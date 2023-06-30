@@ -1,7 +1,6 @@
 package com.example.demo.ootw;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.omycloset.Omycloset;
@@ -55,6 +53,7 @@ public class OootwController {
 				imgdto.setClosetnum(closetVO);
 				imgdto.setOotwnum(ootwVo);
 //		// set을 토대로 OootwimgsDto 새로 저장
+				System.out.println();
 				final2 = imgservice.save(imgdto);
 			}
 		} catch (IndexOutOfBoundsException e) {
@@ -154,12 +153,41 @@ public class OootwController {
 		return map;
 	}
 	
-	// 예은 - 기온 범위 검색 리스트 뿌리기.. GET(/temps/{temp1}/{temp2})
+	// 예은 - 기온 범위 검색 리스트 날짜 최신순으로 뿌리기.. GET(/temps/{memnum}/{temp1}/{temp2})
 	@GetMapping("/temps/{memnum}/{temp1}/{temp2}")
-	public Map getByTemp(@PathVariable("memnum") int memnum, @PathVariable("temp1") double temp1, @PathVariable("temp2") double temp2) {
+	public Map getByTemp(@PathVariable("memnum") int memnum, @PathVariable("temp1") double temp1, @PathVariable("temp2") double temp2) {	
+		
+		// 기온 범위로 검색한 ootw 게시글 리스트
 		ArrayList<OootwDto> list = service.getByTempBetween(memnum, temp1, temp2);
+		
+		// 리스트의 사이즈만큼 리스트를 dto에 담아서 Integer 배열에 게시글 번호 담기
+		Integer[] ootwnums = new Integer[list.size()];
+		for(int i = 0; i < list.size(); i++) {
+			System.out.println("기온범위로 뽑은 리스트: " + list.get(i));
+			OootwDto dto = list.get(i);
+			ootwnums[i] = dto.getOotwnum(); 
+			System.out.println(ootwnums[i]);
+		}
+		
+		// 게시글 번호 배열 크기만큼 대표 옷번호 담을 Integer 배열 생성
+		// 게시글이 5개면 각 게시글의 대표사진 5개 담을 배열임
+		Integer[] closetNumList = new Integer[ootwnums.length];
+		ArrayList<OootwimgsDto> dtoList = new ArrayList<>();
+		
+		// 게시글 번호 배열 크기만큼 반복문 돌리면서 각 게시글에 첨부된 이미지의 정보를 dtoList에 담음
+		try {
+			for(int i = 0; i < ootwnums.length; i++) {
+				dtoList = imgservice.getMyImgs(ootwnums[i]);
+				// 게시글별 첨부된 이미지리스트의 첫번째 대표 이미지만 배열에 담음
+				closetNumList[i] = dtoList.get(0).getClosetnum().getClosetnum();
+				System.out.println("각 게시글 대표 옷 번호:" + closetNumList[i]);
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 		Map map = new HashMap<>();
-		map.put("list", list);
+		map.put("list", list); // ootw 게시글 정보
+		map.put("closetNumList", closetNumList); // 각 게시글 대표(index=0) 옷 번호
 		return map;
 	}
 	
