@@ -4,38 +4,43 @@
         
         <!-- 아이디 입력 폼 -->
         <div class="form_group">
-            <div :class="{'input_box_error' : hasIdError}">
-            <label for ="id" :class="{'input_label': id}">ID</label>
-            <input type="text" id="id" v-model="id" placeholder="ID" :class="{'input_field': true, 'input_field_error': hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
-        </div>
+            <label for ="id"  :class="{'input_label': hasIdError, 'input_label_error': !hasIdError}">ID</label>
+            <input type="text" id="id" v-model="id" placeholder="ID" :class="{'input_field': hasIdError, 'input_field_error': !hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
 
-        <!-- 아이디 유효성 검사 -->
-        <p class="input_error" v-if="hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p>
+            <!-- 아이디 유효성 검사 -->
+            <p class="input_error" v-if="!hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p>
         </div>
 
         <!-- 패스워드 입력 폼 -->
         <div class="form_group">
-            <div :class="{'input_box_error' : hasPwdError}">
-            <label for="pwd" :class="{'input_label': pwd}">Password</label>
-            <input type="password" id="pwd" v-model="pwd" placeholder="Password" :class="{'input_field': true, 'input_field_error': hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)"><br/>
-        </div>
+            <label for="pwd" :class="{'input_label': hasPwdError, 'input_label_error': !hasPwdError}">Password</label>
+            <input type="password" id="pwd" v-model="pwd" placeholder="Password" :class="{'input_field': hasPwdError, 'input_field_error': !hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)"><br/>
 
-        <!-- 패스워드 유효성 검사 -->
-        <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
+            <!-- 패스워드 유효성 검사 -->
+            <p class="input_error" v-if="!hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
         </div>
 
         <!-- 로그인 버튼 -->
+        <button v-on:click ="login" :class="{'loginBtn': isEnabled, 'loginBtn_disabled': !isEnabled}" >로그인</button>
+
         <!-- <button v-on:click ="login" :disabled="!isEnabled" :class="{'loginBtn': isEnabled, 'loginBtn_disabled': !isEnabled}" >로그인</button> -->
+
         <!-- 유효성검사 없는 로그인버튼 -->
-        <button v-on:click ="login"  :class="{'loginBtn': isEnabled}" >로그인</button>
+        <!-- <button v-on:click ="login"  :class="{'loginBtn': isEnabled}" >로그인</button> -->
 
         <!-- 회원가입, 아이디찾기, 비밀번호찾기 -->
         <ul class="look_box">
             <li class="look_list">
                 <a href="../Join" class="look_link">가입</a>
             </li>
+            <li>
+              <div class="bar"></div>
+            </li>
             <li class="look_list">
                 <a href="../FindId" class="look_link">아이디 찾기</a>
+            </li>
+            <li>
+              <div class="bar"></div>
             </li>
             <li class="look_list">
                 <a href="../FindPwd" class="look_link">비밀번호 찾기</a>
@@ -110,7 +115,8 @@ export default{
         validateId(event){
             const id = event.target.value;
             const regex = /^[a-zA-Z0-9]{8,12}$/;
-            this.hasIdError = !regex.test(id);
+            this.hasIdError = regex.test(id);
+            console.log("id : " +this.hasIdError)
             this.enabledState();
         },
 
@@ -118,12 +124,13 @@ export default{
         validatePwd(event){
             const pwd = event.target.value;
             const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{4,12}$/;
-            this.hasPwdError = !regex.test(pwd);
+            this.hasPwdError = regex.test(pwd);
+            console.log("pwd : " +this.hasPwdError)
             this.enabledState();
         },
 
         enabledState(){
-            if(!this.hasIdError && !this.hasPwdError){
+            if(this.hasIdError && this.hasPwdError){
                 this.isEnabled = true;
             }else{
                 this.isEnabled = false;
@@ -134,6 +141,19 @@ export default{
 </script>
 
 <style scoped>
+
+/* placeholder 색상 */
+/* input::placeholder{
+    color:#ebebeb
+} */
+
+.bar{
+  width: 1px;
+  height: 15px;
+  background-color: #000000;
+}
+
+/* 로그인버튼 */
 .loginBtn{
     display: block;
     width: 100%;
@@ -143,10 +163,6 @@ export default{
     background-color: #000000;
     color: #fff;
     font-weight: bold;
-}
-
-.loginBtn:hover{
-    cursor:pointer;
 }
 
 .loginBtn_disabled{
@@ -160,6 +176,11 @@ export default{
     font-weight: bold;
 }
 
+.loginBtn:hover{
+    cursor:pointer;
+}
+
+/* 로그인 틀 */
 #login{
     display: flex;
     flex-direction: column;
@@ -169,21 +190,23 @@ export default{
     border-radius: 10px;
     background-color: #ffffff;
     max-width: 400px;
-    margin: 0 auto;
+    margin: 100px auto;
 }
 
-h3 {
+/* 로고 */
+/* h3 {
     margin: 0;
     margin-bottom: 20px;
     text-align: center;
-}
+} */
 
-  
+/* 아이디, 비밀번호 묶은 틀 */
 .form_group{
-    margin-bottom:10px;
+    margin-bottom:25px;
     width: 100%;
 }
 
+/* ID, Password 라벨 */
 label{
     display: block;
     font-weight: bold;
@@ -192,27 +215,40 @@ label{
     font-size: 13px;
     padding-left: 8px;
 }
-  
-.input_field{
-    position: relative;
-    width: 100%;
-  padding: 8px;
-  border: none;
-  border-bottom: 1px solid #ccc;
-  background-color: transparent;
-  outline: none;
+
+/* 유효성검사 통과 못하면 색상 변경 */
+.input_label_error{
+    color:#f15746
 }
 
+/* 아이디 입력창 */
+.input_field{
+    position: relative;
+    width: 96%;
+    padding: 8px;
+    border: none;
+    border-bottom: 1px solid #ebebeb;
+    background-color: transparent;
+    outline: none;
+}
+
+/* 아이디 입력창(유효성검사 통과X) */
+.input_field_error{
+    position: relative;
+    width: 96%;
+    padding: 8px;
+    border: none;
+    border-bottom: 1px solid #f15746;
+    background-color: transparent;
+    outline: none;
+}
+
+/* 아이디 입력창 포커스 시 아랫줄 굵어짐 */
 #login .input_field:focus{
     border-bottom: 2px solid #000000;
 }
-  
-.input_field:focus + .input_label{
-    top: -10px;
-    font-size: 10px;
-    color: #000000;
-}
 
+/* 유효성 검사 문구 */
 .input_error{
     display: block;
     color:#f15746;
@@ -222,24 +258,16 @@ label{
     padding-left: 8px;
 }
 
-.input_field_error, 
-.input_box_error .input_field,
-.input_box_error .input_label,
-.input_box_error .input_error{
-    border-bottom-color: 2px solid #f15746;
-}
-
 button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 12px;
-  background-color: #000000;
-  color: #fff;
-  font-weight: bold;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    background-color: #000000;
+    color: #ebebeb;
+    font-weight: bold;
 }
-
 
 .look_box{
     width: 100%;

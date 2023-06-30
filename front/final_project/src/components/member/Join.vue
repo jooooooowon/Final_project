@@ -263,6 +263,8 @@ export default{
 
 /* 회원가입 */
 .join_title{
+    display: flex;
+    padding: 24px 0 23px 23px;
     padding-bottom: 46px;
     text-align: center;
     font-size: 28px;

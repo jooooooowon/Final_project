@@ -1,20 +1,39 @@
 <template>
-    <div id="Mypage">
-        <h3>마이페이지</h3>
-        id:<input type="text" v-model="id" readonly><br/>
-        pwd:<input type="password" v-model="pwd"><br/>
-        email:<input type="text" v-model="email" readonly><br/>
-        gender:{{ gender }}<br/>
-        nickname:<input type="text" v-model="nickname"><br/>
+    <div class="layout_base">
+        <div class="container">
+            <h2>마이페이지</h2>
+            <div class="content" id="Mypage">
+                <div class="memberInfo">
+                    
+                    <label for ="newimg">
+                        <div class="userDetail">
+                            <div class="">
+                                <img :src= "profileImg()" style="cursor: pointer; border-radius: 50%;"><br/>
+                                <input type="file" id="newimg" accept="img/*" @change="changeImg" v-show="isVisible"><br/>
+                            </div>
+                            <div>
+                                nickname:<input type="text" v-model="nickname"><br/>
+                                id:<input type="text" v-model="id" readonly><br/>
+                                pwd:<input type="password" v-model="pwd"><br/>
+                                email:<input type="text" v-model="email" readonly><br/>
+                                gender:{{ gender }}<br/>
+                            </div>
+                        </div>
 
-        <label for ="newimg">
-            img:<img :src= "profileImg()" style="cursor: pointer;"><br/>
+                    </label>
+                        <div>
+
+                        </div>
+                </div>
+                
+               
             
-        </label>
-        <input type="file" id="newimg" accept="img/*" @change="changeImg"><br/>
-        <button v-on:click="edit">수정</button>
-        <button v-on:click="out">탈퇴</button>
-        <button v-on:click="logout">로그아웃</button>
+                
+                <button v-on:click="edit">수정</button>
+                <button v-on:click="out">탈퇴</button>
+                <button v-on:click="logout">로그아웃</button>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -148,18 +167,42 @@ export default{
 </script>
 
 <style scoped>
-  h3 {
-    margin: 40px 0 0;
-  }
-  ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  li {
-    display: inline-block;
-    margin: 0 10px;
-  }
-  a {
-    color: #42b983;
-  }
+.layout_base{
+    margin-top:100px;
+}
+.container{
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px;
+    padding: 40px 40px 160px;
+}
+.memberInfo{
+    display:flex;
+    width:80%;
+    border: 1px solid #ebebeb;
+    border-radius: 10px;
+    margin:0 auto;
+    background-color:#ffffff;
+}
+.userDetail{
+    display: flex;
+    text-align: left;
+}
+h2{
+    display: block;
+    font-size: 24px;
+    font-weight:bolder;
+    text-align: left;
+}
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
+a {
+  color: #42b983;
+}
 </style>
