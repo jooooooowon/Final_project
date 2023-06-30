@@ -1,10 +1,11 @@
 package com.example.demo.likebnt;
 
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.community.OcommunityDto;
 
 
 @Service
@@ -28,7 +29,20 @@ public class OlikebtnService {
 						
 			}
 		}
-
+		
+		// ArrayList Vo -> Dto 로 변경하기
+		private ArrayList<OlikebtnDto> changeList(ArrayList<Olikebtn> list) {
+			// 값을 넣은 후 리턴할 빈 dto list를 선언 및 생성한다.
+			ArrayList<OlikebtnDto> listDto = new ArrayList<>();
+			for (Olikebtn vo : list) {
+				// 입력 값으로 받은 vo list에 있는 vo들을 dto로 변환한다.
+				OlikebtnDto dto = (OlikebtnDto) change(vo);
+				// method가 실행될 때 선언했던 dto list에 변경된 dto들을 삽입한다.
+				listDto.add(dto);
+			}
+			// 완성된 dto list를 리턴한다.
+			return listDto;
+		}
 
 		// 등록
 		public OlikebtnDto save(OlikebtnDto dto) {
@@ -51,8 +65,17 @@ public class OlikebtnService {
 			dao.deleteById(likenum);
 		}
 		
+		public OlikebtnDto getById(int likenum) {
+			return dao.findByLikenum(likenum);
+		}
+		
 		//좋아요 cnt list
 		public int likeCount(int commnum) {
-			return dao.likeCount(commnum).get(0);
+			System.out.println("commnum : " + commnum);
+			ArrayList<Olikebtn> list = (ArrayList<Olikebtn>)dao.likeCount(commnum);
+			if(list == null) {
+				return 0;
+			}
+			return list.size();
 		}
 }

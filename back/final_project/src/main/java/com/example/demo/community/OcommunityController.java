@@ -45,6 +45,12 @@ public class OcommunityController {
 	public Map getAll() {
 		ArrayList<OcommunityDto> list = service.getAll();
 		Map map = new HashMap();
+		for(OcommunityDto dto : list) {
+			for(String tagTemp : dto.getTagList()) {
+				System.out.print("dto's tags : "+tagTemp );
+			}
+			System.out.println();
+		}
 		map.put("list", list);
 		return map;
 	}
@@ -132,6 +138,7 @@ public class OcommunityController {
 		boolean flag = true;
 		try {
 			ArrayList<OcommunityDto> tags = service.getByTag(tag);
+			
 			map.put("tags", tags);
 		} catch (Exception e) {
 			e.printStackTrace();

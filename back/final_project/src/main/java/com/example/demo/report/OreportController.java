@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.support.RequestPartServletServerHttpRequest;
+
+import com.example.demo.community.Ocommunity;
+import com.example.demo.community.OcommunityService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -20,13 +24,16 @@ public class OreportController {
 
 	@Autowired
 	private OreportService service;
+	@Autowired
+	private OcommunityService commservice;
 
 	// 전체목록 검색
 	@GetMapping("")
 	public Map getAll() {
 		ArrayList<OreportDto> list = service.getAll();
+		System.out.println("리포트 리스트: " +list);
 		Map map = new HashMap();
-		map.put(list, list);
+		map.put("list", list);
 		return map;
 	}
 
@@ -46,9 +53,27 @@ public class OreportController {
 		return map;
 	}
 
-	// 신고번호로 삭제
+	// 신고번호로 신고테이블에서 삭제 및 신고된 게시글 삭제 동시에...
 	@DeleteMapping("/{repnum}")
 	public Map del(@PathVariable("repnum") int repnum) {
+		boolean flag = true;
+		OreportDto dto = service.getByRepNum(repnum);
+		Ocommunity comm = new Ocommunity();
+		comm = dto.getCommnum();
+		Map map = new HashMap();
+		try {
+			service.delOreport(repnum);
+			commservice.delOcommunity(comm.getCommnum());
+		} catch (Exception e) {
+			flag = false;
+		}
+		map.put("flag", flag);
+		return map;
+	}
+	
+	// 신고게시글에서 신고된 게시글의 정보를 지움으로서 게시글로 복구함
+	@DeleteMapping("/recovery/{repnum}")
+	public Map recovery(@PathVariable("repnum") int repnum) {
 		boolean flag = true;
 		Map map = new HashMap();
 		try {
@@ -59,5 +84,4 @@ public class OreportController {
 		map.put("flag", flag);
 		return map;
 	}
-
 }

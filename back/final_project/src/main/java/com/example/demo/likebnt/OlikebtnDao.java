@@ -19,8 +19,11 @@ public interface OlikebtnDao extends JpaRepository<Olikebtn, Integer> {
 	Olikebtn findByMemnumAndCommnum(@Param("memnum") int memnum, @Param("commnum") int commnum);
 	//좋아요 검색(memnum&commnum) 받아서 좋아요를 눌렀었는지 확인하기 위함.
 	
-	@Query(value = "select count(*)"
-				 + "from olikebtn"
-				 + "where commnum = :commnum", nativeQuery = true)
-	List<Integer> likeCount(int commnum);
+	@Transactional
+	@Query(value = "select * "
+				 + "from olikebtn "
+				 + "where commnum = :commnum", nativeQuery =  true)
+	List<Olikebtn> likeCount(@Param("commnum") int commnum);
+	
+	OlikebtnDto findByLikenum(int likenum);
 }
