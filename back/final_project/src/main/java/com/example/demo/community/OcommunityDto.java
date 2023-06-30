@@ -1,6 +1,8 @@
 package com.example.demo.community;
 
 
+import java.util.ArrayList;
+
 import com.example.demo.member.Omember;
 
 import lombok.AllArgsConstructor;
@@ -21,7 +23,6 @@ public class OcommunityDto {
 	private String tag;
 	
 	
-	
 //	private int btngood;
 //	private int btnwhat;
 //	private int btnsad;
@@ -32,4 +33,5 @@ public class OcommunityDto {
 	private int btnlike;
 	//private MultipartFile[] f = new MultipartFile[3];
 	
+	private ArrayList<String> tagList;
 }

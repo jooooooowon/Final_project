@@ -4,7 +4,11 @@
     <hr class="addhr">
     <div class="container">
         <div>
-            <img style="width: 250px; height: 300px;" :src="currentPhoto"><br>
+            <div>
+                <img style="width: 250px; height: 300px;" :src="currentPhoto"><br>
+                <!-- <img v-if="!currentPhoto" style="width: 100px; height: 120px;" src="@/assets/fileimg.png" alt="기본이미지"> -->
+            </div>
+            
             <div class="cir" style="margin-right: 12%; margin-left: 12%;">
                 <div v-for="(photo, index) in photos" :key="index" class="circle" :class="{ active: currentPhotoIndex === index }" @click="changePhoto(index)"></div>
             </div>
@@ -14,6 +18,7 @@
             </div>
 
             <div>
+                
                 <input type="file" id="f1" @change="handleFile(0)">
                 <br>
                 <input type="file" id="f2" @change="handleFile(1)">
@@ -44,11 +49,13 @@ export default {
             return this.photos[this.currentPhotoIndex];
         }
     },
+    
     methods: {
         handleFile(index) {
             const file = event.target.files[0];
             this.photos[index] = URL.createObjectURL(file);
             this.files[index] = file;
+            this.currentPhotoIndex = index;
         },
         changePhoto(index) {
             this.currentPhotoIndex = index;

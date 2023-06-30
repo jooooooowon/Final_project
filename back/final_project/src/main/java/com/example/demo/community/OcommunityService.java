@@ -19,9 +19,17 @@ public class OcommunityService {
 		if (obj instanceof Ocommunity) {
 			// 만약 vo라면 temp에 vo클래스로 값을 넣어놓는다.
 			Ocommunity temp = (Ocommunity) obj;
+			ArrayList<String> tagList = new ArrayList<>();
+			
+			// vo에서 dto로 갈 때 vue에서 이용하기 쉽게 ArrayList로 담아서 만든다.
+			String tag = temp.getTag();
+			String[] tagArr = tag.split("#");
+			for(String tagTemp : tagArr) {
+				tagList.add(tagTemp);
+			}
 			// vo의 값들을 dto 생성자를 이용하여 새로 생긴 dto에 값을 기입해준 후 리턴한다.
 			return new OcommunityDto(temp.getCommnum(), temp.getMemnum(), temp.getTag(), temp.getImg1(), temp.getImg2(),
-					temp.getImg3(), temp.getBtnlike());
+					temp.getImg3(), temp.getBtnlike(),tagList);
 		} else {
 			// 반대로 한다.
 			OcommunityDto temp = (OcommunityDto) obj;

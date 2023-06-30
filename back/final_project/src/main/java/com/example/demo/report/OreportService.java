@@ -52,7 +52,17 @@ public class OreportService {
 		ArrayList<OreportDto> list2 = changeList(list);
 		return list2;
 	}
-
+	
+	// 신고 게시글 불러오기(신고게시글 번호 뽑아오기)
+	public OreportDto getByRepNum(int repnum) {
+		Oreport entity = dao.findById(repnum).orElse(null);
+		if(entity == null) {
+			return null;
+		} else {
+			return new OreportDto(entity.getRepnum(), entity.getMemnum(), entity.getCommnum(), entity.getCategory());
+		}
+	}
+	
 	// 신고 삭제
 	public void delOreport(int repnum) {
 		dao.deleteById(repnum);
