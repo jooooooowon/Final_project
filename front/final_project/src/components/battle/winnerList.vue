@@ -4,47 +4,50 @@
   <notYet></notYet>
 </div>
 <div v-else>
-    <div class="main">
-        <div v-for="particle in particles" :key="particle.id" class="particule" :style="{ 
-          transform: 'translate3d(' + particle.x + 'px, ' + particle.y + 'px, 1px)', 
-          width: particle.size + 'px',
-          height: particle.size + 'px',
-          background: particle.color
-        }"></div>
-      </div>
-    <div>
-    <div class = "title">명예의 전당</div>
-    <div class="winner-list">
-      <ul v-for="(winner,i) in list" :key="i">
-        <li class="list-winner">
-        <div class="card">
-          <div class="round-cnt">
-            ROUNDNUM #{{ winner.roundcnt }} 
-          </div>
-          <div class="nickname">
-            {{ nickname[i] }}
-          </div>
-          <div class="winner-content">
-            <div class="theme">
-              <span class="small-title">테마</span> <br><br>
-              <span class="small-content">
-                {{ winner.theme }}
-              </span>  
-            </div>
-            <div class="bar"></div>
-            <div class="gender">
-              <span class="small-title">성별</span> <br><br>
-              <span class="small-content">
-                {{ winner.gender }}
-              </span>  
-            </div>
-          </div>
-          <div class="imgPosition">
-            <img :src="'http://localhost:8081/battles/imgs/' + winner.batnum" alt="이미지 불러오기 실패">
-          </div>
+  <div style="display :flex">
+    <div class="body-div">
+      <div class="container">
+        <div class="bubbles">
+          <span v-for="i in items" :style="`--i:${i}`" :key="i"></span>
+          <span v-for="i in items" :style="`--i:${i}`" :key="i"></span>
+          <span v-for="i in items" :style="`--i:${i}`" :key="i"></span>
         </div>
-       </li>
-      </ul>
+      </div>
+    </div>
+    <div class = "main-winner-list">
+      <div class = "title">명예의 전당</div>
+      <div class="winner-list">
+        <ul v-for="(winner,i) in list" :key="i">
+          <li class="list-winner">
+          <div class="card">
+            <div class="round-cnt">
+              ROUNDNUM #{{ winner.roundcnt }} 
+            </div>
+            <div class="nickname">
+              {{ nickname[i] }}
+            </div>
+            <div class="winner-content">
+              <div class="theme">
+                <span class="small-title">테마</span> <br><br>
+                <span class="small-content">
+                  {{ winner.theme }}
+                </span>  
+              </div>
+              <div class="bar"></div>
+              <div class="gender">
+                <span class="small-title">성별</span> <br><br>
+                <span class="small-content">
+                  {{ winner.gender }}
+                </span>  
+              </div>
+            </div>
+            <div class="imgPosition">
+              <img :src="'http://localhost:8081/battles/imgs/' + winner.batnum" alt="이미지 불러오기 실패">
+            </div>
+          </div>
+        </li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>
@@ -59,14 +62,11 @@ export default{
     return{
       dto:{},
       list:[1],
-      particles:[],
       nickname:[],
-      colors:["#eb6383", "#fa9191", "#ffe9c5", "#b4f2e1"]
+      items: [
+        11, 12, 24, 10, 14, 23, 18, 16, 19, 20, 22, 25, 18, 21, 15, 13, 26, 17, 13, 28, 10, 25, 24, 18
+      ],
     }
-  },
-  mounted(){
-      this.pop();
-      this.render();
   },
   components : {
     notYet : notYet
@@ -75,38 +75,6 @@ export default{
     this.winnerList();
   },
   methods:{
-    pop() {
-      for (let i = 0; i < 150; i++) {
-        const particle = {
-          id: i,
-          x: window.innerWidth * 0.5,
-          y: window.innerHeight + Math.random() * window.innerHeight * 0.3,
-          vel: {
-            x: (Math.random() - 0.5) * 10,
-            y: Math.random() * -20 - 15
-          },
-          mass: Math.random() * 0.2 + 0.8,
-          size: Math.random() * 15 + 5,
-          color: this.colors[Math.floor(Math.random() * this.colors.length)]
-        };
-        this.particles.push(particle);
-      }
-    },
-    render() {
-      for (let i = this.particles.length; i--; i > -1) {
-        const particle = this.particles[i];
-        particle.x += particle.vel.x;
-        particle.y += particle.vel.y;
-        particle.vel.y += 0.5 * particle.mass;
-        if (
-          particle.y > window.innerHeight * 1.2 ||
-          particle.x > window.innerWidth
-        ) {
-          this.particles.splice(i, 1);
-        }
-      }
-      requestAnimationFrame(this.render);
-    },
     winnerList(){
       let self = this;
     self.$axios.get('http://localhost:8081/battles/winnerlist')
@@ -117,6 +85,11 @@ export default{
           console.log(dto.memnum.nickname);
           this.nickname.push(dto.memnum.nickname);
         }
+        let container = document.querySelector('.container');
+        container.style.height = (self.list.length / 3) * 100 + 'vh';
+        container.style.setProperty("--h-name",(self.list.length / 3) * 100 + 'vh');
+        console.log(container.style.getPropertyValue("--h-name"));
+        console.log(container.style.getPropertyValue("height"));
         console.log(this.list);
       }else{
         alert("오류로 인해 명예의 전당 활성화 불가")
@@ -129,22 +102,55 @@ export default{
 
 <style scoped>
   @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Diphylleia&display=swap');
-.main {
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: scroll;
+.body-div{
+  position:absolute;
 }
 
-.particule {
-  position: absolute;
-  border-radius: 50%;
-  box-shadow: 1px 1px 4px #eb6383;
+.container{
+  position:relative;
+  width: 100%;
+  overflow : hidden;
+  --h-name: 100vh;
+}
+
+.bubbles{
+  position: relative;
+  display:flex;
+}
+
+.bubbles span{
+  position:relative;
+  width: 30px;
+  height: 30px;
+  background-color: #85b380;
+  margin: 0 4px;
+  border-radius : 50%;
+  box-shadow: 0 0 0 10px #85b38044,
+  0 0 50px #85b380,
+  0 0 100px #85b380;
+  animation : animate 15s ease-in-out infinite;
+  animation-duration: calc(125s / var(--i));
+}
+
+@keyframes animate {
+  0%{
+    transform: translateY(var(--h-name)) scale(0);
+  }
+  100%{
+    transform: translateY(-10vh) scale(.3);
+  }
+  
 }
 
 
 /* =========================================== */
+
+.main-winner-list{
+  position : absolute;
+  left : 0;
+  right: 0;
+  margin : auto;
+}
 
 .winnerList{
   width:100%;
