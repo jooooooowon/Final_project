@@ -66,7 +66,7 @@ export default {
             } else if (this.selectedmain == '하의') {
                 this.subtags = ['반바지', '치마', '면바지', '청바지', '레깅스', 'etc']
             } else if (this.selectedmain == '기타') {
-                this.subtags = ['스타킹', '히트텍', '기모제품', '목도리', 'etc']
+                this.subtags = ['스타킹', '히트텍', '기모제품', '방한용품', 'etc']
             } else if (this.selectedmain == '신발') {
                 this.subtags = ['샌들', '슬리퍼', '운동화', '등산화', '구두', 'etc']
             }

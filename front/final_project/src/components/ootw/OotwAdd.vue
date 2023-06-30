@@ -149,7 +149,7 @@ export default {
             } else if (index == 3) {
                 self.subtags = ['하의(전체)', '반바지', '치마', '면바지', '청바지', '레깅스', 'etc']
             } else if (index == 4) {
-                self.subtags = ['기타(전체)', '스타킹', '히트텍', '기모제품', '목도리', 'etc']
+                self.subtags = ['기타(전체)', '스타킹', '히트텍', '기모제품', '방한용품', 'etc']
             } else if (index == 5) {
                 self.subtags = ['신발(전체)', '샌들', '슬리퍼', '운동화', '등산화', '구두', 'etc']
             }
