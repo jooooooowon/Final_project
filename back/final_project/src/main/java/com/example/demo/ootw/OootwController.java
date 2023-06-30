@@ -153,7 +153,16 @@ public class OootwController {
 		map.put("list", list);
 		return map;
 	}
-
+	
+	// 예은 - 기온 범위 검색 리스트 뿌리기.. GET(/temps/{temp1}/{temp2})
+	@GetMapping("/temps/{memnum}/{temp1}/{temp2}")
+	public Map getByTemp(@PathVariable("memnum") int memnum, @PathVariable("temp1") double temp1, @PathVariable("temp2") double temp2) {
+		ArrayList<OootwDto> list = service.getByTempBetween(memnum, temp1, temp2);
+		Map map = new HashMap<>();
+		map.put("list", list);
+		return map;
+	}
+	
 	// 게시글 & 게시글 이미지 정보 삭제하기.. DELETE(/ootwnum)
 	@DeleteMapping("/{ootwnum}")
 	public Map delete(@PathVariable("ootwnum") int ootwnum) {

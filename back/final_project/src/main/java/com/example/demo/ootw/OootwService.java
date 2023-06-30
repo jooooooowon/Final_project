@@ -47,6 +47,16 @@ public class OootwService {
 		return list2;
 	}
 	
+	// 기온 검색 리스트 뿌리기(예은)
+	public ArrayList<OootwDto> getByTempBetween(int memnum, double temp1, double temp2){
+		ArrayList<Oootw> list = dao.findByTempBetween(memnum, temp1, temp2);
+		ArrayList<OootwDto> dtoList = new ArrayList<>();
+		for(Oootw o : list) {
+			dtoList.add(new OootwDto(o.getOotwnum(), o.getMemnum(), o.getOdate(), o.getWeather(), o.getTemp(), o.getComments()));
+		}
+		return dtoList;
+	}
+	
 	// 게시글 삭제
 	public void delete(int ootwnum) {
 		dao.deleteById(ootwnum);

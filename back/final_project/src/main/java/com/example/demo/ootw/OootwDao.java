@@ -1,5 +1,6 @@
 package com.example.demo.ootw;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,11 @@ public interface OootwDao extends JpaRepository<Oootw, Integer> {
 	@Modifying
 	@Query(value="select * from oootw order by odate desc", nativeQuery = true)
 	ArrayList<Oootw> findAllListByOrder();
+	
+	// 기온 between 자기 게시글만 검색(예은)
+	@Transactional
+	@Modifying
+	@Query(value="select * from oootw where memnum=:memnum and temp between :temp1 and :temp2", nativeQuery = true)
+	ArrayList<Oootw> findByTempBetween(@Param("memnum") int memnum, @Param("temp1") double temp1, @Param("temp2") double temp2);
+	
 }
