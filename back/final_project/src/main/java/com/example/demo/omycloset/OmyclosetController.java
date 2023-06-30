@@ -23,6 +23,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.ootw.Oootw;
+import com.example.demo.ootw.OootwDto;
+import com.example.demo.ootw.OootwService;
+import com.example.demo.ootwImgs.OootwimgsDto;
+import com.example.demo.ootwImgs.OootwimgsService;
+
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -30,6 +36,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class OmyclosetController {
 	@Autowired
 	private OmyclosetService service;
+	@Autowired
+	private OootwimgsService imgservice;
+	@Autowired
+	private OootwService ootwservice;
 	@Value("${spring.servlet.multipart.location}")
 	private String path;
 	
@@ -206,9 +216,16 @@ public class OmyclosetController {
 	}
 	
 	// 옷장에 옷 등록할 때 이미지 클릭하는 부분 폴더에 저장해 놓은 기본 이미지 뜨게 하려고 만듬
-	@GetMapping("/img/addimg")
-	public ResponseEntity<byte[]> read_addimg(){
-		String fname = "c:/closet/addimg/imageadd.png";
+	@GetMapping("/img/addimg/{index}")
+	public ResponseEntity<byte[]> read_addimg(@PathVariable("index") int index){
+		String fname = "";
+		if(index == 0) {
+			fname = "c:/closet/addimg/imageadd.png";
+		} else if(index == 1) {
+			fname = "c:/closet/addimg/emptystar.png";
+		} else if(index == 2) {
+			fname = "c:/closet/addimg/fullstar.png";
+		}
 		File f = new File(fname);
 		HttpHeaders header = new HttpHeaders(); // HttpHeaders 객체 생성
 		ResponseEntity<byte[]> result = null; // 선언
@@ -252,8 +269,24 @@ public class OmyclosetController {
 	@DeleteMapping("/{closetnum}")
 	public Map delete(@PathVariable("closetnum") int closetnum) {
 		boolean flag = true;
+		
+		// 삭제하려는 옷 번호로 옷이미지정보 담긴 테이블 리스트 호출하기
+		System.out.println("삭제한 옷번호: " + closetnum);
+		ArrayList<OootwimgsDto> imglist= imgservice.getByClosetnum(closetnum);
+		// 불러온 리스트의 사이즈만큼 옷이미지정보 담긴 테이블에 정보 담고,
+		// 그 정보에서 삭제하려고 했던 옷의 정보가 담긴 ootw게시글 번호 모두 추출하기
+		Oootw ootw = new Oootw();
+		Integer[] checkOotwnum = new Integer[imglist.size()];
+		System.out.println(imglist.size());
+		for (int i = 0; i < imglist.size(); i++) {
+			OootwimgsDto o = imglist.get(i);
+			ootw = o.getOotwnum();
+			checkOotwnum[i] = ootw.getOotwnum();
+			System.out.println("Ootw게시글 번호: " + checkOotwnum[i]);
+		}
+		///////////////////////////////////////////////////////////////
+		
 		try {
-			
 			OmyclosetDto dto = service.getMyCloth(closetnum);
 			int memnum = dto.getMemnum().getMemnum();
 			String filePath = dto.getImg();
@@ -263,9 +296,43 @@ public class OmyclosetController {
 			oldfile.delete();
 			folder.delete();
 			service.delete(closetnum);
+			// 옷 삭제 이후에, 위에서 부른 ootw 게시글 번호로 다시 ootwimgs 테이블 리스트 조회
+			// 위에서 옷 삭제하면서 ootwimgs 테이블에서도 cascade로 해당 옷 관련 열 다 삭제됨
+			// 게시글에 있는 옷이 다 삭제되면, ootwimgs테이블에 옷번호, ootw게시글 번호 모두 없으므로
+			// ootw게시글 번호로 조회...
+			// 조회 후에 없는 리스트 사이즈가 0이면(리스트에 정보 없으면) 해당 게시글 번호로 게시글 삭제
+			for(int i = 0; i<checkOotwnum.length; i++) {
+				ArrayList<OootwimgsDto> checklist = imgservice.getMyImgs(checkOotwnum[i]);
+				if(checklist.size() == 0) {
+					ootwservice.delete(checkOotwnum[i]);
+				} else {
+					System.out.println(checkOotwnum[i]);
+				}
+			}
+			///////////////////////////////////////////////////////////////
 		} catch (Exception e) {
 			flag = false;
 		}
+		
+		// 옷 삭제 이후에, 위에서 부른 ootw 게시글 번호로 다시 ootwimgs 테이블 리스트 조회
+		// 위에서 옷 삭제하면서 ootwimgs 테이블에서도 cascade로 해당 옷 관련 열 다 삭제됨
+		// 게시글에 있는 옷이 다 삭제되면, ootwimgs테이블에 옷번호, ootw게시글 번호 모두 없으므로
+		// ootw게시글 번호로 조회...
+		// 조회 후에 없는 리스트 사이즈가 0이면(리스트에 정보 없으면) 해당 게시글 번호로 게시글 삭제
+//		for(int i = 0; i<checkOotwnum.length; i++) {
+//			try {
+//				ArrayList<OootwimgsDto> checklist = imgservice.getMyImgs(checkOotwnum[i]);
+//				if(checklist.size() == 0) {
+//					ootwservice.delete(checkOotwnum[i]);
+//				} else {
+//					System.out.println(checkOotwnum[i]);
+//				}
+//			} catch (IndexOutOfBoundsException e) {
+//				System.out.println(e);
+//			}
+//		}
+		///////////////////////////////////////////////////////////////
+		
 		Map map = new HashMap<>();
 		map.put("flag", flag);
 		return map;

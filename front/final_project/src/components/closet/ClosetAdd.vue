@@ -21,12 +21,11 @@
 </template>
 
 <script>
-
 export default {
     name: 'ClosetAdd',
     data() {
         return {
-            thumbimg: 'http://localhost:7878/closets/img/addimg',
+            thumbimg: 'http://localhost:7878/closets/img/addimg/' + 0,
             uploadimg: '',
             memnum: null,
             selectedmain: '',
@@ -49,6 +48,7 @@ export default {
                 reader.onload = function() { // reader.onload 이벤트 핸들러는 파일 읽기가 완료되었을 때 호출되는 콜백 함수를 정의하는 역할을 한다.
                     self.thumbimg = reader.result; // reader.result 속성은 파일의 데이터를 담고 있는 문자열을 제공함, 이 문자열은 일반적으로 이미지 파일의 경우 base64 인코딩된 이미지 데이터를 포함한다.
                     // 따라서 인코딩된 이미지 데이터를 thumbnail에 담아서 이미지를 미리보기 해주는 역할을 수행한다.
+                    console.log("이미지 정보: " + reader.result)
                     self.uploadimg = file.files[0];  // 업로드한 파일을 uploadimg에 담아서 back에 보내는 역할을 한다.
                 };
                 reader.readAsDataURL(file.files[0]);
@@ -76,6 +76,8 @@ export default {
             let formdata = new FormData();
             if(self.uploadimg == ''){
                 alert("옷 이미지를 등록해주세요.")
+            } else if(self.selectedmain == '' || self.selectedsub == '' || self.clothname =='') {
+                alert("등록하시는 옷의 태그 또는 이름을 정해주세요.")
             } else {
                 formdata.append('f', self.uploadimg)
                 formdata.append('memnum', self.memnum)

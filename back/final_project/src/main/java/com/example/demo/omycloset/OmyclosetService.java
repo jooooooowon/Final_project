@@ -128,7 +128,7 @@ public class OmyclosetService {
 
 	// 내옷 키워드 검색 리스트
 	public ArrayList<OmyclosetDto> getByCloth(String cloth){
-		ArrayList<Omycloset> list = dao.findByClothLike("%" + cloth + "%");
+		ArrayList<Omycloset> list = (ArrayList<Omycloset>) dao.findByClothLike("%" + cloth + "%");
 		ArrayList<OmyclosetDto> list2 = new ArrayList<OmyclosetDto>();
 		for(Omycloset o : list) {
 			list2.add(new OmyclosetDto(o.getClosetnum(), o.getMemnum(), o.getCloth(), o.getImg(), o.getMaintag(),

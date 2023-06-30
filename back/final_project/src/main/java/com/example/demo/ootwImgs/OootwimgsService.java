@@ -28,6 +28,16 @@ public class OootwimgsService {
 		return list2;
 	}
 	
+	// closetnum으로 ootwnum 호출하기
+	public ArrayList<OootwimgsDto> getByClosetnum(int closetnum) {
+		ArrayList<Oootwimgs> list = (ArrayList<Oootwimgs>) dao.findByClosetnum(closetnum);
+		ArrayList<OootwimgsDto> list2 = new ArrayList<>();
+		for(Oootwimgs o : list) {
+			list2.add(new OootwimgsDto(o.getOotwimgsnum(), o.getOotwnum(), o.getClosetnum()));
+		}
+		return list2;
+	}
+	
 	// 게시글에 등록된 옷장 이미지 정보 삭제하기(ootw num 받아서)
 	public void delete(int ootwnum) {
 		dao.deleteByFk(ootwnum); // fk(ootwnum) 받아서 삭제하기

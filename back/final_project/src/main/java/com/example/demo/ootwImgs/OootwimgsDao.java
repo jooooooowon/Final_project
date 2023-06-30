@@ -18,7 +18,13 @@ public interface OootwimgsDao extends JpaRepository<Oootwimgs, Integer> {
 	@Transactional
 	@Modifying
 	@Query(value="select * from oootwimgs where ootwnum=:ootwnum order by ootwimgsnum", nativeQuery = true)
-	ArrayList<Oootwimgs> findByOotwnum(int ootwnum);
+	ArrayList<Oootwimgs> findByOotwnum(@Param("ootwnum") int ootwnum);
+	
+	// closetnum으로 조회해서 ootwnum 얻고, 옷삭제후 얻은 ootwnum으로 다시 imgs 테이블 조회했을 때 null이면 ootw 삭제
+	@Transactional
+	@Modifying
+	@Query(value="select * from oootwimgs where closetnum=:closetnum", nativeQuery = true)
+	ArrayList<Oootwimgs> findByClosetnum(@Param("closetnum") int closetnum);
 	
 	// pk값 아닌 컬럼 매개변수 받아서 삭제하기
 	@Transactional

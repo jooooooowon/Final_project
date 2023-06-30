@@ -1,10 +1,10 @@
 <template>
-    <h3>옷장 전체리스트</h3>
-
+    <div id="up1"></div>
+    <!-- <h3>옷장 전체리스트</h3> -->
     <div>
-        <router-link to="/closetadd">옷 등록</router-link><br />
-        옷이름 검색: <input type="search" v-model="cloth"><button v-on:click="clothserach">검색</button>
-
+        <input type="search" v-model="cloth" size="30" style="height: 38px; text-align: center;" placeholder="옷 검색하기">
+        <span class="searchBtn"><b-button v-on:click="clothserach" style="width:65px; height:40px;">검색</b-button></span>
+        <div class="addCloth"><b-button href="/closetadd" style="width:150px; height:40px;" class="addBtn">내옷 등록하기</b-button></div>
         <div class="mouseout" v-on:mouseout="hideselect">
             <ul v-for="(maintag, index) in maintags" v-bind:value="maintag" v-bind:key="maintag">
                 <li v-on:mouseover="selectsub(index)" v-on:click="getall(index)">{{ maintag }}</li>
@@ -16,30 +16,31 @@
             </div>
         </div><br />
 
-        <div>
-            <b-card-group deck v-for="(row, index) in additionalCloset" :key="index" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
-                <b-card v-for="closet in row" :key="closet.closetnum"
-                    :img-src="'http://localhost:7878/closets/img/' + memnum + '/' + closet.closetnum" img-top
-                    style="max-width:200px; height: auto; flex: 0 0 250px;">
-                    <a v-on:click="favorite(closet.closetnum)">
-                        <span v-text="closet.favorite == 1 ? '★' : '☆'" class="star"></span>
-                    </a>
-                    <b-card-text>
-                        {{ closet.maintag }}<br />
-                        {{ closet.subtag }}<br />
-                        {{ closet.cloth }}<br />
-                    </b-card-text>
-                    <template #footer>
-                        <small class="text-muted">
-                            <b-button v-on:click="deletecloth(closet.closetnum)">삭제</b-button>
-                        </small>
-                    </template>
-                </b-card>
-            </b-card-group>
+        <div v-show="memnum == checkMemnum">
+            <div class="container" v-for="(row, index) in additionalCloset" :key="index"
+                style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+                <div class="card" v-for="closet in row" :key="closet.closetnum">
+                    <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + closet.closetnum">
+                    <div class="favImg">
+                        <a v-on:click="favorite(closet.closetnum)">
+                            <img :src="closet.favorite === 1 ? image1 : image2" style="width:40px; height:40px">
+                        </a>
+                    </div>
+                    <div class="inform">
+                        <span class="word-spacing">{{ closet.maintag }} {{ closet.subtag }}</span>
+                        <br />
+                        <a v-on:click="detail(closet.closetnum)">{{ closet.cloth }}</a><br />
+                    </div>
+                    <div class="btn-container">
+                        <b-button v-on:click="deletecloth(closet.closetnum, closet.favorite)">삭제</b-button>
+                    </div>
+                </div>
+            </div>
         </div><br />
-        <b-button href="#" variant="primary">Go somewhere</b-button>
         <b-button v-on:click="moreBtn">더보기</b-button>
     </div>
+    <div class="goupBtn"><b-button href="#up1" class="moveBtn">Go up</b-button></div>
+    <br />
 </template>
 
 <script>
@@ -47,6 +48,8 @@ export default {
     name: 'ClosetlistByTag',
     data() {
         return {
+            image1: 'http://localhost:7878/closets/img/addimg/' + 2,
+            image2: 'http://localhost:7878/closets/img/addimg/' + 1,
             tag: this.$route.query.tag,
             index: this.$route.query.index,
             closetlist: [],
@@ -56,18 +59,22 @@ export default {
             maintags: ['전체', '아우터', '상의', '하의', '기타', '신발'],
             subtags: [],
             memnum: sessionStorage.getItem('memnum'),
-            cloth: ''
+            cloth: '',
+            checkMemnum: ''
         }
     },
     created: function () { // 해당 컴포넌트가 처음 실행될 때만 적용... 그 다음부터는 변경된 컴포넌트(같은 컴포넌트로 이동할 때 적용이 안됨)
         const self = this;
+        self.memnum = sessionStorage.getItem('memnum')
         if (self.index == 0) {
             let maintag = self.tag.split('(', 1)
             self.$axios.get('http://localhost:7878/closets/maintags/' + maintag)
                 .then(function (res) {
                     if (res.status == 200) {
-                        // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default 걸러서 리스트에 넣기
-                        self.closetlist = res.data.list.filter(closet => closet.closetnum != 999999999);
+                        self.closetlist = res.data.list;
+                        if (self.closetlist != '') {
+                            self.checkMemnum = self.closetlist[0].memnum.memnum;
+                        }
                         const addtionalRow = self.closetlist.slice(0, self.closetPerPage);
                         self.additionalCloset.push(addtionalRow);
                     } else {
@@ -79,7 +86,10 @@ export default {
                 .then(function (res) {
                     if (res.status == 200) {
                         // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default 걸러서 리스트에 넣기
-                        self.closetlist = res.data.list.filter(closet => closet.closetnum != 999999999);
+                        self.closetlist = res.data.list;
+                        if (self.closetlist != '') {
+                            self.checkMemnum = self.closetlist[0].memnum.memnum;
+                        }
                         const addtionalRow = self.closetlist.slice(0, self.closetPerPage);
                         self.additionalCloset.push(addtionalRow);
                     } else {
@@ -191,11 +201,15 @@ export default {
         },
         listbytag(subtag, index) {
             const self = this;
-            self.$router.push({ name: 'ClosetlistByTag', query: { tag: subtag, index: index } });
+            self.$router.push({ name: 'ClosetListByTag', query: { tag: subtag, index: index } });
         },
         clothserach() {
             const self = this;
-            self.$router.push({ name: 'ClosetlistByCloth', query: { cloth: self.cloth } });
+            if (self.cloth == '') {
+                alert('검색할 옷을 입력해주세요.');
+            } else {
+                self.$router.push({ name: 'ClosetListByCloth', query: { cloth: self.cloth } });
+            }
         }
     }
 }
@@ -204,17 +218,6 @@ export default {
 <style scoped>
 h3 {
     margin: 40px 0 0;
-}
-
-.star {
-    margin-left: 150px;
-    margin-top: 1000px;
-    cursor: pointer;
-}
-
-table {
-    margin-left: auto;
-    margin-right: auto;
 }
 
 ul {
@@ -231,5 +234,106 @@ li {
 
 .follow {
     clear: left;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.card {
+    width: 225px;
+    height: 345px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card img {
+    position: relative;
+    width: 200px;
+    /* 가로 사이즈 200px로 고정 */
+    height: 200px;
+    /* 세로 사이즈 200px로 고정 */
+    object-fit: cover;
+    /* 이미지가 카드 영역에 꽉 차도록 설정 */
+    border-radius: 10px;
+}
+
+.favImg {
+    margin-left: 165px;
+    /* margin-top: 150px; */
+    cursor: pointer;
+}
+
+a {
+    cursor: pointer;
+}
+
+.inform {
+    /* margin-left: 150px; */
+    margin-top: -20px;
+}
+
+.word-spacing {
+    word-spacing: 5px;
+}
+
+button {
+    background-color: rgba(38, 37, 37, 0.5);
+    border: none;
+}
+
+.moveBtn {
+    background-color: rgba(38, 37, 37, 0.5);
+    border: none;
+}
+.addBtn {
+    background-color: rgba(34, 183, 34, 0.5);
+    border: none;
+}
+
+.addCloth {
+    margin-left: 1080px;
+    margin-top: -40px;
+}
+.searchBtn {
+    margin-left: 5px;
+}
+.btn-container {
+    display: flex;
+    flex-wrap: wrap;
+    /* 필요한 경우 버튼이 줄바꿈되도록 함 */
+    justify-content: space-between;
+    border-top: 1px solid lightgray;
+    width: 120px;
+
+}
+
+.btn-container button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1 0 45%;
+    /* 버튼의 크기 조정 */
+    margin: 5px;
+    /* 버튼 사이의 간격 설정 */
+    background-color: rgba(18, 76, 18, 0.5);
+    border: none;
+}
+
+.goupBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
 }
 </style>

@@ -24,7 +24,7 @@
         <button v-on:click="modalOpen(5)" id="addLabel5" style="display:none"></button>
         날짜: <input type="date" v-model="odate"><br />
         날씨: <input type="text" v-model="weather"><br />
-        기온: <input type="text" v-model="temp"><br />
+        기온: <input type="number" v-model="temp"><br />
         Comment<br />
         <textarea v-model="comments" cols="30" rows="5" style="resize:none" maxlength="100"
             placeholder="커멘트는 최대 50자까지 입력 가능합니다."></textarea><br />
@@ -45,19 +45,20 @@
                         <li class="second" v-on:click="listbytag(index)" id="sub">{{ subtag }}</li>
                     </ul>
                 </div>
-                
+
                 <h3>옷장 전체리스트</h3>
                 <div class="container">
                     <div class="item" v-for="closet in closetlist" :key="closet.closetnum">
-                        <img :src="'http://localhost:7878/closets/img/' + closet.memnum.memnum + '/' + closet.closetnum"><br/>
-                        {{ closet.cloth }}<br/>
-                        {{ closet.maintag }}<br/>
-                        {{ closet.subtag }}<br/>
-                        <button v-on:click="addCloth(closet.closetnum)">추가</button>
-                        <button v-on:click="moreBtn">더보기</button> <button @click="modalClose">취소</button>
+                        <img :src="'http://localhost:7878/closets/img/' + closet.memnum.memnum + '/' + closet.closetnum"><br />
+                        {{ closet.cloth }}<br />
+                        {{ closet.maintag }}<br />
+                        {{ closet.subtag }}<br />
+                        <b-button v-on:click="addCloth(closet.closetnum)">추가</b-button>
                     </div>
                 </div>
-                <div id="down"></div><b-button href="#up">Go up</b-button>
+                <br />
+                <b-button @click="modalClose">취소</b-button>
+                <div id="down"><br /></div><b-button href="#up">Go up</b-button>
             </div>
         </div>
     </div>
@@ -68,14 +69,13 @@ export default {
     name: 'OotwAdd',
     data() {
         return {
-            thumbImg1: 'http://localhost:7878/closets/img/addimg',
-            thumbImg2: 'http://localhost:7878/closets/img/addimg',
-            thumbImg3: 'http://localhost:7878/closets/img/addimg',
-            thumbImg4: 'http://localhost:7878/closets/img/addimg',
-            thumbImg5: 'http://localhost:7878/closets/img/addimg',
+            thumbImg1: 'http://localhost:7878/closets/img/addimg/' + 0,
+            thumbImg2: 'http://localhost:7878/closets/img/addimg/' + 0,
+            thumbImg3: 'http://localhost:7878/closets/img/addimg/' + 0,
+            thumbImg4: 'http://localhost:7878/closets/img/addimg/' + 0,
+            thumbImg5: 'http://localhost:7878/closets/img/addimg/' + 0,
             modalCheck: false,
             closetlist: [],
-            // displayedcloset: [],
             closetPerPage: 3,
             currentPage: 1,
             maintags: ['전체', '아우터', '상의', '하의', '기타', '신발'],
@@ -87,16 +87,10 @@ export default {
             temp: '',
             comments: '',
             thumbnum: null,
-            closetnum1: null,
-            closetnum2: null,
-            closetnum3: null,
-            closetnum4: null,
-            closetnum5: null,
             // formdata null이면 axios로 전달이 안되기 때문에 default 넣어주고 보냄..
             // default 999999999에 기본 이미지 넣어주고 리스트에서는 filter 메서드로 안보여주게 함
             // 값 넘기기 위해 만들어 놓은 더미용
-            closetnum: [999999999, 999999999, 999999999, 999999999, 999999999],
-            list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            closetnumlist: []
         }
     },
     created: function () {
@@ -105,7 +99,7 @@ export default {
         self.$axios.get('http://localhost:7878/closets')
             .then(function (res) {
                 if (res.status == 200) {
-                    self.closetlist = res.data.list.filter(closet => closet.closetnum != 999999999);
+                    self.closetlist = res.data.list;
                     // self.displayedcloset = self.closetlist.slice(0, self.closetPerPage);
                 } else {
                     alert('에러코드: ' + res.status)
@@ -129,7 +123,7 @@ export default {
                 self.$axios.get('http://localhost:7878/closets')
                     .then(function (res) {
                         if (res.status == 200) {
-                            self.closetlist = res.data.list.filter(closet => closet.closetnum != 999999999);
+                            self.closetlist = res.data.list;
                             // self.displayedcloset = self.closetlist.slice(0, self.closetPerPage);
                         } else {
                             alert('에러코드: ' + res.status)
@@ -167,7 +161,7 @@ export default {
                 self.$axios.get('http://localhost:7878/closets/maintags/' + maintag)
                     .then(function (res) {
                         if (res.status == 200) {
-                            self.closetlist = res.data.list.filter(closet => closet.closetnum != 999999999);
+                            self.closetlist = res.data.list;
                         } else {
                             alert('에러코드: ' + res.status)
                         }
@@ -177,7 +171,7 @@ export default {
                 self.$axios.get('http://localhost:7878/closets/subtags/' + subtag)
                     .then(function (res) {
                         if (res.status == 200) {
-                            self.closetlist = res.data.list.filter(closet => closet.closetnum != 999999999);
+                            self.closetlist = res.data.list;
                         } else {
                             alert('에러코드: ' + res.status)
                         }
@@ -188,44 +182,51 @@ export default {
             const self = this;
             if (self.thumbnum == 1) {
                 self.thumbImg1 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnum[0] = closetnum
+                self.closetnumlist[0] = closetnum
             } else if (self.thumbnum == 2) {
                 self.thumbImg2 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnum[1] = closetnum
+                self.closetnumlist[1] = closetnum
             } else if (self.thumbnum == 3) {
                 self.thumbImg3 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnum[2] = closetnum
+                self.closetnumlist[2] = closetnum
             } else if (self.thumbnum == 4) {
                 self.thumbImg4 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnum[3] = closetnum
+                self.closetnumlist[3] = closetnum
             } else if (self.thumbnum == 5) {
                 self.thumbImg5 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnum[4] = closetnum
+                self.closetnumlist[4] = closetnum
             }
             this.modalCheck = !this.modalCheck
         },
         addBoard() {
             const self = this
-            alert(self.odate)
             var year = self.odate.substring(0, 4);
             var month = self.odate.substring(5, 7);
             var day = self.odate.substring(8, 10);
             var date = year + "/" + month + "/" + day;
             let formdata = new FormData();
-            formdata.append('memnum', self.memnum)
-            formdata.append('odate', date)
-            formdata.append('weather', self.weather)
-            formdata.append('temp', self.temp)
-            formdata.append('comments', self.comments)
-            formdata.append('closetnum', self.closetnum)
-            self.$axios.post('http://localhost:7878/boards', formdata)
-                .then(function (res) {
-                    if (res.status == 200) {
-                        location.href = '/ootwlist'
-                    } else {
-                        alert('에러코드:' + res.status)
-                    }
-                })
+            if (self.closetnumlist == '') {
+                alert('입으신 옷을 등록해주세요.')
+            } else if (self.odate == '' || self.weather == '' || self.temp == '') {
+                alert('날짜와 날씨를 입력해주세요.')
+            } else if (self.comments == '') {
+                alert('커멘트를 입력해주세요.')
+            } else {
+                formdata.append('memnum', self.memnum)
+                formdata.append('odate', date)
+                formdata.append('weather', self.weather)
+                formdata.append('temp', self.temp)
+                formdata.append('comments', self.comments)
+                formdata.append('closetnumlist', self.closetnumlist)
+                self.$axios.post('http://localhost:7878/boards', formdata)
+                    .then(function (res) {
+                        if (res.status == 200) {
+                            location.href = '/ootwlist'
+                        } else {
+                            alert('에러코드:' + res.status)
+                        }
+                    })
+            }
         }
         // check() { // 체크박스 1개만 체크되도록 설정
         //     const maxAllowed = 1;

@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h3>{{ cloth }} 정보</h3>
         <table>
             <tr>
                 <td>
@@ -24,8 +23,8 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <button v-on:click="change(closetnum)">수정</button>
-                    <button v-on:click="close">닫기</button>
+                    <b-button v-on:click="change(closetnum)">수정</b-button>
+                    <b-button v-on:click="close">닫기</b-button>
                 </td>
             </tr>
         </table>
@@ -101,6 +100,7 @@ export default {
                 const self = this;
                 reader.onload = function () {
                     document.getElementById('thumbimg').src = reader.result;
+                    console.log(document.querySelector("#thumbimg"));
                     self.uploadimg = file.files[0];
                 };
                 reader.readAsDataURL(file.files[0]);
@@ -121,5 +121,9 @@ img {
 table {
     margin-left: auto;
     margin-right: auto;
+}
+button {
+    background-color: rgba(38, 37, 37, 0.5);
+    border: none;
 }
 </style>

@@ -1,10 +1,10 @@
 <template>
     <div id="up1"></div>
-    <h3>옷장 전체리스트</h3>
+    <!-- <h3>옷장 전체리스트</h3> -->
     <div>
-        <router-link to="/closetadd">옷 등록</router-link><b-button href="#down1">Go Down</b-button><br />
-        옷이름 검색: <input type="search" v-model="cloth"><button v-on:click="clothserach">검색</button>
-
+        <input type="search" v-model="cloth" size="30" style="height: 38px; text-align: center;" placeholder="옷 검색하기">
+        <span class="searchBtn"><b-button v-on:click="clothserach" style="width:65px; height:40px;">검색</b-button></span>
+        <div class="addCloth"><b-button href="/closetadd" style="width:150px; height:40px;" class="addBtn">내옷 등록하기</b-button></div>
         <div class="mouseout" v-on:mouseout="hideselect">
             <ul v-for="(maintag, index) in maintags" v-bind:value="maintag" v-bind:key="maintag">
                 <li v-on:mouseover="selectsub(index)" v-on:click="getall(index)">{{ maintag }}</li>
@@ -16,32 +16,57 @@
             </div>
         </div><br />
 
-        <div>
-            <b-card-group deck v-for="(row, index) in additionalCloset" :key="index"
+        <div v-show="memnum == checkMemnum">
+            <div class="container" v-for="(row, index) in additionalCloset" :key="index"
                 style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
-                <b-card v-for="closet in row" :key="closet.closetnum"
-                    :img-src="'http://localhost:7878/closets/img/' + memnum + '/' + closet.closetnum" img-top
-                    style="max-width:200px; height: auto; flex: 0 0 250px;">
-                    <a v-on:click="favorite(closet.closetnum)">
-                        <span v-text="closet.favorite == 1 ? '★' : '☆'" class="star"></span>
-                    </a>
-                    <b-card-text>
-                        {{ closet.maintag }}<br />
-                        {{ closet.subtag }}<br />
+                <div class="card" v-for="closet in row" :key="closet.closetnum">
+                    <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + closet.closetnum">
+                    <div class="favImg">
+                        <a v-on:click="favorite(closet.closetnum)">
+                            <img :src="closet.favorite === 1 ? image1 : image2" style="width:40px; height:40px">
+                        </a>
+                    </div>
+                    <div class="inform">
+                        <span class="word-spacing">{{ closet.maintag }} {{ closet.subtag }}</span>
+                        <br />
                         <a v-on:click="detail(closet.closetnum)">{{ closet.cloth }}</a><br />
-                    </b-card-text>
+                    </div>
+                    <div class="btn-container">
+                        <b-button v-on:click="deletecloth(closet.closetnum, closet.favorite)">삭제</b-button>
+                    </div>
+                </div>
+            </div>
+        </div><br />
+        <b-button v-on:click="moreBtn">더보기</b-button>
+        <!-- <div v-show="memnum == checkMemnum">
+            <b-card-group deck v-for="(row, index) in additionalCloset" :key="index"
+            style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
+            <b-card v-for="closet in row" :key="closet.closetnum">
+                    <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + closet.closetnum"
+                        style="width:200px; height:200px;">
+                        <div class="favImg">
+                            <a v-on:click="favorite(closet.closetnum)">
+                                <img :src="closet.favorite === 1 ? image1 : image2" style="width:40px; height:40px">
+                            </a>
+                        </div>
+                        <div class="inform">
+                            <b-card-text>
+                            <span class="word-spacing">{{ closet.maintag }} {{ closet.subtag }}</span>
+                            <br />
+                            <a v-on:click="detail(closet.closetnum)">{{ closet.cloth }}</a><br />
+                        </b-card-text>
+                    </div>
                     <template #footer>
                         <small class="text-muted">
-                            <b-button v-on:click="deletecloth(closet.closetnum)">삭제</b-button>
+                            <b-button v-on:click="deletecloth(closet.closetnum, closet.favorite)">삭제</b-button>
                         </small>
                     </template>
                 </b-card>
             </b-card-group>
-        </div><br />
-        <b-button href="#up1">Go up</b-button>
-        <b-button v-on:click="moreBtn">더보기</b-button>
+        </div><br /> -->
     </div>
-    <div id="down1"></div>
+    <div class="goupBtn"><b-button href="#up1" class="moveBtn">Go up</b-button></div>
+    <br />
 </template>
 
 <script>
@@ -49,6 +74,8 @@ export default {
     name: 'OotwSelect',
     data() {
         return {
+            image1: 'http://localhost:7878/closets/img/addimg/' + 2,
+            image2: 'http://localhost:7878/closets/img/addimg/' + 1,
             closetlist: [],
             additionalCloset: [],
             closetPerPage: 5,
@@ -56,7 +83,8 @@ export default {
             maintags: ['전체', '아우터', '상의', '하의', '기타', '신발'],
             subtags: [],
             cloth: '',
-            memnum: ''
+            memnum: sessionStorage.getItem('memnum'),
+            checkMemnum: ''
         }
     },
     created: function () { // 해당 컴포넌트가 처음 실행될 때만 적용... 그 다음부터는 변경된 컴포넌트(같은 컴포넌트로 이동할 때 적용이 안됨)
@@ -66,7 +94,10 @@ export default {
             .then(function (res) {
                 if (res.status == 200) {
                     // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default 걸러서 리스트에 넣기
-                    self.closetlist = res.data.list.filter(closet => closet.closetnum != 999999999);
+                    self.closetlist = res.data.list;
+                    if (self.closetlist != '') {
+                        self.checkMemnum = self.closetlist[0].memnum.memnum;
+                    }
                     const addtionalRow = self.closetlist.slice(0, self.closetPerPage);
                     self.additionalCloset.push(addtionalRow);
                 } else {
@@ -77,9 +108,7 @@ export default {
     methods: {
         getall(index) {
             // const self = this;
-            if (index == '') { 
-                alert('보관하신 옷이 없습니다.')
-            } else if (index == 0) {
+            if (index == 0) {
                 location.reload();
             }
         },
@@ -107,25 +136,50 @@ export default {
         detail(closetnum) {
             this.$router.push({ name: 'ClosetDetail', query: { closetnum: closetnum } })
         },
-        deletecloth(closetnum) {
+        deletecloth(closetnum, favorite) {
             const self = this;
-            self.$axios.delete('http://localhost:7878/closets/' + closetnum)
-                .then(function (res) {
-                    if (res.status == 200) {
-                        if (res.data.flag) {
-                            location.reload();
-                            // self.additionalCloset = self.additionalCloset.map(row => row.filter(closet => closet.closetnum != closetnum));
-                            // self.additionalCloset = self.additionalCloset.filter(closet => closet.closetnum != closetnum);
-                            // filter() method: 자바스크립트의 배열 method..
-                            // 주어진 배열(self.closetlist)을 method 내부에 있는 조건에 만족하는 열들을 새로운 배열로 생성하는 method
-                            // 기존에 있는 배열의 요소 closet 객체의 closetnum 속성들을 모두 꺼내서 입력된 변수 closetnum과 비교한다.
-                            // 입력된 변수와 기존 배열 속성이 같지 않을 때(true) 그 속성들로만 배열을 다시 생성한다.
-                            // 즉 삭제를 위해 입력된 변수 closetnum이 기존 배열 속성 closetnum과 일치하므로 해당 열은 새로운 배열에 속할 수 없다. 
+            if (favorite == 1) {
+                let answer = confirm('즐겨찾기된 옷입니다. 정말 삭제하시겠습니까?')
+                if (answer) {
+                    self.$axios.delete('http://localhost:7878/closets/' + closetnum)
+                        .then(function (res) {
+                            if (res.status == 200) {
+                                if (res.data.flag) {
+                                    location.reload();
+                                    // self.additionalCloset = self.additionalCloset.map(row => row.filter(closet => closet.closetnum != closetnum));
+                                    // self.additionalCloset = self.additionalCloset.filter(closet => closet.closetnum != closetnum);
+                                    // filter() method: 자바스크립트의 배열 method..
+                                    // 주어진 배열(self.closetlist)을 method 내부에 있는 조건에 만족하는 열들을 새로운 배열로 생성하는 method
+                                    // 기존에 있는 배열의 요소 closet 객체의 closetnum 속성들을 모두 꺼내서 입력된 변수 closetnum과 비교한다.
+                                    // 입력된 변수와 기존 배열 속성이 같지 않을 때(true) 그 속성들로만 배열을 다시 생성한다.
+                                    // 즉 삭제를 위해 입력된 변수 closetnum이 기존 배열 속성 closetnum과 일치하므로 해당 열은 새로운 배열에 속할 수 없다. 
+                                }
+                            } else {
+                                alert('에러코드: ' + res.status)
+                            }
+                        })
+                } else {
+                    alert('삭제가 취소되었습니다.')
+                }
+            } else {
+                self.$axios.delete('http://localhost:7878/closets/' + closetnum)
+                    .then(function (res) {
+                        if (res.status == 200) {
+                            if (res.data.flag) {
+                                location.reload();
+                                // self.additionalCloset = self.additionalCloset.map(row => row.filter(closet => closet.closetnum != closetnum));
+                                // self.additionalCloset = self.additionalCloset.filter(closet => closet.closetnum != closetnum);
+                                // filter() method: 자바스크립트의 배열 method..
+                                // 주어진 배열(self.closetlist)을 method 내부에 있는 조건에 만족하는 열들을 새로운 배열로 생성하는 method
+                                // 기존에 있는 배열의 요소 closet 객체의 closetnum 속성들을 모두 꺼내서 입력된 변수 closetnum과 비교한다.
+                                // 입력된 변수와 기존 배열 속성이 같지 않을 때(true) 그 속성들로만 배열을 다시 생성한다.
+                                // 즉 삭제를 위해 입력된 변수 closetnum이 기존 배열 속성 closetnum과 일치하므로 해당 열은 새로운 배열에 속할 수 없다. 
+                            }
+                        } else {
+                            alert('에러코드: ' + res.status)
                         }
-                    } else {
-                        alert('에러코드: ' + res.status)
-                    }
-                })
+                    })
+            }
         },
         favorite(closetnum) {
             const self = this;
@@ -170,11 +224,15 @@ export default {
         },
         listbytag(subtag, index) {
             const self = this;
-            self.$router.push({ name: 'ClosetlistByTag', query: { tag: subtag, index: index } });
+            self.$router.push({ name: 'ClosetListByTag', query: { tag: subtag, index: index } });
         },
         clothserach() {
             const self = this;
-            self.$router.push({ name: 'ClosetlistByCloth', query: { cloth: self.cloth } });
+            if (self.cloth == '') {
+                alert('검색할 옷을 입력해주세요.');
+            } else {
+                self.$router.push({ name: 'ClosetListByCloth', query: { cloth: self.cloth } });
+            }
         }
     }
 }
@@ -183,17 +241,6 @@ export default {
 <style scoped>
 h3 {
     margin: 40px 0 0;
-}
-
-.star {
-    margin-left: 150px;
-    margin-top: 1000px;
-    cursor: pointer;
-}
-
-table {
-    margin-left: auto;
-    margin-right: auto;
 }
 
 ul {
@@ -210,5 +257,107 @@ li {
 
 .follow {
     clear: left;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.card {
+    width: 225px;
+    height: 345px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card img {
+    position: relative;
+    width: 200px;
+    /* 가로 사이즈 200px로 고정 */
+    height: 200px;
+    /* 세로 사이즈 200px로 고정 */
+    object-fit: cover;
+    /* 이미지가 카드 영역에 꽉 차도록 설정 */
+    border-radius: 10px;
+}
+
+.favImg {
+    margin-left: 165px;
+    /* margin-top: 150px; */
+    cursor: pointer;
+}
+
+a {
+    cursor: pointer;
+}
+
+.inform {
+    /* margin-left: 150px; */
+    margin-top: -20px;
+}
+
+.word-spacing {
+    word-spacing: 5px;
+}
+
+button {
+    background-color: rgba(38, 37, 37, 0.5);
+    border: none;
+}
+
+.moveBtn {
+    background-color: rgba(38, 37, 37, 0.5);
+    border: none;
+}
+
+.addBtn {
+    background-color: rgba(34, 183, 34, 0.5);
+    border: none;
+}
+
+.addCloth {
+    margin-left: 1080px;
+    margin-top: -40px;
+}
+.searchBtn {
+    margin-left: 5px;
+}
+.btn-container {
+    display: flex;
+    flex-wrap: wrap;
+    /* 필요한 경우 버튼이 줄바꿈되도록 함 */
+    justify-content: space-between;
+    border-top: 1px solid lightgray;
+    width: 120px;
+
+}
+
+.btn-container button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1 0 45%;
+    /* 버튼의 크기 조정 */
+    margin: 5px;
+    /* 버튼 사이의 간격 설정 */
+    background-color: rgba(18, 76, 18, 0.5);
+    border: none;
+}
+
+.goupBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
 }
 </style>

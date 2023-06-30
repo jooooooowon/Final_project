@@ -4,14 +4,13 @@
         <h3>Outfit Of the Weather</h3>
         <input type="date" v-model="date1" id="date1"> ~ <input type="date" v-model="date2" id="date2">
         <button v-on:click="searchByDate">검색</button>
-        <table border="1">
+        <table border="1" v-show="memnum == checkMemnum">
             <tr>
                 <th>Ootw num</th>
                 <th>날짜</th>
                 <th>Comment</th>
                 <th>기온</th>
                 <th>날씨</th>
-                <th>삭제하기</th>
             </tr>
             <tr v-for="ootw in displayedootw" :key="ootw.ootwnum">
                 <td>{{ ootw.ootwnum }}</td>
@@ -19,7 +18,6 @@
                 <td><a v-on:click="detail(ootw.ootwnum)">{{ ootw.comments }}</a></td>
                 <td>{{ ootw.temp }}</td>
                 <td>{{ ootw.weather }}</td>
-                <td><a v-on:click="deleteOootw(ootw.ootwnum)">X</a></td>
             </tr>
         </table>
         <button v-on:click="moreBtn">더보기</button>
@@ -33,19 +31,25 @@ export default {
         return {
             ootwlist: [],
             displayedootw: [],
-            ootwPerPage: 1,
+            ootwPerPage: 20,
             currentPage: 1,
             weather: '',
             date1: '',
-            date2: ''
+            date2: '',
+            memnum: sessionStorage.getItem('memnum'),
+            checkMemnum: ''
         }
     },
     created: function () {
         const self = this;
+        self.memnum = sessionStorage.getItem('memnum');
         self.$axios.get('http://localhost:7878/boards')
             .then(function (res) {
                 if (res.status == 200) {
                     self.ootwlist = res.data.list;
+                    if(self.ootwlist != ''){
+                        self.checkMemnum = self.ootwlist[0].memnum.memnum;
+                    }
                     self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
                 } else {
                     alert('에러코드: ' + res.status);
@@ -64,28 +68,21 @@ export default {
         detail(ootwnum) {
             this.$router.push({ name: 'OotwDetail', query: { ootwnum: ootwnum } })
         },
-        deleteOootw(ootwnum) {
-            const self = this;
-            self.$axios.delete('http://localhost:7878/boards/' + ootwnum)
-                .then(function (res) {
-                    if (res.status == 200) {
-                        self.displayedootw = self.ootwlist.filter(ootw => ootw.ootwnum != ootwnum)
-                    } else {
-                        alert('에러 코드: ' + res.status)
-                    }
-                })
-        },
         searchByDate() {
             const self = this;
             if (self.date2 < self.date1 || self.date1 == '' || self.date2 == '') {
                 alert('날짜 범위를 다시 정해주세요.')
             } else {
-                location.reload();
                 self.$axios.get('http://localhost:7878/boards/dates/' + self.date1 + "/" + self.date2)
-                    .then(function (res) {
-                        if (res.status == 200) {
-                            self.ootwlist = res.data.list;
-                            self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
+                .then(function (res) {
+                    if (res.status == 200) {
+                        if(res.data.list != '') {
+                                location.reload();
+                                self.ootwlist = res.data.list;
+                                self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
+                            } else {
+                                alert('선택한 범위의 검색 결과가 없습니다.')
+                            }
                         } else {
                             alert('에러코드: ' + res.status);
                         }
