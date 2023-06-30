@@ -29,7 +29,7 @@ public class OcommunityService {
 			}
 			// vo의 값들을 dto 생성자를 이용하여 새로 생긴 dto에 값을 기입해준 후 리턴한다.
 			return new OcommunityDto(temp.getCommnum(), temp.getMemnum(), temp.getTag(), temp.getImg1(), temp.getImg2(),
-					temp.getImg3(), temp.getBtnlike(),tagList);
+					temp.getImg3(), temp.getBtnlike(),tagList,false,false);
 		} else {
 			// 반대로 한다.
 			OcommunityDto temp = (OcommunityDto) obj;

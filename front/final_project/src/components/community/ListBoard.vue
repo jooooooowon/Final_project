@@ -45,14 +45,13 @@
 			</span>
 
 			<br />
-
+			{{ i }}
 			<div class="markcontainer">
 				<span> <!--좋아요 버튼-->
-					<button class="markbtn" @click="heartcheck(i)"><span class="material-symbols-outlined" :id="i"> favorite</span></button>
-					<span>{{ heartcount(comm.commnum) }}</span>
-				</span>
+					<button class="markbtn" @click="pushLike(comm.commnum)"><span class="material-symbols-outlined" :style="{'color' : comm.chklike ? 'red' : 'gray'}"> favorite</span></button>
+					{{ comm.btnlike }}명이 좋아합니다. {{ comm.chklike }}</span>
 				<span> <!--북마크 버튼-->
-					<button class="markbtn" @click="bookcheck"><span class="material-symbols-outlined">bookmark</span></button>
+					<button class="markbtn" @click="bookcheck(comm.commnum)"><span class="material-symbols-outlined" :style="{'color' : comm.chkbookmark ? 'yellow' : 'gray'}">bookmark</span></button>
 				</span>
 			</div>
 			{{ comm.tagList.length }}
@@ -114,7 +113,6 @@ export default {
 			memnum: sessionStorage.getItem('memnum'),
 			modalCheck: false,
 			searchTag : '',
-
 		}
 	},
 
@@ -127,28 +125,8 @@ export default {
 	computed: {
 		isLoggedIn() {
 			return sessionStorage.getItem('memnum') !== null;
-		},
-		heartcount(){
-			return (commnum) =>{
-
-				let self = this;
-				let result = 0;
-				self.$axios.get(`http://localhost:8081/olikebtn/${commnum}`)
-				.then(res =>{
-					if(res.status == 200){
-						alert("commnum : " + commnum);
-						console.log(res.data.likeCount)
-						alert("res.data.likeCount : " + res.data.likeCount);
-						result = res.data.likeCount;
-					}else{
-						alert("에러 띠")
-					}
-				})
-				return result;
-			}
 		}
 	},
-
 	methods: {
 		// 게시글 삭제하는거
 		delPost(commnum) {
@@ -167,22 +145,24 @@ export default {
 		//전체 게시글 list 받는거
 		getCommunityList() { 
 			const self = this;
-			self.$axios.get('http://localhost:8081/ocommunity')
+			let url = '';
+			if(self.memnum == undefined){
+				url = 'http://localhost:8081/ocommunity';
+			}else{
+				url = `http://localhost:8081/ocommunity/${self.memnum}`
+			}
+			self.$axios.get(url)
 			.then((response) => {
-					if (response.status === 200) {
-						self.commlist = response.data.list
-						.sort((a, b) => b.commnum - a.commnum) //게시글 최신순 정렬
-						.map((comm) => ({
-							...comm,
-						}));
-						for(let i=0; i<self.reportedCommnums.length; i++){
+				if (response.status === 200) {
+					self.commlist = response.data.list
+					console.log(self.commlist)
+					for(let i=0; i<self.reportedCommnums.length; i++){
 						self.commlist = self.commlist.filter(comm => comm.commnum != self.reportedCommnums[i])
-						}
-						console.log(this.commlist)
-					} else {
-						alert('에러코드: ' + response.status);
 					}
-				})
+				} else {
+					alert('에러코드: ' + response.status);
+				}
+			})
 		},search(tag){
 			let self = this;
 			self.searchTag = tag;
@@ -267,15 +247,51 @@ export default {
     // },
 		
 		// 좋아요 + 1 / - 1
-		// heartcheck(i){
+		pushLike(commnum){
+			let self = this;
+			let form = new FormData();
+			form.append("memnum", self.memnum);
+			form.append("commnum", commnum);
+			self.$axios.patch('http://localhost:8081/olikebtn',form)
+			.then(res =>{
+				if(res.status == 200){
+					alert(res.data.flag)
+					alert("성공")
+					window.location.reload();
+				}else{
+					alert(res.data.flag)
+					alert("실패")
+				}
+			})
+		},
+		bookcheck(commnum){
+			let self = this;
+			let form = new FormData();
+			form.append("commnum",commnum);
+			form.append("memnum",self.memnum);
+
+			self.$axios.put('http://localhost:8081/obookmark',form)
+			.then(res => {
+				if(res.status == 200){
+					alert(res.data.flag);
+					alert('성공');
+					window.location.reload();
+				}else{
+					alert(res.data.flag);
+					alert('실패');
+				}
+			})
+		}
 		
-		// },
+		
 		
 	}
 }
 </script>
   
 <style scoped>
+
+
 .add {
 	margin-left: 60%;
 }

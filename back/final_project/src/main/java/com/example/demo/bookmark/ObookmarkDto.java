@@ -5,9 +5,11 @@ import com.example.demo.member.Omember;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Data 
 @NoArgsConstructor
 @AllArgsConstructor
 public class ObookmarkDto {
@@ -15,4 +17,5 @@ public class ObookmarkDto {
 	private int bmnum;
 	private Ocommunity commnum;
 	private Omember memnum;
+
 }

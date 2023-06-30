@@ -53,11 +53,11 @@ public class OlikebtnService {
 		
 		// 검색(좋아요를 눌렀는지 확인하기 위함)
 		public OlikebtnDto getByMemnumAndCommnum(int memnum, int commnum) {
-			Olikebtn entity = dao.findByMemnumAndCommnum(memnum, commnum);
-			if(entity == null) {
+			ArrayList<Olikebtn> list = (ArrayList<Olikebtn>) dao.findByMemnumAndCommnum(memnum, commnum);
+			if(list == null || list.size() == 0) {
 				return null;
 			}
-			return (OlikebtnDto) change(entity);
+			return (OlikebtnDto) change(list.get(0));
 		}
 		
 		// 삭제

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.demo.bookmark.ObookmarkDto;
+import com.example.demo.bookmark.ObookmarkService;
 import com.example.demo.likebnt.OlikebtnDto;
 import com.example.demo.likebnt.OlikebtnService;
 import com.example.demo.member.Omember;
@@ -35,26 +39,85 @@ public class OcommunityController {
 	private OcommunityService service;
 
 	@Autowired
-	private OlikebtnService likeservice; // 좋아요 누적
+	private OlikebtnService likeservice; // 좋아요 서비스
+
+	@Autowired
+	private ObookmarkService bookmarkservice; // 좋아요 서비스
 
 	@Value("${spring.servlet.multipart.location}")
 	private String path; // C:/comm/
 
-	// 게시글 전체목록 검색
-	@GetMapping("")
-	public Map getAll() {
+	// 로그인 시와 로그아웃 시일 때 모두 일단은 전체 list를 뿌려주는 것이 필요하기 때문에
+	// 전체 list를 뿌려주는 메서드를 작성한다.
+	// 반복 사용될 예정 (그래봤자 두번 밖에 없지만 ㅇㅅㅇ)
+	private ArrayList<OcommunityDto> allList(){
 		ArrayList<OcommunityDto> list = service.getAll();
-		Map map = new HashMap();
-		for(OcommunityDto dto : list) {
-			for(String tagTemp : dto.getTagList()) {
-				System.out.print("dto's tags : "+tagTemp );
+		Collections.sort(list, new Comparator<OcommunityDto>() {
+			@Override
+			public int compare(OcommunityDto dto1, OcommunityDto dto2) {
+				return dto2.getCommnum() - dto1.getCommnum();
 			}
-			System.out.println();
+		});
+		return list;
+	}
+	
+	
+	// 게시글 전체목록 검색 (로그인 시)
+	@GetMapping("/{memnum}")
+	public Map getAll(@PathVariable("memnum") int memnum) {
+		// 앞서 만들었던 allList()로 일단 전체 리스트를 받아온다.
+		ArrayList<OcommunityDto> list = allList();
+		Map map = new HashMap();
+		
+		// 현재 로그인 되어있는 멤버가 북마크한 list를 가져온다.
+		ArrayList<ObookmarkDto> bookmarkList = bookmarkservice.getByMemnum(memnum);
+		// 북마크 확인.
+		System.out.println(bookmarkList);
+		
+		// 전체 리스트에서 하나하나 뽑아서
+		for(OcommunityDto dto : list) {
+			
+			// list에서 각 게시물의 좋아요 수를 좋아요 테이블에서 가져온 것을 바탕으로.
+			// 각 게시물의 dto에 있는 좋아요 수 변수에 저장한다.
+			dto.setBtnlike(likeservice.likeCount(dto.getCommnum()));
+			
+			// 로그인 되어 있는 멤버가 현재 dto (list를 for문으로 돌리고 있다는 것을 잊지말자.)
+			// 에 좋아요를 눌렀는 지 확인한다.
+			// 좋아요를 눌렀었다면 chklike를 true로 바꾼다.
+			if(likeservice.getByMemnumAndCommnum(memnum, dto.getCommnum()) != null) {
+				dto.setChklike(true);
+			}
+			
+			// 북마크도 좋아요와 같은 방식으로 할 수 있지만 더 좋은 방식이 생각나서 새롭게 짜보았다.
+			// 내가 저장해논 북마크를 뽑아놓은 bookmarkList를 for문을 돌린다.
+			// 현재 list의 dto(게시물)의 번호와 bookmarkList에 있는 게시물의 번호가 같다면
+			// 현재 dto는 내가 북마크 해놓은 게시물이기 때문에 
+			// 북마크가 되어있다는 것을 보여준다. -> 게시물의 bookmarkchk를 true로 바꾼다.
+			for(ObookmarkDto bookmarkDto : bookmarkList) {
+				if(bookmarkDto.getCommnum().getCommnum() == dto.getCommnum()) {
+					dto.setChkbookmark(true);
+				}
+			}
+
+			// 끝!
+			System.out.println("getAll Dto : " + dto);
 		}
 		map.put("list", list);
 		return map;
 	}
 
+	
+	
+	// 게시글 전체목록 검색 (비 로그인 시)
+	@GetMapping("")
+	public Map getAll() {
+		ArrayList<OcommunityDto> list = allList();
+		Map map = new HashMap<>();
+		map.put("list", list);
+		return map;
+	}
+	
+	
 //	// 멤버로 검색
 //	@GetMapping("/memnum/{memnum}")
 //	public Map getByMemnum(@PathVariable("memnum") int memnum) {
@@ -116,7 +179,7 @@ public class OcommunityController {
 	}
 
 	// 게시글 번호로 검색
-	@GetMapping("/{commnum}")
+	@GetMapping("/commnum/{commnum}")
 	public Map getByTag(@PathVariable("commnum") int commnum) {
 		Map map = new HashMap<>();
 		boolean flag = true;
@@ -238,22 +301,6 @@ public class OcommunityController {
 		return map;
 	}
 
-	// 좋아요 부분 수정
-	@PatchMapping("/{memnum}/{commnum}")
-	public Map likeUpAndDown(@PathVariable("memnum") int memnum, @PathVariable("communm") int commnum) {
-		Map map = new HashMap<>();
-		boolean flag = true;
-		OlikebtnDto dto = likeservice.getByMemnumAndCommnum(memnum, commnum);
-		if (dto == null) { // 좋아요 안누름
-			service.upBtn(commnum);
-			likeservice.save(dto);
-		} else { // 좋아요 누름
-			service.downBtn(commnum);
-			likeservice.delOlikebtn(dto.getLikebtn());
-			flag = false; // 좋아요 눌려있으면 false 보내서
-		}
-		map.put("flag", flag);
-		return map;
-	}
+	
 
 }

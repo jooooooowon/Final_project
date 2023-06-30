@@ -48,14 +48,27 @@ public class ObookmarkService {
 		}
 
 		//회원번호로 검색
-		public ObookmarkDto getByMemnum(int memnum) {
-			Obookmark entity = dao.findById(memnum).orElse(null);
-			return (ObookmarkDto) change(entity);
+		public ArrayList<ObookmarkDto> getByMemnum(int memnum) {
+			ArrayList<Obookmark> list = (ArrayList<Obookmark>)dao.findByMemnum(memnum);
+			if(list == null) {
+				return null;
+			}
+			return changeList(list);
+		}
+		
+		public ObookmarkDto getByMemnumAndCommnum(int memnum, int commnum) {
+			ArrayList<Obookmark> list = (ArrayList<Obookmark>)dao.findByMemnumAndCommnum(memnum, commnum);
+			if(list == null || list.size() == 0) {
+				return null;
+			}
+			ArrayList<ObookmarkDto> listDto = changeList(list);
+			return listDto.get(0);
 		}
 		
 		//북마크 삭제
 		public void delOreport(int bmnum) {
 			dao.deleteById(bmnum);
 		}
+		
 
 }

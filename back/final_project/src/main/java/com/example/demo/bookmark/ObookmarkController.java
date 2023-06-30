@@ -1,5 +1,6 @@
 package com.example.demo.bookmark;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,8 +28,8 @@ public class ObookmarkController {
 		Map map = new HashMap<>();
 		boolean flag = true;
 		try {
-			ObookmarkDto dto = service.getByMemnum(memnum);
-			map.put("dto", dto);
+			ArrayList<ObookmarkDto> list = service.getByMemnum(memnum);
+			map.put("list", list);
 		} catch (Exception e) {
 			e.printStackTrace();
 			flag = false;
@@ -37,13 +39,21 @@ public class ObookmarkController {
 	}
 
 	// 북마크 추가
-	@PostMapping("")
+	@PutMapping("")
 	public Map save(ObookmarkDto dto) {
 		Map map = new HashMap<>();
 		boolean flag = true;
 		try {
-			ObookmarkDto result = service.save(dto);
-			map.put("dto", result);
+			ObookmarkDto result = service.getByMemnumAndCommnum(dto.getMemnum().getMemnum(),dto.getCommnum().getCommnum());
+			// 북마크가 되어 있는 지 확인하고
+			// ( 회원 넘버와 게시판 넘버로 추출한다. )
+			if(result == null) {
+				// 없으면 넣고
+				service.save(dto);
+			}else {
+				// 있으면 삭제 
+				service.delOreport(result.getBmnum());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			flag = false;

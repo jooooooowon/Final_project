@@ -34,4 +34,6 @@ public class OcommunityDto {
 	//private MultipartFile[] f = new MultipartFile[3];
 	
 	private ArrayList<String> tagList;
+	private boolean chklike;
+	private boolean chkbookmark;
 }
