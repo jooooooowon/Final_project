@@ -5,23 +5,23 @@
 </div>
 <div v-else>
   <div style="display :flex">
-    <div class="body-div">
-      <div class="container">
-        <div class="bubbles">
-          <span v-for="i in items" :style="`--i:${i}`" :key="i"></span>
-          <span v-for="i in items" :style="`--i:${i}`" :key="i"></span>
-          <span v-for="i in items" :style="`--i:${i}`" :key="i"></span>
+    <div class = "main-winner-list">
+      <div class="body-div">
+        <div class="container">
+          <div class="bubbles">
+            <span v-for="i in items" :style="`--i:${i}`" :key="i"></span>
+            <span v-for="i in items" :style="`--i:${i}`" :key="i"></span>
+            <span v-for="i in items" :style="`--i:${i}`" :key="i"></span>
+          </div>
         </div>
       </div>
-    </div>
-    <div class = "main-winner-list">
       <div class = "title">명예의 전당</div>
       <div class="winner-list">
         <ul v-for="(winner,i) in list" :key="i">
           <li class="list-winner">
           <div class="card">
             <div class="round-cnt">
-              ROUNDNUM #{{ winner.roundcnt }} 
+              ROUNDNUM <span style = "font-weight: bold; font-size: 16px; color:#ebebeb">#{{ winner.roundcnt }}</span> 
             </div>
             <div class="nickname">
               {{ nickname[i] }}
@@ -86,9 +86,10 @@ export default{
           this.nickname.push(dto.memnum.nickname);
         }
         let container = document.querySelector('.container');
-        container.style.height = (self.list.length / 3) * 100 + 'vh';
-        container.style.setProperty("--h-name",(self.list.length / 3) * 100 + 'vh');
-        console.log(container.style.getPropertyValue("--h-name"));
+        // container.style.height = Math.trunc(((self.list.length + 2) / 3)) * 100  + 'vh';
+        container.style.setProperty("--h-name",Math.trunc(((self.list.length + 2) / 3)) * 100 + 'vh');
+        console.log(self.list.length);
+        console.log("hname" + container.style.getPropertyValue("--h-name"));
         console.log(container.style.getPropertyValue("height"));
         console.log(this.list);
       }else{
@@ -101,8 +102,9 @@ export default{
 </script>
 
 <style scoped>
-  @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Diphylleia&display=swap');
-.body-div{
+@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Diphylleia&display=swap');
+
+  .body-div{
   position:absolute;
 }
 
@@ -111,6 +113,7 @@ export default{
   width: 100%;
   overflow : hidden;
   --h-name: 100vh;
+  height: 100vh;
 }
 
 .bubbles{
@@ -134,7 +137,7 @@ export default{
 
 @keyframes animate {
   0%{
-    transform: translateY(var(--h-name)) scale(0);
+    transform: translateY(var(--h-name)) scale(0); 
   }
   100%{
     transform: translateY(-10vh) scale(.3);
