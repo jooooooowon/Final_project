@@ -23,43 +23,73 @@
 	<!-- 사진, 신고, 좋아요,삭제,북마크, 태그 포함할 전체 리스트 -->
 	<div>
 
-		<h3>전체 리스트</h3>
-		<hr />
+		<!-- 게시글 전체 리스트를 보여주는 for 함수 -->
 		<div v-for="(comm, i) in commlist" :key="i">
-				<div v-if="isLoggedIn">
-					<button @click="modalOpen(comm.commnum)" v-if="memnum != comm.memnum.memnum">신고하기</button>
-				</div>
-				<div>
-				회원번호: {{ comm.memnum.memnum }} <!--아이디랑 프로필 사진 가져와야함-->
-				게시글 번호: {{ comm.commnum }}
-			</div>
-			<div>
-				<button v-if="memnum == comm.memnum.memnum" @click="delPost(comm.commnum)">삭제</button>
-			</div>
-			<img class="img1" :src="'http://localhost:8081/ocommunity/img/' + comm.commnum + '/' + 1">
-			<span v-if="comm.img2 != undefined">
-				<img class="img1" :src="'http://localhost:8081/ocommunity/img/' + comm.commnum + '/' + 2">
-			</span>
-			<span v-if="comm.img3 != undefined">
-				<img class="img1" :src="'http://localhost:8081/ocommunity/img/' + comm.commnum + '/' + 3">
-			</span>
 
-			<br />
-			{{ i }}
-			<div class="markcontainer">
-				<span> <!--좋아요 버튼-->
-					<button class="markbtn" @click="pushLike(comm.commnum)"><span class="material-symbols-outlined" :style="{'color' : comm.chklike ? 'red' : 'gray'}"> favorite</span></button>
-					{{ comm.btnlike }}명이 좋아합니다. {{ comm.chklike }}</span>
-				<span> <!--북마크 버튼-->
-					<button class="markbtn" @click="bookcheck(comm.commnum)"><span class="material-symbols-outlined" :style="{'color' : comm.chkbookmark ? 'yellow' : 'gray'}">bookmark</span></button>
-				</span>
+			<!-- 아이디,닉네임(올린사람꺼) & 신고(다른사람꺼) & 삭제(자기꺼) -->
+			<div id="box1">
+					<!--프로필 사진이랑 닉네임 가져와야함-->
+						<div class="item-1">
+							<!-- {{ comm.memnum.img }} -->
+							{{ comm.memnum.nickname }} 
+							<!-- 확인용 게시글 번호: {{ comm.commnum }}  -->
+						</div>
+						
+						<div class="item-2">
+							<!--신고: 로그인이 되어야 보임(자기꺼 빼고) -->
+							<div v-if="isLoggedIn">
+								<div>
+									<button class="item-Btn" @click="modalOpen(comm.commnum)" v-if="memnum != comm.memnum.memnum">신고하기</button>
+								</div>
+							</div>
+							<!-- 삭제: 자기꺼만 -->
+							<div>
+								<button class="item-Btn" v-if="memnum == comm.memnum.memnum" @click="delPost(comm.commnum)">삭제</button>
+							</div>
+						</div>
 			</div>
-			{{ comm.tagList.length }}
-			<span v-for="tag in comm.tagList" :key="tag">
-				<span @click="search(tag)" @mouseover="cursorChange($event)"># {{ tag }}</span>  
-			</span>
-			<hr />
+			<!--box1 End-->		
+
+
+			<!--box2 img-->
+			<div id="box2">
+						<img class="img1" :src="'http://localhost:8081/ocommunity/img/' + comm.commnum + '/' + 1">
+
+						<div v-if="comm.img2 != undefined">
+							<img class="img1" :src="'http://localhost:8081/ocommunity/img/' + comm.commnum + '/' + 2">
+						</div>
+
+						<div v-if="comm.img3 != undefined">
+							<img class="img1" :src="'http://localhost:8081/ocommunity/img/' + comm.commnum + '/' + 3">
+						</div>
 			</div>
+			<!--box2 End-->
+
+			<!-- test -->
+
+			<!-- End test -->
+
+			<div id="box3">
+				<div class="markcontainer">
+					<span class="likeBtn"> <!--좋아요 버튼-->
+						<button class="markbtn" @click="pushLike(comm.commnum)">
+							<span class="material-symbols-outlined" :style="{'color' : comm.chklike ? 'red' : 'gray'}"> favorite</span></button>
+						</span>
+						<span>{{ comm.btnlike }}명이 좋아합니다.</span> <!-- {{ comm.chklike }} -->
+						</div>
+					<span class="bookBtn"> <!--북마크 버튼-->
+						<button class="markbtn" @click="bookcheck(comm.commnum)"><span class="material-symbols-outlined" :style="{'color' : comm.chkbookmark ? 'yellow' : 'gray'}">bookmark</span></button>
+					</span>
+			</div>				
+			
+			<div id="box4">
+				<div class="box4-item" v-for="tag in comm.tagList" :key="tag">
+					<div @click="search(tag)" @mouseover="cursorChange($event)"># {{ tag }}</div>  
+				</div>
+			</div>
+			<br>
+
+		</div>
 	</div>
 
 
@@ -92,17 +122,12 @@
 
 		</div>
 	</div>
+
 </template>
   
 <script>
-// import ReportForm from '@/components/community/ReportForm.vue'
-
 export default {
-
-	// components: {
-	// 	ReportForm
-	// },
-
+	
 	data() {
 		return {
 			commlist: [],
@@ -125,9 +150,11 @@ export default {
 	computed: {
 		isLoggedIn() {
 			return sessionStorage.getItem('memnum') !== null;
-		}
+		},
 	},
 	methods: {
+		//test
+
 		// 게시글 삭제하는거
 		delPost(commnum) {
 			const self = this;
@@ -142,6 +169,7 @@ export default {
 					}
 				})
 		},
+
 		//전체 게시글 list 받는거
 		getCommunityList() { 
 			const self = this;
@@ -163,7 +191,9 @@ export default {
 					alert('에러코드: ' + response.status);
 				}
 			})
-		},search(tag){
+		},
+
+		search(tag){
 			let self = this;
 			self.searchTag = tag;
 			if(self.searchTag == '' || self.searchTag == undefined){
@@ -241,10 +271,6 @@ export default {
 			console.log("e:" + e);
 			e.target.style.cursor = "pointer";
 		},
-		//북마크 추가(push->마이페이지에서 리스트 보여줘야함)
-		// bookcheck() {
-      
-    // },
 		
 		// 좋아요 + 1 / - 1
 		pushLike(commnum){
@@ -282,38 +308,99 @@ export default {
 				}
 			})
 		}
-		
-		
-		
 	}
 }
 </script>
   
-<style scoped>
-
-
-.add {
-	margin-left: 60%;
+<style scoped>  
+/* box1 */
+#box1 {
+	border: #336399 solid 2px;
+	max-width: 48%;
+	margin: auto;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+.item-1 {
+	margin-block-start: auto;
+	margin-left: 10px;
 }
 
-.search {
-	padding-top: 5px;
+.item-2 {
+	margin-right: 5px;
 }
 
-hr {
-	width: 70%;
-	margin-left: auto;
-	margin-right: auto;
-	border: solid 3px #336399;
+.item-Btn {
+	background-color:transparent;
+	border: none;
+	font-family: sans-serif;
+}
+
+/* box2(이미지) */
+#box2 {
+	border: #336399 solid 2px;
+	max-width: 48%;
+	margin: auto;
+	display: flex;
+	justify-content: center;
 }
 
 .img1 {
 	width: 200px;
 	height: 300px;
+	transition: transform 0.3s 
+}
+
+.img1:hover {
+	transform: scale(1.2);  
+}
+
+/* box3(좋아요&북마크 버튼) */
+#box3 {
+	border: #336399 solid 2px;
+	max-width: 48%;
+	margin: auto;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+.markcontainer{
+	display: flex;
+}
+.markbtn{
+	display: flex;
+	flex-direction: row;
+	background-color: transparent;
+	border: none; 
+}
+
+/* box4 */
+#box4 {
+	border: #336399 solid 2px;
+	max-width: 48%;
+	margin: auto;
+	display: flex;
+}
+
+.box4-item {
+	margin-left: 10px;
+}
+/* 게시글 등록 */
+.add {
+	margin-left: 60%;
+}
+
+hr {
+	width: 60%;
+	margin-left: auto;
+	margin-right: auto;
+	border: solid 2px #336399;
 }
 
 
-
+/* modal or popup */
 .modal-wrap {
 	position: fixed;
 	left: 0;
@@ -322,9 +409,6 @@ hr {
 	height: 100%;
 	background: rgba(0, 0, 0, 0.4);
 }
-
-
-/* modal or popup */
 .modal-container {
 	overflow: auto;
 	position: relative;
@@ -347,16 +431,11 @@ hr {
 	border: none;
 }
 
-.markcontainer{
-	width: 60%;
-	display: flex;
-	justify-content: space-around;	
-	margin-left: 20%;
 
-}
-.markbtn{
-	background-color: transparent;
-	border: none; 
-}
+
+
+
+
+
 </style>
   
