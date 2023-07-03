@@ -4,29 +4,27 @@
         
         <!-- 아이디 입력 폼 -->
         <div class="form_group">
-            <label for ="id"  :class="{'input_label': hasIdError, 'input_label_error': !hasIdError}">ID</label>
-            <input type="text" id="id" v-model="id" placeholder="ID" :class="{'input_field': hasIdError, 'input_field_error': !hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
+            <label for ="id"  :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">ID</label>
+            <input type="text" id="id" v-model="id" placeholder="ID" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
 
             <!-- 아이디 유효성 검사 -->
-            <p class="input_error" v-if="!hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p>
+            <p class="input_error" v-if="hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p>
         </div>
 
         <!-- 패스워드 입력 폼 -->
         <div class="form_group">
-            <label for="pwd" :class="{'input_label': hasPwdError, 'input_label_error': !hasPwdError}">Password</label>
-            <input type="password" id="pwd" v-model="pwd" placeholder="Password" :class="{'input_field': hasPwdError, 'input_field_error': !hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)"><br/>
+            <label for="pwd" :class="{'input_label': !hasPwdError, 'input_label_error': hasPwdError}">Password</label>
+            <input type="password" id="pwd" v-model="pwd" placeholder="Password" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)"><br/>
 
             <!-- 패스워드 유효성 검사 -->
-            <p class="input_error" v-if="!hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
+            <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
         </div>
-
+        
         <!-- 로그인 버튼 -->
-        <button v-on:click ="login" :class="{'loginBtn': isEnabled, 'loginBtn_disabled': !isEnabled}" >로그인</button>
-
-        <!-- <button v-on:click ="login" :disabled="!isEnabled" :class="{'loginBtn': isEnabled, 'loginBtn_disabled': !isEnabled}" >로그인</button> -->
+        <!-- <button v-on:click ="login" :class="loginBtnClass" :disabled="loginBtnDisalbed">로그인</button> -->
 
         <!-- 유효성검사 없는 로그인버튼 -->
-        <!-- <button v-on:click ="login"  :class="{'loginBtn': isEnabled}" >로그인</button> -->
+        <button v-on:click ="login"  :class="{'loginBtn': isEnabled}" >로그인</button>
 
         <!-- 회원가입, 아이디찾기, 비밀번호찾기 -->
         <ul class="look_box">
@@ -58,14 +56,19 @@ export default{
             id:'',
             pwd:'',
             hasIdError:false,
-            hasPwdError:false,
-            isEnabled: false
+            hasPwdError:false
         }
     },
 
     computed:{
-        isFormValid(){
-            return !this.hasIdError && !this.hasPwdError;
+        loginBtnClass(){
+            return{
+                'loginBtn': !this.hasIdError && !this.hasPwdError && (this.id && this.pwd),
+                'loginBtn_disabled': this.hasIdError || this.hasPwdError || !(this.id && this.pwd)
+            }
+        },
+        loginBtnDisalbed(){
+            return this.hasIdError || this.hasPwdError || !(this.id && this.pwd);
         }
     },
 
@@ -86,6 +89,11 @@ export default{
                         location.href='/'
                     }else{
                         alert('로그인 실패')
+                        self.id=''
+                        self.pwd=''
+                        document.getElementById('id').placeholder='ID';
+                        document.getElementById('pwd').placeholder='Password';
+                        return;
                     }
                 }else{
                     alert('에러코드:'+res.status)
@@ -111,29 +119,29 @@ export default{
             }
         },
 
-        //아이디 정규화(8~12자리 이상 영문)
+        //아이디 정규식(8~12자리 이상 영문+숫자, 영문, 숫자X)
         validateId(event){
             const id = event.target.value;
-            const regex = /^[a-zA-Z0-9]{8,12}$/;
-            this.hasIdError = regex.test(id);
+            const regex = /^(?=.*[A-Za-z])[A-Za-z\d]{8,12}$/;
+            this.hasIdError = !regex.test(id);
             console.log("id : " +this.hasIdError)
             this.enabledState();
         },
 
-        //비밀번호 정규화
+        //비밀번호 정규식
         validatePwd(event){
             const pwd = event.target.value;
-            const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{4,12}$/;
-            this.hasPwdError = regex.test(pwd);
+            const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,12}$/;
+            this.hasPwdError = !regex.test(pwd);
             console.log("pwd : " +this.hasPwdError)
             this.enabledState();
         },
 
         enabledState(){
-            if(this.hasIdError && this.hasPwdError){
-                this.isEnabled = true;
-            }else{
+            if(this.hasIdError || this.hasPwdError){
                 this.isEnabled = false;
+            }else{
+                this.isEnabled = true;
             }
         }
     }
