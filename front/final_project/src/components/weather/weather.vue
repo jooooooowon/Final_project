@@ -1,56 +1,68 @@
 <template>
-  <div>
-    <p>{{ textContent }}</p>
-
-    <h3>now</h3>
+  <div class="background">
     <div>
-      <ul>
-        <li>{{ address }}</li> <br />
-        <li>{{ nowTmp }}℃</li> <br />
-        <li>{{ nowSky }}</li> <br />
-        <li>{{ nowPop }}</li> <br />
-        <li>H: {{ todayTmx }}° L: {{ todayTmn }}°</li>
-      </ul>
+      <h3>{{ realDate }}</h3>
+      <div>
+        {{ address }}<br />
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <div style="display: flex; align-items: center;">
+            <img class="iconImg" :src="getIcon(nowSky)">
+            <div v-if="nowPop !== '0%'">
+              {{ nowPop }}
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div style="text-align: center;">
+              <div class="tmp">{{ nowTmp }}°</div>
+              <div class="tmx">{{ todayTmx }}° / {{ todayTmn }}°</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <p>{{ textContent }}</p> -->
+      <br /><br />
+      <!-- <h3>24HOURS</h3> -->
+      <div class="allWeather">
+        <div class="inside">
+          <table>
+            <tr>
+              <td v-for="eachTime in everyTime" :key="eachTime.fcstTime">
+                {{ eachTime.fcstTime }}<br />
+                <img :src="getIcon(eachTime.sky)"><br />
+                <!-- {{ eachTime.sky }}<br /> -->
+                {{ eachTime.pop }}<br />
+                {{ eachTime.tmp }}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 옷 추천~~ -->
+      <h3>기온별 옷차림</h3>
+      <div>
+        <closet></closet>
+      </div>
+
+      <h3>OOTW</h3>
+      <div>
+        <ootw></ootw>
+      </div>
+
+
     </div>
-
-    <h3>24HOURS</h3>
-    <div>
-      <table border="1">
-        <tr>
-          <td v-for="eachTime in everyTime" :key="eachTime.fcstTime">
-            {{ eachTime.fcstTime }}<br />
-            {{ eachTime.sky }}<br />
-            {{ eachTime.pop }}<br />
-            {{ eachTime.tmp }}
-          </td>
-        </tr>
-      </table>
-    </div>
-
-    <!-- 옷 추천~~ -->
-    <h3>기온별 옷차림</h3>
-    <div>
-      <closet></closet>
-    </div>
-    <!-- 옷 추천~~ -->
-    <!-- <h3>OOTW</h3>
-    <div>
-      <ootw></ootw>
-    </div> -->
-
-
   </div>
 </template>
 
 <script>
 import wthCloset from './wthCloset.vue'
-// import wthOotw from './wthOotw.vue'
+import wthOotw from './wthOotw.vue'
 
 export default {
   name: 'TodayWeather',
   data() {
     return {
-      textContent: '',
+      // textContent: '',
       latitude: '',
       longitude: '',
       x: '', // latitude를 변환한 x좌표
@@ -73,27 +85,62 @@ export default {
       todayTmn: '', // 오늘 최저기온
       todayTmx: '', // 오늘 최고기온
       // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      
-      ootwList: []
+      weatherIcons: {
+        1: require('@/assets/weatherIcons/1.svg'),
+        3: require('@/assets/weatherIcons/3.svg'),
+        4: require('@/assets/weatherIcons/4.svg'),
+        5: require('@/assets/weatherIcons/5.svg'),
+        6: require('@/assets/weatherIcons/6.svg'),
+        7: require('@/assets/weatherIcons/7.svg'),
+        8: require('@/assets/weatherIcons/8.svg'),
+        9: require('@/assets/weatherIcons/9.svg'),
+        11: require('@/assets/weatherIcons/11.svg'),
+        12: require('@/assets/weatherIcons/12.svg'),
+        13: require('@/assets/weatherIcons/13.svg'),
+        14: require('@/assets/weatherIcons/14.svg'),
+        15: require('@/assets/weatherIcons/15.svg'),
+        16: require('@/assets/weatherIcons/16.svg'),
+        100: require('@/assets/weatherIcons/100.svg'),
+        200: require('@/assets/weatherIcons/200.svg')
+      },
+      background: ''
     }
   },
-  components : {
-    closet : wthCloset
-    // ootw : wthOotw
+  components: {
+    closet: wthCloset,
+    ootw: wthOotw
+  },
+  computed: {
+    realDate() {
+      // Date 객체에는 slice 메서드가 없기 때문에
+      // 날짜를 영어로 표시하기 위해 toLocaleString 메서드
+      // 월을 영어로 표시하기 위해 toLocaleString 메서드에 options 객체를 전달하여 옵션을 설정
+      const options = { month: 'long', day: 'numeric', year: 'numeric' };
+      const d = new Date();
+      return d.toLocaleString('en-US', options);
+    },
+    // realTime() {
+    //   const time = new Date();
+    //   let hh = time.getHours();
+    //   let mm = time.getMinutes();
+
+    //   return (hh < 10 ? '0' + hh : hh) + ':' + (mm < 10 ? '0' + mm : mm);
+    // }
   },
   created() {
     this.getDate()
-    if (!("geolocation" in navigator)) {
-      this.textContent = 'Geolocation is not available.';
-      return;
-    }
-    this.textContent = 'Locating...';
+
+    // if (!("geolocation" in navigator)) {
+    //   this.textContent = 'Geolocation is not available.';
+    //   return;
+    // }
+    // this.textContent = 'Locating...';
 
     // Get position
     navigator.geolocation.getCurrentPosition(async pos => {
       this.latitude = pos.coords.latitude;
       this.longitude = pos.coords.longitude;
-      this.textContent = 'Your location data is ' + this.latitude + ', ' + this.longitude;
+      // this.textContent = 'Your location data is ' + this.latitude + ', ' + this.longitude;
       this.dfsXyConv(this.latitude, this.longitude)
       this.toAddress()
       this.sunTime(this.today)
@@ -113,6 +160,24 @@ export default {
 
   },
   methods: {
+    // 시계 업데이트
+    // updateClockDisplay() {
+    //   // computed로 할당된 realTime 속성값을 clockDisplay 요소의 내용으로 설정
+    //   document.getElementById('clockDisplay').textContent = this.realTime;
+    //   // 1초마다 updateClockDisplay 함수를 호출하여 시계를 업데이트
+    //   // setInterval(this.updateClockDisplay(), 1000)를 setInterval(this.updateClockDisplay, 1000)로 수정
+    //   // this.updateClockDisplay()를 호출하는 대신에 함수 자체를 setInterval에 전달해야 합니다.
+    //   // this.updateClockDisplay()를 호출할 때, 함수를 호출하는 대신에 호출된 결과를 setInterval에 전달하게 됩니다. 이로 인해 updateClockDisplay()가 무한히 재귀적으로 호출되며, 호출 스택 크기를 초과
+    //   setInterval(this.updateClockDisplay, 1000);
+    // },
+    // background() {
+    //   const sky = this.nowSky;
+    // },
+    // 하늘 상태에 따른 아이콘 불러오기
+    getIcon(sky) {
+      return this.weatherIcons[sky];
+    },
+
     // 위경도 좌표를 xy좌표로 변환하는 메서드
     dfsXyConv(v1, v2) {
       const { PI, tan, log, cos, pow, floor, sin } = Math
@@ -176,10 +241,10 @@ export default {
       const tom_year = tom.getFullYear();
 
       //getMonth(), getDate(), getHours(), getMinutes(), getSeconds() 함수는 수치 값을 반환하기 때문에 2자리를 맞추기 위해서는 "0"을 붙여서 뒤에서 2자리만 잘라서 값을 변환해야 한다.
-      const to_month = ('0' + (d.getMonth()+1)).slice(-2); //getMonth()함수는 0~11을 반환하기 때문에 항상 +1을 해줘야한다
-      const yes_month = ('0' + (yes.getMonth()+1)).slice(-2);
-      const tomo_month = ('0' + (tom.getMonth()+1)).slice(-2);
-      
+      const to_month = ('0' + (d.getMonth() + 1)).slice(-2); //getMonth()함수는 0~11을 반환하기 때문에 항상 +1을 해줘야한다
+      const yes_month = ('0' + (yes.getMonth() + 1)).slice(-2);
+      const tomo_month = ('0' + (tom.getMonth() + 1)).slice(-2);
+
       const to_day = ('0' + d.getDate()).slice(-2);
       const yes_day = ('0' + yes.getDate()).slice(-2);
       const tomo_day = ('0' + tom.getDate()).slice(-2);
@@ -292,10 +357,10 @@ export default {
 
 
               // 날씨 배열에 끼워넣을 일출일몰 객체 
-              const todaySunriseObject = { fcstDate: this.today, fcstTime: this.today_sunrise, sky: 200, pty: '', pop: '', tmp: '오늘sunrise' };
-              const todaySunsetObject = { fcstDate: this.today, fcstTime: this.today_sunset, sky: 100, pty: '', pop: '', tmp: '오늘sunset' };
-              const tomorrowSunriseObject = { fcstDate: this.tomorrow, fcstTime: this.tomorrow_sunrise, sky: 200, pty: '', pop: '', tmp: '내일sunrise' };
-              const tomorrowSunsetObject = { fcstDate: this.tomorrow, fcstTime: this.tomorrow_sunset, sky: 100, pty: '', pop: '', tmp: '내일sunset' };
+              const todaySunriseObject = { fcstDate: this.today, fcstTime: this.today_sunrise, sky: 200, pty: '', pop: '', tmp: 'sunrise' };
+              const todaySunsetObject = { fcstDate: this.today, fcstTime: this.today_sunset, sky: 100, pty: '', pop: '', tmp: 'sunset' };
+              const tomorrowSunriseObject = { fcstDate: this.tomorrow, fcstTime: this.tomorrow_sunrise, sky: 200, pty: '', pop: '', tmp: 'sunrise' };
+              const tomorrowSunsetObject = { fcstDate: this.tomorrow, fcstTime: this.tomorrow_sunset, sky: 100, pty: '', pop: '', tmp: 'sunset' };
 
               // 조건별로 일출일몰 객체 다르게 끼워넣기~
               // (1) now = 0000 ~ 일출
@@ -308,7 +373,7 @@ export default {
                 let todaySS = this.everyTime.findIndex((eachTime) => parseInt(eachTime.fcstTime.substring(0, 2)) === parseInt(this.today_sunset.substring(0, 2)));
                 // 일출, 일몰 기준으로 배열 자르기~~
                 let first = this.everyTime.slice(0, todaySR + 1);
-                let second = this.everyTime.slice(todaySR +1, todaySS + 1);
+                let second = this.everyTime.slice(todaySR + 1, todaySS + 1);
                 let third = this.everyTime.slice(todaySS + 1, this.everyTime.length);
 
                 for (const eachTime of first) { // now ~ 일출 (밤)
@@ -323,6 +388,13 @@ export default {
                     eachTime.pty = +eachTime.pty + 8;
                   }
                 }
+
+                // now 아이콘 밤으로 바꾸기
+                this.nowSky = +this.nowSky + 8;
+                if (this.nowPty != 0) {
+                  this.nowPty = +this.nowPty + 8;
+                }
+
                 // 일출일몰 껴서 배열 다시 생성~
                 first.push(todaySunriseObject); // 오늘 일출 추가
                 second.push(todaySunsetObject); // 오늘 일몰 추가
@@ -333,7 +405,7 @@ export default {
                 let todaySS = this.everyTime.findIndex((eachTime) => parseInt(eachTime.fcstTime.substring(0, 2)) > parseInt(this.today_sunset.substring(0, 2)));
                 let tomorrowSR = this.everyTime.findIndex((eachTime) => parseInt(eachTime.fcstTime.substring(0, 2)) === parseInt(this.tomorrow_sunrise.substring(0, 2)));
                 console.log(todaySS)
-                
+
                 let first = this.everyTime.slice(0, todaySS);
                 let second = this.everyTime.slice(todaySS, tomorrowSR + 1);
                 let third = this.everyTime.slice(tomorrowSR + 1, this.everyTime.length);
@@ -370,6 +442,13 @@ export default {
                     eachTime.pty = +eachTime.pty + 8;
                   }
                 }
+
+                // now 아이콘 밤으로 바꾸기
+                this.nowSky = +this.nowSky + 8;
+                if (this.nowPty != 0) {
+                  this.nowPty = +this.nowPty + 8;
+                }
+
                 first.push(tomorrowSunriseObject); // 내일 일출 추가
                 second.push(tomorrowSunsetObject); // 내일 일몰 추가
                 this.everyTime = first.concat(second, third);
@@ -496,6 +575,86 @@ export default {
 </script>
 
 <style scoped>
+.background {
+  min-width: 335px;
+  width: 100%;
+  height: 100%;
+  /* 밤 흐림, 눈 */
+  /* background-image: linear-gradient(white, #3a4159, #1e1f26); */
+  /* 밤 비 */
+  /* background-image: linear-gradient(white, #28434e, #001813); */
+  /* 밤 맑음 */
+  /* background-image: linear-gradient(white, #012083, #04092c); */
+  /* 낮 눈 */
+  /* background-image: linear-gradient(white, #b5c8cd, #89b0bf); */
+  /* 낮 비 */
+  /* background-image: linear-gradient(white, #9fb1c5, #1c3f43); */
+  /* 낮 맑음 */
+  background-image: linear-gradient(white, #ffcc66, #4dc4ff); 
+}
+
+.allWeather {
+  max-width: 900px;
+  margin: 0 auto;
+  /* color: white; */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background: transparent;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  /* padding: 20px; */
+  /* 가로 스크롤 */
+  overflow: auto;
+  white-space: nowrap;
+  /* 자동 줄바꿈 없앰 */
+}
+
+.allWeather::-webkit-scrollbar {
+  /* display: none; */
+  width: 95%;
+  height: 7px;
+}
+
+/* 스크롤바 막대 설정 */
+.allWeather::-webkit-scrollbar-thumb {
+  /* background: transparent; */
+  background-color: rgba(255, 255, 255, 0.5);
+  /* 스크롤바 둥글게 설정    */
+  border-radius: 20px;
+  /* border: 7px solid rgba(255, 255, 255, 0.3); */
+}
+
+/* 마우스 안올리면 안보이게 */
+.allWeather::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0);
+  transition: background-color 0.3s;
+}
+
+/* 마우스 올리면 보이게~ */
+.allWeather:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.inside {
+  padding: 20px;
+  display: inline-block;
+}
+
+.iconImg {
+  width: 300px;
+  height: auto;
+  /* display: block;
+  margin-left: auto;
+  margin-right: auto; */
+}
+
+.tmp {
+  font-size: 80px;
+}
+
+.tmx {
+  font-size: 20px;
+}
+
 
 
 
@@ -533,6 +692,4 @@ li {
 .follow {
   clear: left;
 }
-
-
 </style>

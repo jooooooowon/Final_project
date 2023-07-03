@@ -77,7 +77,6 @@ export default {
             memnum: sessionStorage.getItem("memnum"),
             recommend: '...로딩중 *^^*',
             message: '', // 로그인하면 옷장에서 옷 추천해드림~
-            message1: '', // 현재 기온에 입고 나갔던 옷은? 
             message2: '옷장이 비었네요!',
             showRecom: false,
             gender: '', // 로그인 한 사람의 성별 담음 -> 네이버 검색에 쓰임
@@ -366,7 +365,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 
 .card-grid {
