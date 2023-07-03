@@ -5,33 +5,41 @@
 
         <!-- 아이디 입력 폼 -->
         <div class="form_group">
-            <label for="id" :class="{'input_label': id}">ID*</label>
-            <input type="text" v-model="id" placeholder="ID" class="input_field">
+            <label for="id" :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">ID*</label>
+            <input type="text" id="id" v-model="id" placeholder="ID" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="idcheck(); validateId($event)">
+            <!-- {{ msg }} -->
         
 
         <!-- 아이디 유효성검사 메시지 -->
-        <p class="input_error" v-if="id && !validateId(id)">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p>
+        <!-- <p class="input_error" v-if="id && !validateId(id)">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p> -->
+        <p class="input_error" v-if="hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p>
+        <p class="input_idcheck" v-else>{{ msg }}</p>
+        <!-- <p class="input_idcheck" v-else="validateId(id)"></p> -->
          </div>
 
-        <!-- 중복체크 메시지 -->
-        <span v-if="msg === '사용가능한 아이디'" class="success_message">{{ msg }}</span>
+        <!-- 중복체크 버튼/메시지 -->
+        <!-- <span v-if="msg === '사용가능한 아이디'" class="success_message">{{ msg }}</span>
         <span v-else class="error_message">{{ msg }}</span>
-        <button v-on:click="idcheck">중복체크(수정예정)</button><br/>
+        <button v-on:click="idcheck">중복체크(수정예정)</button><br/> -->
         
         <!-- 비밀번호 입력 폼 -->
         <div class="form_group">
-            <label for="pwd" :class="{'input_label': pwd}">Password*</label>
-            <input type="password" v-model="pwd" placeholder="Password" class="input_field">
+            <label for="pwd" :class="{'input_label': !hasPwdError, 'input_label_error': hasPwdError}">Password*</label>
+            <input type="password" id="pwd" v-model="pwd" placeholder="Password" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)">
 
         <!-- 비밀번호 유효성검사 메시지 -->
-        <p class="input_error" v-if="pwd && !validatePassword(pwd)">영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
+        <p class="input_error" v-if="hasPwdError">영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
         </div>
 
         <!-- 이메일 입력 폼 -->
         <div class="form_group">
-            <label for="email" :class="{input_label: email}">Email*</label>
-            <input type="text" v-model="emailId" placeholder="예) intheham@tistory.com" class="input_field">
-            <!-- 이메일 인증 버튼 -->
+            <label for="email" :class="{'input_label': !hasEmailError, 'input_label_error': hasEmailError}">Email*</label>
+            <input type="text" v-model="emailId" placeholder="예) intheham@tistory.com" :class="{'input_field': !hasEmailError, 'input_field_error': hasEmailError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateEmail($event)">
+
+        <!-- 이메일 유효성검사 메시지  -->
+        <p class="input_error" v-if="hasEmailError">이메일 주소를 정확히 입력해주세요.</p>
+
+        <!-- 이메일 인증 버튼 -->
             <button v-on:click="authEmail" id="authEmail">인증번호 받기(수정예정)</button><br/>
         </div>
 
@@ -100,17 +108,24 @@ export default{
             gender:'',
             nickname:'',
             msg:'',
-
+            hasIdError:false,
+            hasPwdError:false,
+            hasEmailError:false,
         }
     },
 
-    computed:{
-        isJoinable(){
-            return this.validatePassword(this.pwd) && this.validateId(this.id);
-        },
-    },
+    // computed:{
+    //     isJoinable(){
+    //         return this.id && this.validatePwd(this.pwd) && this.validateId(this.id);
+    //     },
+    // },
 
     methods:{
+
+        //아이디 입력값 찍기
+        logId(){
+            console.log('id:' + this.id);
+        },
 
         //회원가입
         join(){
@@ -158,13 +173,19 @@ export default{
         //중복체크
         idcheck(){
             const self =this;
+            if(self.id.trim() === ''){ //trim: 문자열 양쪽 끝 공백제거
+                self.msg = '아이디를 입력하시오.'
+                return;
+            }
             self.$axios.get('http://localhost:8081/members/check/'+self.id)
             .then(function(res){
                 if(res.status == 200){
                     if(res.data.tf){
                         self.msg='사용가능한 아이디'
+                        // alert('사용가능한 아이디')
                     }else{
                         self.msg='중복된 아이디'
+                        // alert('중복된 아이디')
                     }
                 }else{
                     alert('에러코드:'+res.status)
@@ -172,17 +193,47 @@ export default{
             });
         },
 
-        //아이디 정규화(8~12자리 이상 영문)
-        validateId(id){
-            const pattern = /^[a-zA-Z0-9]{8,12}$/;
-            return pattern.test(id);
+        // idchecknull(){
+        //     const self =this;
+        //     if(self.id.trim() === ''){ //trim: 문자열 양쪽 끝 공백제거
+        //         self.msg = '아이디를 입력하시오.'
+        //         return;
+        //     }
+        // },
+
+        //아이디 정규식(8~12자리 이상 영문+숫자, 영문, 숫자X)
+        validateId(event){
+            const id = event.target.value
+            const pattern = /^(?=.*[A-Za-z])[A-Za-z\d]{8,12}$/;
+            this.hasIdError = !pattern.test(id);
+            console.log("id:" + this.hasIdError);
+            this.enabledState();
+            // return pattern.test(id);
         },
 
-        //비밀번호 정규화
-        validatePassword(password){
+        //비밀번호 정규식
+        validatePwd(event){
             //4~12자리, 공백X, 한글X, 영문+숫자, 영대문자1개 포함, 특수문자포함
+            const pwd = event.target.value
             const pattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{4,12}$/;
-            return pattern.test(password);
+            this.hasPwdError = !pattern.test(pwd);
+            this.enabledState();
+        },
+
+        //이메일 정규식
+        validateEmail(event){
+            const emailId = event.target.value
+            const pattern = /^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\.[A-Za-z0-9\\-]+/;
+            this.hasEmailError = !pattern.test(emailId);
+            this.enabledState();
+        },
+
+        enabledState(){
+            if(this.hasIdError || this.hasPwdError){
+                this.isEnabled = false;
+            }else{
+                this.isEnabled = true;
+            }
         },
 
         //이메일 인증
@@ -243,7 +294,56 @@ export default{
                 alert('인증번호가 틀렸습니다.')
                 self.authComplete = 1;
             }
+        },
+
+        //로그인, 패스워드 폼 포커스시
+        cPlaceholder(event){
+            event.target.previousElementSibling.classList.add('actvie');
+            event.target.placeholder='';
+        },
+        rPlaceholder(event){
+            const inputField = event.target;
+            const label = inputField.previousElementSibling;
+            if(!inputField.value || !label){
+                return;
+            }
+            label.classList.remove('active');
+            if(inputField.id === 'id'){
+                inputField.placeholder = 'ID';
+            }else if(inputField.id === 'pwd'){
+                inputField.placeholder = 'Password';
+            }
         }
+        
+
+        //로그인, 패스워드 폼 포커스시
+        // cPlaceholder(event){
+        //     const inputField = event.target;
+        //     const label = inputField.previousElementSibling;
+        //     if(!inputField.value || label){
+        //         return;
+        //     }
+        //     label.classList.add('active');
+        //     if(inputField.id === 'id'){
+        //         inputField.placeholder = 'ID';
+        //     }else if(inputField.id === 'pwd'){
+        //         inputField.placeholder = 'Password';
+        //     }
+        // },
+
+        // rPlaceholder(event){
+        //     const inputField = event.target;
+        //     const label = inputField.previousElementSibling;
+        //     if(!inputField.value || label){
+        //         return;
+        //     }
+        //     label.classList.remove('active');
+        //     if(inputField.id === 'id'){
+        //         inputField.placeholder = 'ID';
+        //     }else if(inputField.id === 'pwd'){
+        //         inputField.placeholder = 'Password';
+        //     }
+        // }
     }
 }
 </script>
@@ -284,14 +384,31 @@ label{
     padding-left: 8px;
 }
 
+.input_label_error{
+    color:#f15746
+}
 .input_field{
     position: relative;
     padding: 8px;
-    width: 100%;
+    width: 96%;
     border: none;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #ebebeb;
     background-color: transparent;
     outline: none;
+}
+
+.input_field_error{
+    position: relative;
+    padding: 8px;
+    width: 96%;
+    border: none;
+    border-bottom: 1px solid #f15746;
+    background-color: transparent;
+    outline: none;
+}
+
+.input_field:focus{
+    border-bottom: 2px solid #000000;
 }
 
 /* 유효성 검사 메시지 */
