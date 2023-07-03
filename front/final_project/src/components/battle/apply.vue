@@ -34,12 +34,16 @@
     <!-- roundcnt : {{ roundcnt }} <br> -->
     <!-- dto : {{ dto }} -->
     <!-- <img :src="'http://localhost:8081/members/imgs/' + memnum" alt="왜 안나옴 ㅋㅋ"> -->
-    <div v-if="chk" style="margin-top: 20px;">
-      <input style="margin-bottom: 30px;" type="file"><br>
+    <div v-if="chk" class="label-class">
+      <label for="imgtag">
+            <img src="../../assets/img-upload.png">
+        </label>
+        <input type="file" id="imgtag" style="display:none" accept="image/*" v-on:change="thumbnail"><br>
+
       <button @:click="applyBattle">신청 하기</button>
     </div>
 
-    <div v-else>
+    <div v-else style="font-weight: bold; font-size: 1.3em; margin-top:120px">
       이미 신청하였습니다.
     </div>
 
@@ -117,25 +121,48 @@ export default {
     applyBattle(){
       const self = this;
       let file = document.querySelector("input");
-      alert(file)
-      let formdata = new FormData();
-      formdata.append("memnum",this.memnum);
-      formdata.append("theme",this.theme);
-      formdata.append("gender",this.gender);
-      formdata.append("roundcnt",this.roundcnt);
-      formdata.append("mf",file.files[0]);
-      
-      self.$axios.post('http://localhost:8081/battles',formdata,
-      {headers : {"Content-Type":"multipart/form-data"}})
-      .then(res =>{
-        if(res.status == 200 || res.data.flag){
-          alert("신청 완료.");
-          location.href = "/"
-        }else{
-          alert("오류 발생으로 인한 신청 실패")
+      console.log(file.files[0])
+      if(file.files[0] == undefined){
+        alert("배틀 신청 시 사진은 필수 입니다.")
+      }else{
+
+        let formdata = new FormData();
+        formdata.append("memnum",this.memnum);
+        formdata.append("theme",this.theme);
+        formdata.append("gender",this.gender);
+        formdata.append("roundcnt",this.roundcnt);
+        formdata.append("mf",file.files[0]);
+        
+        self.$axios.post('http://localhost:8081/battles',formdata,
+        {headers : {"Content-Type":"multipart/form-data"}})
+        .then(res =>{
+          if(res.status == 200 || res.data.flag){
+            alert("신청 완료.");
+            location.href = "/"
+          }else{
+            alert("오류 발생으로 인한 신청 실패")
+          }
+        })
+      }
+    },
+    thumbnail() {
+        const file = document.getElementById('imgtag'); // type file에 올려진 file을 상수 file에 저장한다.
+        if (file.files[0]) { // file은 하나만 올리므로 files 배열의 [0]만 null인지 아닌지 확인한다.
+            // FileReader(): 자바스크립트 API.. 파일을 비동기적으로 읽을 수 있으며, 주로 파일의 내용을 읽어서 데이터를 가져오는 데 사용한다.
+            const reader = new FileReader(); // FileReader의 새로운 객체를 생성(new)하여(인스턴스를 생성하여) reader 변수에 담는다. 
+            const self = this;
+            reader.onload = function() { // reader.onload 이벤트 핸들러는 파일 읽기가 완료되었을 때 호출되는 콜백 함수를 정의하는 역할을 한다.
+                self.thumbimg = reader.result; // reader.result 속성은 파일의 데이터를 담고 있는 문자열을 제공함, 이 문자열은 일반적으로 이미지 파일의 경우 base64 인코딩된 이미지 데이터를 포함한다.
+                // 따라서 인코딩된 이미지 데이터를 thumbnail에 담아서 이미지를 미리보기 해주는 역할을 수행한다.
+                console.log("이미지 정보: " + reader.result)
+                document.querySelector('label img').src = reader.result;
+            };
+            reader.readAsDataURL(file.files[0]);
+            // FileReader의 객체를 사용하여 여러 방식으로 데이터를 읽을 수 있다.
+            // 여기에서 사용된 readAsDataURL 메서드는 파일을 데이터 url형식으로 읽는다.
+            // 업로드한 파일을 해당 메서드가 읽고, 파일 읽기가 완료되면 read.onload 이벤트 핸들러 내부의 작업이 시작된다.
         }
-      })
-    }
+    },
   }
 }
 </script>
@@ -178,9 +205,33 @@ hr {
 
 .v-line{
  border-left:  solid rgb(3, 129, 3, 0.3);
- height:28%;
+ height: 150px;
  left: 50%;
  position: absolute;
 }
 
+.label-class{
+  margin-top : 60px;
+}
+
+.label-class img{
+  width: 300px;
+  height: 300px;
+}
+
+.label-class button{
+  margin : 30px;
+  width: 80px;
+  height: 50px;
+  border-radius : 20px;
+  background-color: #C4D7B2;
+  transition : .5s;
+}
+
+.label-class button:hover{
+  background-color: #85b380;
+  color: #ffffff;
+  cursor:pointer;
+  font-weight: bold;
+}
 </style>

@@ -1,12 +1,30 @@
 <template>
-  <input type="button" value="랜덤 두명 뽑기" @click="find">
-  <div v-show="show">
-    {{ firstCandidate }}
-    <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" alt="첫 번째">
-    {{ secondCandidate }}
-    <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" alt="두 번째">
+  <div class="battle-info">
+    <div class="theme">
+      테마 : {{ theme }}
+    </div>
+    <div class="roundcnt">
+      회차 : {{ roundcnt }}
+    </div>
   </div>
-  <input type="button" value="후보 확정 하기" @click="firm">
+  <div class="buttons">
+    <input type="button" value="랜덤 두명 뽑기" @click="find">
+    <input type="button" value="후보 확정 하기" @click="firm">
+  </div>
+  <div v-show="show" class="show">
+    <div class="first-candidate">
+      <div class="nickname">
+        {{ firstMember }}
+      </div> 
+      <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" alt="첫 번째">
+    </div>
+    <div class="second-candidate">
+      <div class="nickname">
+        {{ secondMember }}
+      </div>
+      <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" alt="두 번째">
+    </div>
+  </div>
 </template>
 
 <script>
@@ -15,9 +33,29 @@ export default{
   data(){
     return{
       firstCandidate : {},
+      firstMember : '',
       secondCandidate : {},
-      show : false
+      secondMember : '',
+      show : false,
+      theme : '',
+      roundcnt : 0
     }
+  },
+  created: function(){
+    let self = this;
+    self.$axios.get('http://localhost:8081/battles/info')
+    .then(res =>{
+      if(res.status == 200 || res.data.flag){
+        // 대결 테마가 변경되어있는 지 확인하는 if문
+        if(res.data.changeTheme){
+          this.theme = res.data.theme;
+          this.roundcnt = res.data.roundcnt;
+          self.prepared = true;
+        }
+      }else{
+        alert("오류 발생으로 인한 테마 정보 불러오기 실패");
+      }
+    })
   },
   methods:{
     find : function(){
@@ -32,6 +70,10 @@ export default{
             self.firstCandidate = res.data.list.pop();
             self.secondCandidate = res.data.list.pop();
             self.show = true;
+            setTimeout(() => {
+              self.firstMember = self.firstCandidate.memnum.nickname;
+              self.secondMember = self.secondCandidate.memnum.nickname;
+            }, 100);
           }
         }else{
           alert('오류로 인해 후보자 랜덤 뽑기 실행 불가.')
@@ -67,3 +109,63 @@ export default{
   }
 }
 </script>
+
+<style scoped>
+.battle-info{
+  width: 500px;
+  position:absolute;
+  left:0;
+  right:0;
+  margin:50px auto;
+  text-overflow: ellipsis;
+}
+.battle-info .theme{
+  font-size: 2.9em;
+}
+
+.battle-info .roundcnt{
+  font-size: 1.8em;
+}
+
+.buttons{
+  margin-top:170px;
+}
+
+input[type="button"]{
+  width: 100px;
+  height: 40px;
+  border-radius: 30px;
+  background-color: #C4D7B2;
+  transition : .5s;
+  margin : 0 5px;
+}
+
+input[type="button"]:hover{
+  background-color: #85b380;
+  color: #ffffff;
+  cursor:pointer;
+  font-weight: bold;
+}
+
+.show{
+  display:flex;
+  justify-content: space-between;
+  width: 850px;
+  position:absolute;
+  left:0;
+  right:0;
+  margin:auto;
+}
+
+.nickname{
+  font-size: 1.9em;
+  text-overflow: ellipsis;
+  margin:50px;
+}
+
+.show div img{
+  width: 300px;
+  height: 300px;
+}
+
+</style>

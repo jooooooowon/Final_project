@@ -1,11 +1,26 @@
 <template>
-  <div v-if="!prepared">
-    <notYet></notYet>
+  <div v-if="prepared" style="display: flex;">
+    
+    <canvas id="canvas" style="position:absolute"></canvas>
+    
+    <div class="your-choice">
+      Your choice?
+    </div>
+    <div class="main">
+
+      <div class="first-candidate">
+        <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" @click="voteCandidate(firstCandidate.batnum)" alt="첫번째 후보">
+      </div>
+      <div class="vs">
+        VS
+      </div>
+      <div class="second-candidate">
+        <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" @click="voteCandidate(secondCandidate.batnum)" alt="두번째 후보">
+      </div>
+    </div>
   </div>
   <div v-else>
-    <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" @click="voteCandidate(firstCandidate.batnum)" alt="첫번째 후보">
-     VS 
-    <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" @click="voteCandidate(secondCandidate.batnum)" alt="두번째 후보">
+    <notYet></notYet>
   </div>
 
 </template>
@@ -21,12 +36,12 @@ export default{
       memnum : sessionStorage.getItem("memnum"),
       firstCandidate:{},
       secondCandidate:{},
-      prepared : false,
+      prepared : true,
       chk : true
     }
   },
   components:{
-    notYet
+     notYet
   },
   created: function(){
     // 현재 로그인 상태 확인.
@@ -73,6 +88,179 @@ export default{
     }
         
   },
+  mounted:function(){
+    var c = document.getElementById("canvas");
+      var ctx = c.getContext("2d");
+
+      function resize() {
+          var box = c.getBoundingClientRect();
+          c.width = box.width;
+          c.height = box.height;
+      }
+
+      var light = {
+          x: 80,
+          y: 100
+      }
+
+      var colors = ["#f5c156", "#e6616b", "#5cd3ad"];
+
+      function drawLight() {
+          ctx.beginPath();
+          ctx.arc(light.x, light.y, 1000, 0, 2 * Math.PI);
+          var gradient = ctx.createRadialGradient(light.x, light.y, 0, light.x, light.y, 500);
+          gradient.addColorStop(0, "#3bccaa");
+          gradient.addColorStop(1, "#96d9b1");
+          ctx.fillStyle = gradient;
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(light.x, light.y, 5, 0, 2 * Math.PI);
+          gradient = ctx.createRadialGradient(light.x, light.y, 0, light.x, light.y, 5);
+          gradient.addColorStop(0, "#3bccaa");
+          gradient.addColorStop(1, "#3b4654");
+          ctx.fillStyle = gradient;
+          ctx.fill();
+      }
+
+      function Box() {
+          this.half_size = Math.floor((Math.random() * 15) + 1);
+          this.x = Math.floor((Math.random() * c.width) + 1);
+          this.y = Math.floor((Math.random() * c.height) + 1);
+          this.r = Math.random() * Math.PI;
+          this.shadow_length = 2000;
+          this.color = colors[Math.floor((Math.random() * colors.length))];
+        
+          this.getDots = function() {
+
+              var full = (Math.PI * 2) / 4;
+
+
+              var p1 = {
+                  x: this.x + this.half_size * Math.sin(this.r),
+                  y: this.y + this.half_size * Math.cos(this.r)
+              };
+              var p2 = {
+                  x: this.x + this.half_size * Math.sin(this.r + full),
+                  y: this.y + this.half_size * Math.cos(this.r + full)
+              };
+              var p3 = {
+                  x: this.x + this.half_size * Math.sin(this.r + full * 2),
+                  y: this.y + this.half_size * Math.cos(this.r + full * 2)
+              };
+              var p4 = {
+                  x: this.x + this.half_size * Math.sin(this.r + full * 3),
+                  y: this.y + this.half_size * Math.cos(this.r + full * 3)
+              };
+
+              return {
+                  p1: p1,
+                  p2: p2,
+                  p3: p3,
+                  p4: p4
+              };
+          }
+          this.rotate = function() {
+              var speed = (60 - this.half_size) / 20;
+              this.r += speed * 0.002;
+              this.x += speed;
+              this.y += speed;
+          }
+          this.draw = function() {
+              var dots = this.getDots();
+              ctx.beginPath();
+              ctx.moveTo(dots.p1.x, dots.p1.y);
+              ctx.lineTo(dots.p2.x, dots.p2.y);
+              ctx.lineTo(dots.p3.x, dots.p3.y);
+              ctx.lineTo(dots.p4.x, dots.p4.y);
+              ctx.fillStyle = this.color;
+              ctx.fill();
+
+
+              if (this.y - this.half_size > c.height) {
+                  this.y -= c.height + 100;
+              }
+              if (this.x - this.half_size > c.width) {
+                  this.x -= c.width + 100;
+              }
+          }
+          this.drawShadow = function() {
+              var dots = this.getDots();
+              var angles = [];
+              var points = [];
+
+              for (let dot in dots) {
+                  var angle = Math.atan2(light.y - dots[dot].y, light.x - dots[dot].x);
+                  var endX = dots[dot].x + this.shadow_length * Math.sin(-angle - Math.PI / 2);
+                  var endY = dots[dot].y + this.shadow_length * Math.cos(-angle - Math.PI / 2);
+                  angles.push(angle);
+                  points.push({
+                      endX: endX,
+                      endY: endY,
+                      startX: dots[dot].x,
+                      startY: dots[dot].y
+                  })
+              }
+
+              for (var i = points.length - 1; i >= 0; i--) {
+                  var n = i == 3 ? 0 : i + 1;
+                  ctx.beginPath();
+                  ctx.moveTo(points[i].startX, points[i].startY);
+                  ctx.lineTo(points[n].startX, points[n].startY);
+                  ctx.lineTo(points[n].endX, points[n].endY);
+                  ctx.lineTo(points[i].endX, points[i].endY);
+                  ctx.fillStyle = "#96d9b1";
+                  ctx.fill();
+              }
+          }
+      }
+
+      var boxes = [];
+
+      function draw() {
+          ctx.clearRect(0, 0, c.width, c.height);
+          drawLight();
+
+          for (let i = 0; i < boxes.length; i++) {
+              boxes[i].rotate();
+              boxes[i].drawShadow();
+          }
+          for (let i = 0; i < boxes.length; i++) {
+              collisionDetection(i)
+              boxes[i].draw();
+          }
+          requestAnimationFrame(draw);
+      }
+
+      resize();
+      draw();
+
+      while (boxes.length < 14) {
+          boxes.push(new Box());
+      }
+
+      window.onresize = resize;
+      c.onmousemove = function(e) {
+          light.x = e.offsetX == undefined ? e.layerX : e.offsetX;
+          light.y = e.offsetY == undefined ? e.layerY : e.offsetY;
+      }
+
+
+      function collisionDetection(b){
+        for (var i = boxes.length - 1; i >= 0; i--) {
+          if(i != b){	
+            var dx = (boxes[b].x + boxes[b].half_size) - (boxes[i].x + boxes[i].half_size);
+            var dy = (boxes[b].y + boxes[b].half_size) - (boxes[i].y + boxes[i].half_size);
+            var d = Math.sqrt(dx * dx + dy * dy);
+            if (d < boxes[b].half_size + boxes[i].half_size) {
+              boxes[b].half_size = boxes[b].half_size > 1 ? boxes[b].half_size-=1 : 1;
+              boxes[i].half_size = boxes[i].half_size > 1 ? boxes[i].half_size-=1 : 1;
+            }
+          }
+        }
+      }
+
+  },
   methods:{
         
     // 투표 하기 버튼 클릭시 이벤트 리스너.
@@ -108,3 +296,117 @@ export default{
 }
 </script>
 
+<style scoped>
+@import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
+
+html{
+  height: 100%;
+}
+body{
+		margin: 0;
+		padding: 0;
+		height: 100%;
+		overflow: hidden;
+		cursor: none;
+}
+#canvas{
+		background-color: #96d9b1;
+		width: 100%;
+		height: 100%;		
+}
+
+.main{
+  display:flex;
+  position:absolute;
+  width: 1000px;
+  left:0;
+  right:0;
+  margin: 300px auto;
+}
+.main img{
+  width: 300px;
+  height: 300px;
+  margin-bottom:150px;
+}
+
+.your-choice{
+  font-family: "Pacifico", cursive;
+  font-size: 5rem;
+  margin-top:50px;
+  z-index:1; 
+  position:absolute;
+  left:0; 
+  right:0; 
+  margin:50px auto;
+}
+
+
+.first-candidate{
+  position:absolute;
+  animation:first ease;
+  animation-duration: 3s;
+  left:10%;
+  
+}
+
+.first-candidate:hover{
+  cursor:pointer;
+}
+
+@keyframes first{
+  0%{
+    left:-100%;
+  }
+  70%{
+    left:18%;
+  }
+  100%{
+    left:10%;
+  }
+}
+
+.second-candidate{
+  position:absolute;
+  animation:second ease;
+  animation-duration: 3s;
+  right:10%;
+}
+.second-candidate:hover{
+  cursor:pointer;
+}
+
+@keyframes second{
+  0%{
+    right:-100%;
+  }
+  70%{
+    right:18%;
+  }
+  100%{
+    right:10%;
+  }
+}
+
+.vs{
+  display :absolute;
+  font-family: "Pacifico", cursive;
+  font-size: 1.8em;
+  font-weight: bold;
+  left:0;
+  right:0;
+  margin:10% auto;
+  animation:vs-animate ease-in;
+  animation-duration: 3s;
+  z-index:1;
+}
+
+@keyframes vs-animate {
+  0%{
+    opacity:0;
+  }
+  100%{
+    opacity : 1;
+  }
+}
+</style>
