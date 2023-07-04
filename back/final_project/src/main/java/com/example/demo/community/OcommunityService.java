@@ -67,10 +67,11 @@ public class OcommunityService {
 	}
 
 	// 회원번호로 검색
-//	public OcommunityDto getByMemnum(int memnum) {
-//		Ocommunity entity = dao.findById(memnum).orElse(null);
-//		return (OcommunityDto) change(entity);
-//	}
+	public ArrayList<OcommunityDto> getByMemnum(int memnum) {
+		ArrayList<Ocommunity> list = (ArrayList<Ocommunity>) dao.findByMemnum(memnum);
+		ArrayList<OcommunityDto> list2 = changeList(list);
+		return list2;
+	}
 
 	// 게시글 번호로 검색
 	public OcommunityDto getByCommnum(int commnum) {

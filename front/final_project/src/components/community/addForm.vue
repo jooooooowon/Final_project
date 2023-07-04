@@ -1,19 +1,28 @@
 <template>
-    <h3>모달 안해!!!!!!!!!!!!!!</h3>
+    <div>
+        <img style="width: 200px; " src="@/assets/logogo.png" alt="">
+    </div>
     <hr class="addhr">
     <div class="comm-add-container">
         <div id="container">
+            <!-- 박스 3개, 이미지 넣는 세션 1 -->
             <section>
                 <article class="photo-box">
                     <div>
-                        <div v-for="(photo, index) in photos" :key="index" class="circle"
+                        <div v-for="(photo, index) in photos" :key="index" class="box"
                             :class="{ active: currentPhotoIndex === index }" @click="changePhoto(index)"></div>
                     </div>
                     <div>
-                        <img style="width: 250px; height: 300px;" :src="currentPhoto"><br>
+                        <span v-if="photos != ''">
+                            <img style="width: 250px; height: 300px;" :src="currentPhoto">
+                        </span>
+                        <span v-if="photos == ''">
+                            <img style="width: 250px; height: 300px;" src="../../assets/imageadd.png">
+                        </span>
                     </div>
                 </article>
             </section>
+            <!-- 파일 선택, 태그, 등록,뒤로 버튼세션 2 -->
             <section class="box-container">
                 <article class="content-box1">
                     <div>
@@ -27,18 +36,18 @@
 
                 <article class="content-box2">
                     <div class="tag">
-                        <!-- <input size="30" type="text" v-model="tag" placeholder="예) #오피스룩 #남친룩"> -->
-                        <textarea placeholder="내용을 입력해 주세요."></textarea>
+                        <textarea size="30" type="text" v-model="tag" placeholder="예) #오피스룩"></textarea>
+                    </div>
+                </article>
+
+                <article>
+                    <div>
+                        <button class="Btn" style="margin-right: 5px;" @click="add">등록</button>
+                        <a href="listboard" class="Btn">이전</a>
                     </div>
                 </article>
             </section>
         </div>
-    </div>
-
-    <div>
-        <button style="margin-top: 5px;" @click="add">등록</button>
-        <a href="listboard"><button>뒤로</button></a>
-
     </div>
 </template>
   
@@ -48,7 +57,7 @@ export default {
         return {
             tag: '',
             files: [],
-            photos: [null, null, null],
+            photos: [],
             currentPhotoIndex: 0,
             memnum: sessionStorage.getItem('memnum')
         }
@@ -86,11 +95,12 @@ export default {
     }
 }
 </script>
-  
+
 <style scoped>
 body {
     margin: 0;
     padding: 0;
+    max-width: 80%;
 }
 
 #container {
@@ -103,7 +113,6 @@ body {
 .photo-box {
     display: flex;
     flex-direction: row;
-
 }
 
 .box-container {
@@ -124,35 +133,35 @@ textarea {
     margin-top: 10px;
 }
 
-/* .content-box2 {
-    margin-top: 10%;
-    margin-right: 50px;
-  } */
-.container {
-    /* display: flex; */
-    align-items: center;
-    max-width: 30%;
-}
-
-.circle {
+.box {
     width: 20px;
     height: 50px;
-    /* border-radius: 50%; */
-    background-color: rgb(228, 213, 213);
-    margin-right: 10px;
+    background-color: rgb(237, 245, 237);
+    margin-right: 2px;
     display: flex;
     flex-direction: column;
     cursor: pointer;
+    border: black solid 1px;
 }
 
 .active {
-    background-color: rgb(24, 186, 235);
+    background-color: rgb(3, 94, 45);
 }
 
 .addhr {
     width: 25%;
     margin-left: auto;
     margin-right: auto;
-    border: solid 5px #0d5e30;
+    border: solid 3px #0d5e30;
     ;
-}</style>
+}
+
+.Btn {
+    background-color: transparent;
+	border: none; 
+	color:#363433;
+	font-size: 1.2em;
+	font-weight: bold;
+    text-decoration: none;
+}
+</style>

@@ -111,28 +111,16 @@ public class OcommunityController {
 	// 게시글 전체목록 검색 (비 로그인 시)
 	@GetMapping("")
 	public Map getAll() {
-		ArrayList<OcommunityDto> list = allList();
+		ArrayList<OcommunityDto> list = allList();	
 		Map map = new HashMap<>();
+		for(OcommunityDto dto : list) {
+			dto.setBtnlike(likeservice.likeCount(dto.getCommnum()));
+		}
 		map.put("list", list);
 		return map;
 	}
 	
 	
-//	// 멤버로 검색
-//	@GetMapping("/memnum/{memnum}")
-//	public Map getByMemnum(@PathVariable("memnum") int memnum) {
-//		Map map = new HashMap<>();
-//		boolean flag = true;
-//		try {
-//			OcommunityDto dto = service.getByMemnum(memnum);
-//			map.put("dto", dto);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			flag = false;
-//		}
-//		map.put("flag", flag);
-//		return map;
-//	}
 
 	// 커뮤니티 게시글 이미지 추출하기
 	@GetMapping("/img/{commnum}/{index}")
@@ -194,6 +182,25 @@ public class OcommunityController {
 		return map;
 	}
 
+	// 멤버로 검색
+	@GetMapping("/members/{memnum}")
+	public Map getByMemnum(@PathVariable("memnum") int memnum) {
+		Map map = new HashMap<>();
+		boolean flag = true;
+		try {
+			ArrayList<OcommunityDto> list = service.getByMemnum(memnum);
+			for(OcommunityDto dto : list) {
+				dto.setBtnlike(likeservice.likeCount(dto.getCommnum()));
+			}
+			map.put("list", list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			flag = false;
+		}
+		map.put("flag", flag);
+		return map;
+	}
+	
 	// 게시글 태그 검색
 	@GetMapping("/tags/{tag}")
 	public Map getByTag(@PathVariable("tag") String tag) {
@@ -201,7 +208,6 @@ public class OcommunityController {
 		boolean flag = true;
 		try {
 			ArrayList<OcommunityDto> tags = service.getByTag(tag);
-			
 			map.put("tags", tags);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,20 +1,17 @@
 <template>
-	<!-- <span v-if="modalon=false">
-			<ReportForm @close="modalon = false" />
-		</span> -->
 
 	<!-- 게시글 등록~검색까지 -->
 	<div>
 		<div class="add">
 			<!-- 로그인 해야 게시글 등록 버튼 보임 -->
 			<a v-if="isLoggedIn" href="/addform"> <!--v-if="isLoggedIn" : 로그인한 아이디-->
-				<button type="button" class="btn btn-light">게시글 등록</button>
+				<button type="button" class="addBtn">게시글 등록</button>
 			</a>
 		</div>
 		<hr />
 		<div>
 			<p>
-				<input type="search" v-model="searchTag" placeholder="예) #오피스룩 #패피">
+				<input type="search" v-model="searchTag" placeholder="예) #오피스룩">
 				<button style="margin-left: 5px;" @click="search(searchTag)">검색</button>
 			</p>
 		</div>
@@ -22,29 +19,31 @@
 
 	<!-- 사진, 신고, 좋아요,삭제,북마크, 태그 포함할 전체 리스트 -->
 	<div>
-
 		<!-- 게시글 전체 리스트를 보여주는 for 함수 -->
 		<div v-for="(comm, i) in commlist" :key="i">
-
-			<!-- 아이디,닉네임(올린사람꺼) & 신고(다른사람꺼) & 삭제(자기꺼) -->
+			
+			<!--box1: 아이디,닉네임(올린사람꺼) & 신고(다른사람꺼) & 삭제(자기꺼) -->
 			<div id="box1">
-					<!--프로필 사진이랑 닉네임 가져와야함-->
-						<div class="item-1">
-							<!-- {{ comm.memnum.img }} -->
-							{{ comm.memnum.nickname }} 
-							<!-- 확인용 게시글 번호: {{ comm.commnum }}  -->
-						</div>
-						
+				<!-- 프사 & 닉네임-->
+				<div class="item-1">
+					<img style="margin-right: 8px; border-radius:50%; width: 30px; height: 30px;" :src="'http://localhost:8081/members/imgs/' + comm.memnum.memnum">
+					<a v-on:click="searchMember(comm.memnum.memnum)" style="cursor: pointer; font-size: 0.8em; font-weight: bold;">{{ comm.memnum.nickname }}</a>
+				</div>
+				
 						<div class="item-2">
 							<!--신고: 로그인이 되어야 보임(자기꺼 빼고) -->
 							<div v-if="isLoggedIn">
 								<div>
-									<button class="item-Btn" @click="modalOpen(comm.commnum)" v-if="memnum != comm.memnum.memnum">신고하기</button>
+									<button class="item-Btn" @click="modalOpen(comm.commnum)" v-if="memnum != comm.memnum.memnum">
+										<span class="material-symbols-outlined">sms_failed</span>
+									</button>
 								</div>
 							</div>
-							<!-- 삭제: 자기꺼만 -->
+							<!-- 삭제: 올린사람-->
 							<div>
-								<button class="item-Btn" v-if="memnum == comm.memnum.memnum" @click="delPost(comm.commnum)">삭제</button>
+								<button class="item-Btn" v-if="memnum == comm.memnum.memnum" @click="delPost(comm.commnum)">
+									<span class="material-symbols-outlined" style="color: lightslategray;">delete</span>
+								</button>
 							</div>
 						</div>
 			</div>
@@ -65,61 +64,77 @@
 			</div>
 			<!--box2 End-->
 
-			<!-- test -->
-
-			<!-- End test -->
-
+			<!-- box3 Button -->
 			<div id="box3">
-				<div class="markcontainer">
-					<span class="likeBtn"> <!--좋아요 버튼-->
-						<button class="markbtn" @click="pushLike(comm.commnum)">
-							<span class="material-symbols-outlined" :style="{'color' : comm.chklike ? 'red' : 'gray'}"> favorite</span></button>
-						</span>
-						<span>{{ comm.btnlike }}명이 좋아합니다.</span> <!-- {{ comm.chklike }} -->
-						</div>
-					<span class="bookBtn"> <!--북마크 버튼-->
-						<button class="markbtn" @click="bookcheck(comm.commnum)"><span class="material-symbols-outlined" :style="{'color' : comm.chkbookmark ? 'yellow' : 'gray'}">bookmark</span></button>
-					</span>
+					<div class="likeBtn"> <!--좋아요 버튼-->
+						<button class="markbtn1" @click="pushLike(comm.commnum)">
+							<span class="material-symbols-outlined" :style="{'color' : comm.chklike ? '#f15746' : 'lightslategray'}"> favorite</span>
+						</button>
+					</div>
+
+				<div class="likeCount">{{ comm.btnlike }}명이 좋아합니다.</div>
+
+					<div class="bookBtn"> <!--북마크 버튼-->
+						<button class="markbtn2" @click="bookcheck(comm.commnum)">
+							<span class="material-symbols-outlined" :style="{'color' : comm.chkbookmark ? 'black' : 'lightslategray'}">bookmark</span>
+						</button>
+					</div>
 			</div>				
-			
+			<!-- box3 End -->
+
+			<!-- box4 Tag -->
 			<div id="box4">
 				<div class="box4-item" v-for="tag in comm.tagList" :key="tag">
 					<div @click="search(tag)" @mouseover="cursorChange($event)"># {{ tag }}</div>  
 				</div>
 			</div>
+			<!-- box4 End -->
 			<br>
-
 		</div>
 	</div>
+	
 
-
+	<!-- 신고모달창 -->
 	<div class="modal-wrap" v-show="modalCheck" @click="modalClose" id="modalWrap">
 		<div class="modal-container" @click.stop="" id="container">
-			<button class="close-button" @click="modalClose">X</button>
-			<img src="@/assets/reporticon.png">
-			<br />
-			<label>
-				<input type="radio" v-model="reportContent" value="홍보성/도배성">
-				홍보성/도배성
-			</label>
-			<br />
-			<label>
-				<input type="radio" v-model="reportContent" value="스팸">
-				스팸
-			</label>
-			<br />
-			<label>
-				<input type="radio" v-model="reportContent" value="음란성">
-				음란성
-			</label>
-			<br />
-			<label>
-				<input type="radio" v-model="reportContent" value="기타">
-				기타
-			</label>
-			<br />
-			<button class="btn btn-light" @click="submitReport">신고하기</button>
-
+			<section>
+				<!-- 닫기버튼 -->
+				<article> 
+						<button class="close-button" @click="modalClose">
+							<span class="material-symbols-outlined">close</span>
+						</button>
+				</article>
+				<!-- 신고이모티콘 -->
+				<article>
+					<img src="@/assets/reporticon.png">
+				</article>
+				<!-- 신고내용 -->
+				<article class="report-content">
+					<label>
+						<input type="radio" v-model="reportContent" value="홍보성/도배성" id="radioChecked" checked>
+						홍보성/도배성
+					</label>
+					
+					<label>
+						<input type="radio" v-model="reportContent" value="스팸">
+						스팸
+					</label>
+					
+					<label>
+						<input type="radio" v-model="reportContent" value="음란성">
+						음란성
+					</label>
+					
+					<label>
+						<input type="radio" v-model="reportContent" value="기타">
+						기타
+					</label>
+				</article>
+				<!-- 신고하기버튼 -->
+				<div>
+					<button style="font-weight: bold;" class="subRep" @click="submitReport">신고하기</button>
+				</div>
+			</section>
 		</div>
 	</div>
 
@@ -199,7 +214,6 @@ export default {
 			if(self.searchTag == '' || self.searchTag == undefined){
 				this.getCommunityList();
 			}else{
-
 				self.$axios.get(`http://localhost:8081/ocommunity/tags/${self.searchTag}`)
 				.then(res =>{
 					if(res.status == 200){
@@ -210,24 +224,36 @@ export default {
 				})
 			}
 		},
+		//멤버
+		searchMember(memnum){
+			let self = this;
+				self.$axios.get('http://localhost:8081/ocommunity/members/' + memnum)
+				.then(res =>{
+					if(res.status == 200){
+						self.commlist = res.data.list;
+					}else{
+						alert("오류 띠")
+					}
+				})
+		},
 		// 신고 리스트 받는거
 		getReportList(method) {
 			const self = this;
 			self.$axios.get('http://localhost:8081/oreport')
-				.then(function (res) {
-					if (res.status == 200) {
-						self.reportlist = res.data.list;
-						console.log(res.data.list)
-						console.log("aaa:" + self.reportlist)
-						for (let dto of self.reportlist) {
-							console.log(dto)
-							self.reportedCommnums.push(dto.commnum.commnum);
-						}
-						console.log("reportlist : " + self.reportedCommnums)
-						method();
-					} else {
-						alert('에러코드: ' + res.status);
+			.then(function (res) {
+				if (res.status == 200) {
+					self.reportlist = res.data.list;
+					console.log(res.data.list)
+					console.log("aaa:" + self.reportlist)
+					for (let dto of self.reportlist) {
+						console.log(dto)
+						self.reportedCommnums.push(dto.commnum.commnum);
 					}
+					console.log("reportlist : " + self.reportedCommnums)
+					method();
+				} else {
+					alert('에러코드: ' + res.status);
+				}
 				})
 		},
 		// 신고 값 보내는거
@@ -242,7 +268,7 @@ export default {
 				formdata.append('commnum', self.reportCommnum);
 				formdata.append('category', self.reportContent);
 				self.$axios.post('http://localhost:8081/oreport', formdata)
-					.then(function (res) {
+				.then(function (res) {
 						if (res.status == 200) {
 							alert('신고가 완료되었습니다.')
 							location.reload();
@@ -256,6 +282,8 @@ export default {
 		},
 		// 신고 모달 띄우기
 		modalOpen(commnum) {
+			let selectedRadio = document.getElementById("radioChecked");
+			selectedRadio.checked = true;
 			const self = this;
 			self.reportCommnum = commnum;
 			self.modalCheck = !self.modalCheck;
@@ -265,6 +293,8 @@ export default {
 		modalClose() {
 			const self = this;
 			self.modalCheck = !self.modalCheck;
+			self.reportContent = document.querySelector("input[type=radio]:checked").value;
+			self.reportContent = '';
 		},
 		// 그냥 커서 바꾸는 함수.
 		cursorChange(e){
@@ -281,8 +311,6 @@ export default {
 			self.$axios.patch('http://localhost:8081/olikebtn',form)
 			.then(res =>{
 				if(res.status == 200){
-					alert(res.data.flag)
-					alert("성공")
 					window.location.reload();
 				}else{
 					alert(res.data.flag)
@@ -295,12 +323,10 @@ export default {
 			let form = new FormData();
 			form.append("commnum",commnum);
 			form.append("memnum",self.memnum);
-
+			
 			self.$axios.put('http://localhost:8081/obookmark',form)
 			.then(res => {
 				if(res.status == 200){
-					alert(res.data.flag);
-					alert('성공');
 					window.location.reload();
 				}else{
 					alert(res.data.flag);
@@ -311,7 +337,7 @@ export default {
 	}
 }
 </script>
-  
+
 <style scoped>  
 /* box1 */
 #box1 {
@@ -325,6 +351,8 @@ export default {
 .item-1 {
 	margin-block-start: auto;
 	margin-left: 10px;
+	margin-top: 6px;
+	margin-bottom: 6px;
 }
 
 .item-2 {
@@ -335,6 +363,8 @@ export default {
 	background-color:transparent;
 	border: none;
 	font-family: sans-serif;
+	margin-top: 5px;
+	color: #f15746;
 }
 
 /* box2(이미지) */
@@ -363,15 +393,25 @@ export default {
 	margin: auto;
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
+
 }
 
-.markcontainer{
-	display: flex;
+.likeCount {
+	margin-top: 5px;
 }
-.markbtn{
-	display: flex;
-	flex-direction: row;
+
+.bookBtn {
+	margin-left: 72%;
+}
+
+.markbtn1{
+	margin-top: 3px;
+	background-color: transparent;
+	border: none; 
+}
+
+.markbtn2{
+	margin-top: 3px;
 	background-color: transparent;
 	border: none; 
 }
@@ -386,10 +426,19 @@ export default {
 
 .box4-item {
 	margin-left: 10px;
+	margin-top: 12px;
+	margin-bottom: 12px;
 }
 /* 게시글 등록 */
 .add {
-	margin-left: 60%;
+	margin-left: 40%;
+}
+.addBtn {
+	background-color: transparent;
+	border: none; 
+	color:#363433;
+	font-size: 1em;
+	font-weight: bold;
 }
 
 hr {
@@ -415,8 +464,8 @@ hr {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 800px;
-	height: 80%;
+	width: 400px;
+	height: 45%;
 	background: #fff;
 	border-radius: 10px;
 	padding: 20px;
@@ -425,17 +474,25 @@ hr {
 
 .close-button {
 	position: absolute;
-	right: 60px;
-	top: 50px;
+	top: 10px;
+	right: 20px;
 	background-color: transparent;
 	border: none;
 }
 
-
-
-
-
-
+.report-content {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	margin-left: 30%;
+	margin-top: 3%;
+}
+.subRep{
+	margin-top: 8%;
+	background-color: transparent;
+	border: none;
+	color: #f15746
+}
 
 </style>
   
