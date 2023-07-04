@@ -204,4 +204,10 @@ public class ObattleService {
 		// true 신청 가능, false 이미 신청해서 신청 불가능.
 		return list.isEmpty();
 	}
+	
+	// 멤버넘버로 우승뽑기.
+	public ArrayList<ObattleDto> memWinList(int memnum) {
+		ArrayList<Obattle> list = (ArrayList<Obattle>)dao.memWinList(memnum);
+		return changeList(list);
+	}
 }

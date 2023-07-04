@@ -1,6 +1,7 @@
 <template>
   <div>
-    이번주의 주제는 {{ theme }}
+    이번주의<br>
+     주제는 {{ theme }}
   </div>
   <input type="text" v-model="theme">
   <input type="button" value="변경 하기" @click="changeTheme">
@@ -9,7 +10,7 @@
 
 <script>
 export default{
-  name:'ChangeTheme',
+  name:'changeTheme',
   data(){
     return{
       theme : null

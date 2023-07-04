@@ -80,4 +80,10 @@ public interface ObattleDao extends JpaRepository<Obattle, Integer>{
 	@Query(value = "select * from obattle where winners = 0 and memnum = :memnum", nativeQuery = true)
 	List<Obattle> chkApply(@Param(value = "memnum") int memnum);
 	
+	
+	// member별 리스트 뽑기
+	@Transactional
+	@Query(value = "select * from obattle where winners = 1 and memnum = :memnum", nativeQuery = true)
+	List<Obattle> memWinList(@Param(value = "memnum") int memnum);
+	
 }

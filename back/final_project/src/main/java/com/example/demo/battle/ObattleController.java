@@ -287,6 +287,22 @@ public class ObattleController {
 		map.put("flag", flag);
 		return map;
 	}
+
+	// 멤버별 우승 리스트 뽑기.
+	@GetMapping("/winnerlist/{memnum}")
+	public Map winnerList(@PathVariable("memnum") int memnum) {
+		Map map = new HashMap<>();
+		boolean flag = true;
+		try {
+			ArrayList<ObattleDto> list = service.memWinList(memnum);
+			map.put("list", list);
+		}catch(Exception e) {
+			e.printStackTrace();
+			flag = false;
+		}
+		map.put("flag", flag);
+		return map;
+	}
 	
 	// wincount 세기
 	@GetMapping("/winCount/{memnum}")
