@@ -3,11 +3,14 @@ package com.example.demo.community;
 import java.util.ArrayList;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.member.Omember;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface OcommunityDao extends JpaRepository<Ocommunity, Integer> {
@@ -16,7 +19,10 @@ public interface OcommunityDao extends JpaRepository<Ocommunity, Integer> {
 	ArrayList<Ocommunity> findTop10ByOrderByBtnlikeDesc();
 	
 	//Omember - memnum으로 검색
-	//ArrayList<Ocommunity> findByMemnum(Omember memnum);
+	@Transactional
+	@Modifying
+	@Query(value="select * from ocommunity where memnum=:memnum", nativeQuery = true )
+	ArrayList<Ocommunity> findByMemnum(int memnum);
 	
 	//태그별 검색
 	ArrayList<Ocommunity> findByTagLike(String tag);
