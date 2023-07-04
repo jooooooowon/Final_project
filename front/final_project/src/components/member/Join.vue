@@ -34,13 +34,13 @@
         <!-- 이메일 입력 폼 -->
         <div class="form_group">
             <label for="email" :class="{'input_label': !hasEmailError, 'input_label_error': hasEmailError}">Email*</label>
-            <input type="text" v-model="emailId" placeholder="예) intheham@tistory.com" :class="{'input_field': !hasEmailError, 'input_field_error': hasEmailError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateEmail($event)">
+            <input type="text" id="email" v-model="emailId" placeholder="예) intheham@tistory.com" :class="{'input_field': !hasEmailError, 'input_field_error': hasEmailError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateEmail($event)">
 
         <!-- 이메일 유효성검사 메시지  -->
         <p class="input_error" v-if="hasEmailError">이메일 주소를 정확히 입력해주세요.</p>
 
         <!-- 이메일 인증 버튼 -->
-            <button v-on:click="authEmail" id="authEmail">인증번호 받기(수정예정)</button><br/>
+            <button v-on:click="authEmail" id="authEmail" class="authEmail">인증하기</button><br/>
         </div>
 
         <!-- email: <input type="text" v-model="emailId">
@@ -53,28 +53,34 @@
 
         
         <!-- 인증확인 -->
-        인증번호(수정예정): <input type="text" v-model="authKey" id="authKey" disabled>
-        <input type="text" v-model="compKey" style="display: none;"> <!-- 서버사이드에서 받은 인증키 비교 위해 저장해놓을 더미용 -->
-        <button v-on:click="checkKey" disabled id="checkKey">인증번호 확인</button>
+        <div class="form_group">
+            <label for="authKey" class="input_lable">인증번호*</label>
+            <input type="text" v-model="authKey" id="authKey" class="input_field" disabled>
+            <input type="text" v-model="compKey" style="display: none;"> <!-- 서버사이드에서 받은 인증키 비교 위해 저장해놓을 더미용 -->
 
-        <!-- 인증번호 받기 누르면 시작되는 타이머 -->
-        <div id="timer">
-            <span id="displayedTime" style="color:lightgray">3분0초</span>
-        </div><br/>
+            <!-- 인증번호 받기 누르면 시작되는 타이머 -->
+            <div id="timer" style="display: flex; justify-content: spcae-between; align-items: center;">
+                <span id="displayedTime" style="text-align: center; margin: 0 auto; color:lightgray">3분0초</span>
+                <button v-on:click="checkKey" id="checkKey" class="checkKey_disabled" v-if="compKey==''" disabled>인증번호 확인</button>
+                <button v-on:click="checkKey" id="checkKey" class="checkKey" v-else>인증번호 확인</button>
+            </div>
+        </div>
 
         <!-- 성별 -->
         <div class="form_group">
             <label for="gender" :class="{'input_label': gender}">성별*</label>
             <select v-model="gender" placeholder="선택하세요" class="input_field">
-                <option value="male">남성</option>
+                <option value="male" >남성</option>
                 <option value="female">여성</option>
             </select>
         </div>
 
         <!-- 닉네임 입력폼 -->
         <div class="form_group">
-            <label for="nickname" :class="{'input_label': nickname}">닉네임*</label>
-            <input type="text" v-model="nickname" placeholder="닉네임" class="input_field">
+            <label for="nickname" :class="{'input_label': !hasNicknameError, 'input_label_error': hasNicknameError}">닉네임*</label>
+            <input type="text" id="nickname" v-model="nickname" placeholder="닉네임" :class="{'input_field': !hasNicknameError, 'input_field_error': hasNicknameError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateNickname($event)">
+
+            <p class="input_error" v-if="hasNicknameError">3~8자로 입력해주세요.</p>
         </div>
 
         <!-- 이미지 선택 -->
@@ -111,6 +117,7 @@ export default{
             hasIdError:false,
             hasPwdError:false,
             hasEmailError:false,
+            hasNicknameError:false,
         }
     },
 
@@ -228,6 +235,14 @@ export default{
             this.enabledState();
         },
 
+        //닉네임 정규식
+        validateNickname(event){
+            const nickname = event.target.value
+            const pattern = /^(?!\s)(?!.*\s$)(?!.*[!@#$%^&*(),.?":{}|<>])[^\s]{3,8}$/
+            this.hasNicknameError = !pattern.test(nickname);
+            this.enabledState();
+        },
+
         enabledState(){
             if(this.hasIdError || this.hasPwdError){
                 this.isEnabled = false;
@@ -304,46 +319,19 @@ export default{
         rPlaceholder(event){
             const inputField = event.target;
             const label = inputField.previousElementSibling;
-            if(!inputField.value || !label){
-                return;
-            }
-            label.classList.remove('active');
-            if(inputField.id === 'id'){
-                inputField.placeholder = 'ID';
-            }else if(inputField.id === 'pwd'){
-                inputField.placeholder = 'Password';
+            if(!inputField.value){
+                label.classList.remove('active');
+                if(inputField.id === 'id'){
+                    inputField.placeholder = 'ID';
+                }else if(inputField.id === 'pwd'){
+                    inputField.placeholder = 'Password';
+                }else if(inputField.id === 'email'){
+                    inputField.placeholder = '예) intheham@tistory.com';
+                }else if(inputField.id === 'nickname'){
+                    inputField.placeholder = '닉네임';
+                }
             }
         }
-        
-
-        //로그인, 패스워드 폼 포커스시
-        // cPlaceholder(event){
-        //     const inputField = event.target;
-        //     const label = inputField.previousElementSibling;
-        //     if(!inputField.value || label){
-        //         return;
-        //     }
-        //     label.classList.add('active');
-        //     if(inputField.id === 'id'){
-        //         inputField.placeholder = 'ID';
-        //     }else if(inputField.id === 'pwd'){
-        //         inputField.placeholder = 'Password';
-        //     }
-        // },
-
-        // rPlaceholder(event){
-        //     const inputField = event.target;
-        //     const label = inputField.previousElementSibling;
-        //     if(!inputField.value || label){
-        //         return;
-        //     }
-        //     label.classList.remove('active');
-        //     if(inputField.id === 'id'){
-        //         inputField.placeholder = 'ID';
-        //     }else if(inputField.id === 'pwd'){
-        //         inputField.placeholder = 'Password';
-        //     }
-        // }
     }
 }
 </script>
@@ -361,10 +349,17 @@ export default{
     margin: 0 auto;
 }
 
+/* 사용가능한 아이디입니다 */
+.input_idcheck{
+    display: block;
+    color:#000;
+    margin-top: 5px;
+    font-size: 13px;
+}
 /* 회원가입 */
 .join_title{
     display: flex;
-    padding: 24px 0 23px 23px;
+    padding: 24px 0 23px 0;
     padding-bottom: 46px;
     text-align: center;
     font-size: 28px;
@@ -409,6 +404,45 @@ label{
 
 .input_field:focus{
     border-bottom: 2px solid #000000;
+}
+
+/* 이메일인증 버튼 */
+.authEmail{
+    display: flex;
+    border: none;
+    background: none;
+    text-decoration: underline;
+    cursor: pointer;
+    color: #000;
+    font-weight: bolder;
+    font-size: 13px;
+    text-align: right;
+    margin-left: auto;
+}
+
+/* 이메일인증 확인버튼 */
+.checkKey{
+    display: flex;
+    justify-content: flex-end;
+    border: none;
+    background: none;
+    text-decoration: underline;
+    color: #000000;
+    font-weight: bolder;
+    font-size: 13px;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+.checkKey_disabled{
+    display: none;
+}
+
+/* 타이머 */
+#timer{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* 유효성 검사 메시지 */

@@ -1,10 +1,31 @@
 <template>
-    <h3>아이디찾기(주의! 아이디3자리 이상 아닐 경우 에러나옴)</h3>
-    <h4>가입시 등록한 이메일 입력하면 해당 아이디를 알려드립니다.</h4>
-    <input type="text" v-model="email" placeholder="가입하신 이메일">
-    <button v-on:click="find">아이디 찾기</button><br/>
-    {{ idMasked }}<br/>
-    <a href="../FindPwd" v-if="idMasked">비밀번호찾기</a>
+    <div class="content">
+        <div class="help_area">
+            <div class="title">
+                <h2>아이디 찾기</h2>
+            </div>
+
+            <div class="notice">
+                <p>가입 시 등록한 이메일을 입력하면</p>
+                <p>아이디 일부를 알려드립니다.</p>
+            </div>
+            <div class="input_box">
+                <div class="input_title">
+                    <p>이메일</p>
+                </div>
+                <input type="text" v-model="email" placeholder="가입하신 이메일" class="input_field"><br/>
+            </div>
+
+            {{ idMasked }}<br/>
+            <a href="../FindPwd" v-if="idMasked">비밀번호찾기</a>
+
+            <div class="btn_box">
+                <button v-on:click="find" class="btn">아이디 찾기</button>
+                <!-- <button v-on:click="find" class="btn_disabled">아이디 찾기</button> -->
+            </div>
+            
+        </div>
+    </div>
 </template>
 
 <script>
@@ -42,5 +63,75 @@ export default{
 </script>
 
 <style scoped>
+.content{
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1280px;
+}
 
+.help_area{
+    margin: 0 auto;
+    padding: 60px 0 160px;
+    width:400px;
+}
+
+.title{
+    font-size: 32px;
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+    padding-bottom: 40px;
+}
+
+.notice{
+    font-size: 14px;
+    padding: 40px 0 30px;
+    text-align: left;
+    letter-spacing: -.21px;
+    line-height: 18px;
+}
+
+.input_box{
+    position: relative;
+    padding: 10px 0 14px;
+}
+
+.input_title{
+    font-size: 14px;
+    font-weight: bold;
+    text-align: left;
+    line-height: 18px;
+}
+
+.input_field{
+    border: none;
+    border-bottom: 1px solid #ebebeb;
+    width: 100%;
+    padding: 8px 0;
+    font-size: 15px;
+}
+
+.btn_box{
+    padding-top: 40px;
+}
+.btn{
+    border: none;
+    background: #000;
+    width: 100%;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    height: 52px;
+    border-radius: 12px;
+}
+
+.btn_disabled{
+    border: none;
+    background: #ebebeb;
+    width: 100%;
+    color:#fff;
+    font-size: 16px;
+    font-weight: bold;
+    height: 52px;
+    border-radius: 12px;
+}
 </style>

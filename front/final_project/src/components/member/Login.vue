@@ -270,10 +270,12 @@ button {
     display: block;
     width: 100%;
     padding: 10px;
+    height: 52px;
     border: none;
     border-radius: 12px;
     background-color: #000000;
     color: #ebebeb;
+    font-size: 16px;
     font-weight: bold;
 }
 

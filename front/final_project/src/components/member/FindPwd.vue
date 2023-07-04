@@ -1,10 +1,18 @@
 <template>
-<h2>비밀번호 찾기</h2>
-<h3>ID</h3>
-<input type="text" v-model="id" placeholder="가입하신 아이디"><br/>
-<h3>이메일 주소</h3>
-<input type="text" v-model="email" placeholder="예) intheham@tistory.com"><br/>
-<button v-on:click="find">인증번호 발송하기</button>
+    <div class="content">
+        <div class="help_area">
+            <div class="title">
+                <h2>비밀번호 찾기</h2>
+            </div>
+
+ 
+            <h3>ID</h3>
+            <input type="text" v-model="id" placeholder="가입하신 아이디"><br/>
+            <h3>이메일 주소</h3>
+            <input type="text" v-model="email" placeholder="예) intheham@tistory.com"><br/>
+            <button v-on:click="find">인증번호 발송하기</button>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -50,4 +58,24 @@ export default{
 </script>
 
 <style scoped>
+.content{
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1280px;
+}
+
+.help_area{
+    margin: 0 auto;
+    padding: 60px 0 160px;
+    width: 400px;
+}
+
+.title{
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: -1.48px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 40px;
+}
 </style>
