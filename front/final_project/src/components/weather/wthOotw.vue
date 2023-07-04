@@ -1,7 +1,7 @@
 <template>
     <div>
         {{ message }}
-        
+
         <div v-if="showRecom">
             <p v-if="t1 === 28">{{ t1 }}℃ 이상일 때 입었던 옷 기록들</p>
             <p v-if="t1 !== 28 && t2 !== 4">{{ t1 }}℃ ~ {{ t2 }}℃일 때 입었던 옷 기록들</p>
@@ -183,6 +183,7 @@ export default {
         modalOpen(ootwnum) {
             const self = this;
             self.ootwnum = ootwnum;
+            self.clothnum = [];
             self.modalCheck = !this.modalCheck;
             self.$axios.get('http://localhost:8081/boards/' + ootwnum)
                 .then(function (res) {
@@ -253,6 +254,9 @@ export default {
 }
 
 .card {
+    /* z-index 속성은 position 속성이 relative, absolute, fixed로 설정된 요소에만 적용됩니다. */
+    position: relative; /* 부모 요소를 기준으로 z-index를 설정하기 위해 position 값을 설정합니다. */
+    z-index: 1; /* 카드의 쌓임 순서를 낮게 설정합니다. */
     flex-basis: 20%;
     background-color: #fff;
     border-radius: 10px;
@@ -278,6 +282,7 @@ export default {
 
 /* dimmed */
 .modal-wrap {
+    z-index: 999; /* 모달의 배경을 카드보다 상위로 올립니다. */
     position: fixed;
     left: 0;
     top: 0;
@@ -289,6 +294,7 @@ export default {
 
 /* modal or popup */
 .modal-container {
+    z-index: 9999; /* 모달창을 다른 요소들보다 상위로 올림 */
     overflow: auto;
     position: relative;
     top: 50%;

@@ -1,15 +1,15 @@
 <template>
   <div class="background">
     <div>
-      <h3>{{ realDate }}</h3>
+      <h4>{{ realDate }}</h4>
       <div>
-        {{ address }}<br />
+        {{ address }}<br /><br/><br/>
         <div style="display: flex; justify-content: center; align-items: center;">
           <div style="display: flex; align-items: center;">
-            <img class="iconImg" :src="getIcon(nowSky)">
-            <div v-if="nowPop !== '0%'">
+            <img class="iconImg" :src="getIcon(nowSky)"> <br />
+            <!-- <div v-if="nowPop !== '0%'">
               {{ nowPop }}
-            </div>
+            </div> -->
           </div>
           <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
             <div style="text-align: center;">
@@ -27,11 +27,15 @@
           <table>
             <tr>
               <td v-for="eachTime in everyTime" :key="eachTime.fcstTime">
-                {{ eachTime.fcstTime }}<br />
-                <img :src="getIcon(eachTime.sky)"><br />
-                <!-- {{ eachTime.sky }}<br /> -->
-                {{ eachTime.pop }}<br />
-                {{ eachTime.tmp }}
+                <div class="wInfo"><span class="time">{{ eachTime.fcstTime }}</span></div>
+                <div class="wInfoTwo" v-if="eachTime.pop !== ''">
+                  <img :src="getIcon(eachTime.sky)"><br />
+                  <span class="pop">{{ eachTime.pop }}</span><br />
+                </div>
+                <div class="wInfoOne" v-else>
+                  <img :src="getIcon(eachTime.sky)"><br />
+                </div>
+                <div class="wInfo">{{ eachTime.tmp }}</div>
               </td>
             </tr>
           </table>
@@ -39,13 +43,15 @@
       </div>
 
       <!-- 옷 추천~~ -->
-      <h3>기온별 옷차림</h3>
+      <hr/>
       <div>
+        <h3>기온별 옷차림</h3>
         <closet></closet>
       </div>
+      <hr />
 
-      <h3>OOTW</h3>
       <div>
+        <h3>Outfit Of The Weather</h3>
         <ootw></ootw>
       </div>
 
@@ -357,10 +363,10 @@ export default {
 
 
               // 날씨 배열에 끼워넣을 일출일몰 객체 
-              const todaySunriseObject = { fcstDate: this.today, fcstTime: this.today_sunrise, sky: 200, pty: '', pop: '', tmp: 'sunrise' };
-              const todaySunsetObject = { fcstDate: this.today, fcstTime: this.today_sunset, sky: 100, pty: '', pop: '', tmp: 'sunset' };
-              const tomorrowSunriseObject = { fcstDate: this.tomorrow, fcstTime: this.tomorrow_sunrise, sky: 200, pty: '', pop: '', tmp: 'sunrise' };
-              const tomorrowSunsetObject = { fcstDate: this.tomorrow, fcstTime: this.tomorrow_sunset, sky: 100, pty: '', pop: '', tmp: 'sunset' };
+              const todaySunriseObject = { fcstDate: this.today, fcstTime: this.today_sunrise, sky: 200, pty: '', pop: '', tmp: 'Sunrise' };
+              const todaySunsetObject = { fcstDate: this.today, fcstTime: this.today_sunset, sky: 100, pty: '', pop: '', tmp: 'Sunset' };
+              const tomorrowSunriseObject = { fcstDate: this.tomorrow, fcstTime: this.tomorrow_sunrise, sky: 200, pty: '', pop: '', tmp: 'Sunrise' };
+              const tomorrowSunsetObject = { fcstDate: this.tomorrow, fcstTime: this.tomorrow_sunset, sky: 100, pty: '', pop: '', tmp: 'Sunset' };
 
               // 조건별로 일출일몰 객체 다르게 끼워넣기~
               // (1) now = 0000 ~ 일출
@@ -588,9 +594,9 @@ export default {
   /* 낮 눈 */
   /* background-image: linear-gradient(white, #b5c8cd, #89b0bf); */
   /* 낮 비 */
-  /* background-image: linear-gradient(white, #9fb1c5, #1c3f43); */
+  background-image: linear-gradient(white, #9fb1c5, #1c3f43);
   /* 낮 맑음 */
-  background-image: linear-gradient(white, #ffcc66, #4dc4ff); 
+  /* background-image: linear-gradient(white, #ffcc66, #4dc4ff);  */
 }
 
 .allWeather {
@@ -599,9 +605,9 @@ export default {
   /* color: white; */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   background: transparent;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.6);
   border-radius: 10px;
-  /* padding: 20px; */
+  padding: 20px;
   /* 가로 스크롤 */
   overflow: auto;
   white-space: nowrap;
@@ -635,8 +641,38 @@ export default {
 }
 
 .inside {
-  padding: 20px;
+  /* padding: 20px; */
   display: inline-block;
+}
+
+.wInfo {
+  padding-top: 10px;
+  padding-bottom: 0px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.wInfoOne {
+  padding-top: 24px;
+  padding-bottom: 8px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.wInfoTwo {
+  padding-top: 8px;
+  padding-bottom: 0px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.pop {
+  font-size: 12px;
+  color: blue;
+}
+
+.time {
+  font-size: 14px;
 }
 
 .iconImg {
@@ -656,10 +692,21 @@ export default {
 }
 
 
-
+hr {
+  margin-top: 180px; 
+  margin-left: auto;
+  margin-right: auto;
+  width:500px; 
+  height:5px; 
+  border:0px; 
+  background: linear-gradient(to left, transparent, #fff, transparent);
+}
 
 h3 {
-  margin: 40px 0 0;
+  margin-top: 100px; 
+  margin-bottom: 50px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 
@@ -671,25 +718,5 @@ table {
 td {
   margin-left: 5px;
   margin-right: 5px
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-  /* margin-left: 27%; */
-  cursor: pointer;
-}
-
-li {
-  /* display: inline-block; */
-  /* margin: 0 10px; */
-  list-style: none;
-  /* float: left; */
-  /* margin-right: 80px; */
-  cursor: pointer;
-}
-
-.follow {
-  clear: left;
 }
 </style>
