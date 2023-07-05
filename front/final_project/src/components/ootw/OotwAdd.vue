@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="body-css">
         <h3>Ootw 게시글 등록하기</h3>
         <!-- 옷장에서 옷 꺼내서 이미지 저장시키기 버튼-->
         <label for="addLabel1">
@@ -35,7 +35,7 @@
     <div class="modal-wrap" v-show="modalCheck" @click="modalClose" id="modalWrap">
         <div class="modal-container" @click.stop="" id="container">
             <div id="up"></div>
-            <b-button href="#down">Go down</b-button>
+            <button href="#down">Go down</button>
             <div>
                 <ul v-for="(maintag, index) in maintags" v-bind:value="maintag" v-bind:key="maintag">
                     <li v-on:mouseover="selectsub(index)" v-on:click="getall(index)">{{ maintag }}</li>
@@ -53,12 +53,12 @@
                         {{ closet.cloth }}<br />
                         {{ closet.maintag }}<br />
                         {{ closet.subtag }}<br />
-                        <b-button v-on:click="addCloth(closet.closetnum)">추가</b-button>
+                        <button v-on:click="addCloth(closet.closetnum)">추가</button>
                     </div>
                 </div>
                 <br />
-                <b-button @click="modalClose">취소</b-button>
-                <div id="down"><br /></div><b-button href="#up">Go up</b-button>
+                <button @click="modalClose">취소</button>
+                <div id="down"><br /></div><button href="#up">Go up</button>
             </div>
         </div>
     </div>
@@ -245,6 +245,12 @@ export default {
 </script>
 
 <style scoped>
+.body-css {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
 h3 {
     margin: 40px 0 0;
 }

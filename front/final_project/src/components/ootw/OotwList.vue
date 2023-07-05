@@ -1,44 +1,74 @@
 <template>
-    <div>
-        <router-link to="/ootwadd">Ootw 등록</router-link><br />
-        <h3>Outfit Of the Weather</h3>
-        <input type="date" v-model="date1" id="date1"> ~ <input type="date" v-model="date2" id="date2">
-        <button v-on:click="searchByDate">검색</button>
-        <table border="1" v-show="memnum == checkMemnum">
-            <tr>
-                <th>Ootw num</th>
-                <th>날짜</th>
-                <th>Comment</th>
-                <th>기온</th>
-                <th>날씨</th>
-            </tr>
-            <tr v-for="ootw in displayedootw" :key="ootw.ootwnum">
-                <td>{{ ootw.ootwnum }}</td>
-                <td>{{ ootw.odate }}</td>
-                <td><a v-on:click="detail(ootw.ootwnum)">{{ ootw.comments }}</a></td>
-                <td>{{ ootw.temp }}</td>
-                <td>{{ ootw.weather }}</td>
-            </tr>
-        </table>
-        <button v-on:click="moreBtn">더보기</button>
+    <div class="body-css">
+        <div ref="stickyPoint">
+            <div class="board-search" :class="{ sticky: isSticky }">
+                <ul style="list-style-type: none;">
+                    <li style="border:1px solid lightgray; width:360px; height:70px;">
+                        날짜 검색<br />
+                        <input type="date" v-model="date1" id="date1">
+                        ~ <input type="date" v-model="date2" id="date2">&nbsp;&nbsp;<button
+                            v-on:click="searchByDate">검색</button>
+                    </li>
+                    <li style="border:1px solid lightgray; width:360px; height:70px">
+                        기온 검색<br />
+                        <input type="number" v-model="temp1" id="temp1" style="width:130px;">
+                        ~ <input type="number" v-model="temp2" id="temp2" style="width:130px;">
+                        &nbsp;<button v-on:click="a">검색</button>
+                    </li>
+                    <li style="border:1px solid lightgray; width:360px; height:70px">
+                        내용 검색<br />
+                        <input type="text" v-model="comments" id="comments" style="width:277px;">
+                        &nbsp;<button v-on:click="b">검색</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="board-list">
+            <span class="board-title">Outfit Of the Weather</span>
+            <a href="/ootwadd">게시글 작성</a>
+            <table v-show="memnum == checkMemnum" style="border:1px solid lightgray">
+                <tr style="border:1px solid lightgray">
+                    <th>날짜</th>
+                    <th>Comment</th>
+                    <th>날씨</th>
+                    <th>기온</th>
+                </tr>
+                <tr v-for="(ootw, index) in displayedootw" :key="ootw.ootwnum">
+                    <td>{{ datelist[index] }}</td>
+                    <td><a v-on:click="detail(ootw.ootwnum)">{{ ootw.comments }}</a></td>
+                    <td>{{ ootw.weather }}</td>
+                    <td>{{ ootw.temp }}</td>
+                </tr>
+            </table>
+            <button v-on:click="moreBtn">더보기</button>
+        </div>
     </div>
 </template>
 
 <script>
+
 export default {
     name: 'OotwList',
     data() {
         return {
             ootwlist: [],
             displayedootw: [],
-            ootwPerPage: 20,
+            datelist: [],
+            ootwPerPage: 3,
             currentPage: 1,
             weather: '',
             date1: '',
             date2: '',
             memnum: sessionStorage.getItem('memnum'),
-            checkMemnum: ''
+            checkMemnum: '',
+            // 검색창
+            isSticky: false
         }
+    },
+    mounted() {
+        window.addEventListener('scroll', this.stickyScroll);
+        this.stickyScroll(); // 컴포넌트 마운트될 때 메서드 초기 호출하여 초기상태 설정
     },
     created: function () {
         const self = this;
@@ -47,8 +77,21 @@ export default {
             .then(function (res) {
                 if (res.status == 200) {
                     self.ootwlist = res.data.list;
-                    if(self.ootwlist != ''){
+                    if (self.ootwlist != '') {
                         self.checkMemnum = self.ootwlist[0].memnum.memnum;
+                        for (let i = 0; i < self.ootwlist.length; i++) {
+                            var year = self.ootwlist[i].odate.substring(0, 4);
+                            var month = self.ootwlist[i].odate.substring(5, 7);
+                            var StringDay = self.ootwlist[i].odate.substring(8, 10);
+                            var day = '';
+                            if(month == 2 || month == 4 || month ==  6 || month ==  9 || month ==  11){
+                                day = StringDay;
+                            } else {
+                                day = parseInt(StringDay) + 1;
+                            }
+                            var date = year + "년 " + month + "월 " + day + "일";
+                            self.datelist[i] = date;
+                        }
                     }
                     self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
                 } else {
@@ -57,6 +100,25 @@ export default {
             })
     },
     methods: {
+        stickyScroll() {
+            const stickyPoint = this.$refs.stickyPoint;
+            if (!stickyPoint) {
+                return; // stickyPoint가 정의되지 않은 경우 종료
+            } else {
+                const menuOffsetTop = stickyPoint.offsetTop;
+                if (window.pageYOffset > menuOffsetTop) {
+                    this.isSticky = true;
+                    // this.$nextTick(() => {
+                    stickyPoint.style.top = '10px'; // 원하는 간격으로 조정
+                    // });
+                } else {
+                    this.isSticky = false;
+                    // this.$nextTick(() => {
+                    // stickyPoint.style.top = '-30px'; // 초기 위치로 설정
+                    // });
+                }
+            }
+        },
         moreBtn() {
             const self = this;
             const startIndex = self.currentPage * self.ootwPerPage;
@@ -74,10 +136,10 @@ export default {
                 alert('날짜 범위를 다시 정해주세요.')
             } else {
                 self.$axios.get('http://localhost:7878/boards/dates/' + self.date1 + "/" + self.date2)
-                .then(function (res) {
-                    if (res.status == 200) {
-                        if(res.data.list != '') {
-                                location.reload();
+                    .then(function (res) {
+                        location.reload();
+                        if (res.status == 200) {
+                            if (res.data.list != '') {
                                 self.ootwlist = res.data.list;
                                 self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
                             } else {
@@ -94,8 +156,41 @@ export default {
 </script>
 
 <style scoped>
-h3 {
-    margin: 40px 0 0;
+.body-css {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
+
+.board-search {
+    position: absolute;
+    top: 186px;
+    left: 40px;
+    width: 14%;
+    z-index: 1;
+}
+
+.board-search.sticky {
+    position: fixed;
+    top: 10px;
+    transition: top 1s ease;
+}
+
+.board-list {
+    margin-top: 100px;
+    margin-bottom: 10px;
+}
+
+.board-list span {
+    margin-right: 180px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.board-list a {
+    text-decoration: none;
+    text-decoration-color: black;
 }
 
 table {

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="body-css">
         <h3> 나 뭐 입었더라?</h3>
         <span v-for="src in clothnum" :key="src">
             <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + src" alt="sdf">
@@ -10,7 +10,7 @@
         기온: <input type="text" v-model="temp" readonly><br /><br />
         이 날의 커멘트<br />
         <textarea v-model="comments" cols="30" rows="5" style="resize:none" maxlength="100" readonly></textarea><br />
-        <b-button v-on:click="deleteOootw(ootwnum)">삭제</b-button>
+        <button v-on:click="deleteOootw(ootwnum)">삭제</button>
     </div>
 </template>
 
@@ -69,6 +69,12 @@ export default {
 </script>
 
 <style scoped>
+.body-css {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
 h3 {
     margin: 40px 0 0;
 }

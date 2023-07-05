@@ -1,11 +1,12 @@
 <template>
-    <div id="up"></div>
-    <!-- <h3>옷장 전체리스트</h3> -->
-    <div>
-        <input class="search" type="search" v-model="cloth" size="30" style="height: 35px; text-align: center;" placeholder="옷 검색하기">
-        <span class="searchBtn"><b-button v-on:click="clothserach" style="width:65px; height:35px; background-color:  rgba(0, 0, 0, 0.7);">검색</b-button></span>
-        <div class="addCloth">
-            <b-button v-on:click="modalOpenAdd" style="width:150px; height:38px;" class="addBtn">내옷 등록하기</b-button>
+    <div class="body-css">
+        <div class="search">
+            <input type="text" v-model="cloth" size="30" style="height: 30px; text-align: center; border-color: lightgray;"
+                placeholder="옷 검색하기" onfocus="this.placeholder=''" onblur="this.placeholder='옷 검색하기'">
+            <span class="searchBtn"><button v-on:click="clothserach">검색</button></span>
+            <div class="addCloth">
+                <button v-on:click="modalOpenAdd" style="width:130px; height:38px;" class="addBtn">내옷 등록하기</button>
+            </div>
         </div>
 
         <!-- 옷장에 옷 등록하기 모달창 -->
@@ -22,7 +23,7 @@
                                     style="width:382px; height:382px; cursor: pointer;">
                             </span>
                             <span v-if="addThumbnailfile == ''">
-                                <img class="modal-img-add" id="addthumbimg" src="../../assets/imageadd.png"
+                                <img class="modal-img-add" id="addthumbimg" src="../../assets/dnd.png"
                                     style="width:382px; height:382px; cursor: pointer;">
                             </span>
                         </label>
@@ -44,48 +45,50 @@
                     내옷 별명
                     <input type="text" v-model="clothname" size="16" style="height:25px"><br />
                     <div class="cloth-add-button-container">
-                        <b-button v-on:click="addcloset">옷 등록하기</b-button> |
-                        <b-button v-on:click="modalCloseAdd">취소</b-button>
+                        <!-- 등록하기 버튼 -->
+                        <button v-on:click="addcloset">등록</button> |
+                        <button v-on:click="modalCloseAdd">취소</button>
                     </div>
                 </div>
                 <!-- 다음 버튼 -->
                 <div class="next-button-container" v-if="addThumbnailfile && !isExpanded">
-                    <b-button class="next-button" @click="expandModal">다음</b-button>
+                    <button class="next-button" @click="expandModal">다음</button>
                 </div>
                 <!-- 이전 버튼 -->
                 <div class="before-button-container" v-if="addThumbnailfile && isExpanded">
-                    <b-button class="reduce-button" @click="reduceModal">이전</b-button>
-                </div>x
-                <!-- 등록하기 버튼 -->
+                    <button class="reduce-button" @click="reduceModal">이전</button>
+                </div>
 
             </div>
         </div>
 
         <!-- 옷장 좌측 메뉴바 -->
-        <div class="menu-wrapper" id="menu-wrapper">
-            <div class="menu-bar">
-                <div v-for="(item, index) in menuItems" :key="index" class="menu-item">
-                    <div class="main-tag" @mousedown="toggleSubmenu(index)" v-on:click="getall(index)">&nbsp;&nbsp;{{
-                        item.title }}
-                        <span class="main-tag-eng" v-if="index == 1">&nbsp;Outer</span>
-                        <span class="main-tag-eng" v-if="index == 2">&nbsp;Top</span>
-                        <span class="main-tag-eng" v-if="index == 3">&nbsp;Pants</span>
-                        <span class="main-tag-eng" v-if="index == 4">&nbsp;etc</span>
-                        <span class="main-tag-eng" v-if="index == 5">&nbsp;Shoes</span>
+        <div ref="stickyPoint">
+            <div class="menu-wrapper" id="menu-wrapper" :class="{ sticky: isSticky }">
+                <div class="menu-bar">
+                    <div v-for="(item, index) in menuItems" :key="index" class="menu-item">
+                        <div class="main-tag" @mousedown="toggleSubmenu(index)" v-on:click="getall(index)">&nbsp;&nbsp;{{
+                            item.title }}
+                            <span class="main-tag-eng" v-if="index == 1">&nbsp;Outer</span>
+                            <span class="main-tag-eng" v-if="index == 2">&nbsp;Top</span>
+                            <span class="main-tag-eng" v-if="index == 3">&nbsp;Pants</span>
+                            <span class="main-tag-eng" v-if="index == 4">&nbsp;etc</span>
+                            <span class="main-tag-eng" v-if="index == 5">&nbsp;Shoes</span>
 
-                        <div class="main-tag-icon" v-if="index != 0 && item.isOpen == false">
-                            <img src="../../assets/plus.png">
+                            <div class="main-tag-icon" v-if="index != 0 && item.isOpen == false">
+                                <img src="../../assets/plus.png">
+                            </div>
+                            <div class="main-tag-icon" v-if="index != 0 && item.isOpen == true">
+                                <img src="../../assets/minus.png">
+                            </div>
                         </div>
-                        <div class="main-tag-icon" v-if="index != 0 && item.isOpen == true">
-                            <img src="../../assets/minus.png">
-                        </div>
-                    </div>
-                    <div class="sub-menu" :class="{ active: item.isOpen }">
-                        <div class="sub-items-container">
-                            <div v-for="(subtag, subIndex) in item.subItems" :key="subIndex" class="sub-item"
-                                v-on:click="listbytag(subtag, subIndex)"
-                                style="font-size: 15px;font-weight: bold; color:rgb(123, 120, 120)">
-                                {{ subtag }}
+                        <div class="sub-menu" :class="{ active: item.isOpen }">
+                            <div class="sub-items-container">
+                                <div v-for="(subtag, subIndex) in item.subItems" :key="subIndex" class="sub-item"
+                                    v-on:click="listbytag(subtag, subIndex)"
+                                    style="font-size: 13px;font-weight: bold; color:rgb(142, 140, 140)">
+                                    {{ subtag }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -94,7 +97,7 @@
         </div>
 
         <!-- 옷장에 등록된 옷 리스트 -->
-        <div v-show="memnum == checkMemnum">
+        <div v-show="memnum == checkMemnum" class="main-list">
             <div class="container" v-for="(row, index) in additionalCloset" :key="index"
                 style="display: flex; align-items: center;">
                 <div class="card" v-for="closet in row" :key="closet.closetnum">
@@ -111,18 +114,18 @@
                     </div>
                     <div class="inform">
                         {{ closet.maintag }}&nbsp;|&nbsp;{{ closet.subtag }}
-                        <br />
+                        <br /><br />
                         <a v-on:click="modalOpenDetail(closet.closetnum)">{{ closet.cloth }}</a><br />
                         <!-- v-on:click="detail(closet.closetnum)" -->
-                    </div>
+                    </div><br />
                     <div class="btn-container">
-                        <b-button v-on:click="deletecloth(closet.closetnum, closet.favorite)">삭제</b-button>
+                        <button v-on:click="deletecloth(closet.closetnum, closet.favorite)">삭제</button>
                     </div>
                 </div>
             </div>
+            <span class="more-btn"><button v-on:click="moreBtn">더보기</button></span><br />
         </div><br />
         <div v-show="closetlist == ''">등록된 옷이 없습니다.</div>
-        <span class="more-btn"><b-button v-on:click="moreBtn" style="width:80px; background-color: rgba(0, 0, 0, 0.7);;">더보기</b-button></span>
 
         <!-- 옷 디테일 모달창 -->
         <div class="modal-wrap-detail" v-show="modalCheckDetail" @click="modalCloseDetail" id="modalWrapDetail">
@@ -145,11 +148,8 @@
         </div>
     </div>
 
-    <div class="goupBtn"><b-button href="#up" class="moveBtn" style="width:80px;">Go up</b-button></div>
-    <div id="dwon"></div>
     <br />
 </template>
-
 
 <script>
 export default {
@@ -166,6 +166,8 @@ export default {
             cloth: '',
             memnum: sessionStorage.getItem('memnum'),
             checkMemnum: '',
+            // 메뉴바
+            isSticky: false,
             // add 모달
             addThumbnailfile: '', // 업로드된 이미지 썸네일
             addfile: '', // 업로드된 이미지 파일(서버로 보낼)
@@ -194,6 +196,10 @@ export default {
                 { title: "신발", isOpen: false, subItems: ['신발(전체)', '샌들', '슬리퍼', '운동화', '등산화', '구두', 'etc'] }
             ]
         }
+    },
+    mounted() {
+        window.addEventListener('scroll', this.stickyScroll);
+        this.stickyScroll();
     },
     created: function () { // 해당 컴포넌트가 처음 실행될 때만 적용... 그 다음부터는 변경된 컴포넌트(같은 컴포넌트로 이동할 때 적용이 안됨)
         const self = this;
@@ -234,6 +240,25 @@ export default {
         }
     },
     methods: {
+        stickyScroll() {
+            const stickyPoint = this.$refs.stickyPoint;
+            if (!stickyPoint) {
+                return; // stickyPoint가 정의되지 않은 경우 종료
+            } else {
+                const menuOffsetTop = stickyPoint.offsetTop;
+                if (window.pageYOffset > menuOffsetTop) {
+                    this.isSticky = true;
+                    // this.$nextTick(() => {
+                    stickyPoint.style.top = '10px'; // 원하는 간격으로 조정
+                    // });
+                } else {
+                    this.isSticky = false;
+                    // this.$nextTick(() => {
+                    // stickyPoint.style.top = '-30px'; // 초기 위치로 설정
+                    // });
+                }
+            }
+        },
         toggleSubmenu(index) {
             if (index > 0) {
                 for (let i = 0; i < this.menuItems.length; i++) {
@@ -563,6 +588,25 @@ export default {
 </script>
 
 <style scoped>
+.body-css {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
+
+.search {
+    margin-top: 40px;
+    margin-bottom: 10px;
+    margin-left: 60px;
+}
+
+.search input[type="text"] {
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+
 h3 {
     margin: 40px 0 0;
 }
@@ -583,21 +627,32 @@ li {
     clear: left;
 }
 
+/* 옷장 리스트 */
+.main-list {
+    width: 950px;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+}
+
 .container {
     /* display: flex; */
     /* flex-wrap: wrap;
     justify-content: center; */
-    gap: 30px;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
 .card {
-    width: 200px;
-    height: 300px;
+    width: 150px;
+    height: 252px;
     left: 165px;
     background-color: white;
-    border-color: rgb(222, 222, 222);
-    padding: 10px;
+    /* border-color: rgb(222, 222, 222); */
+    border: 1px solid rgb(222, 222, 222);
+    padding: 20px;
+    margin: 10px;
+    font-size: 15px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -607,9 +662,9 @@ li {
 
 .card img {
     position: relative;
-    width: 175px;
+    width: 150px;
     /* 가로 사이즈 200px로 고정 */
-    height: 175px;
+    height: 150px;
     /* 세로 사이즈 200px로 고정 */
     object-fit: cover;
     /* 이미지가 카드 영역에 꽉 차도록 설정 */
@@ -636,38 +691,47 @@ a {
 }
 
 button {
-    background-color: rgba(38, 37, 37, 0.5);
     border: none;
+    background-color: rgb(196, 215, 178, 0.6);
+    border: none;
+    border-radius: 5px;
+    transition: .5s;
+    font-size: 15px;
+    font-weight: normal;
+}
+
+button:hover {
+    background-color: #85b380;
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .more-btn {
-    /* margin-left: 205px; */
-    position: fixed;
-    bottom: 60px;
-    right: 20px;
+    position: relative;
+    top: 0px;
+    right: -54px;
+    padding-bottom: 50px;
 }
 
-.moveBtn {
-    background-color: rgba(0, 0, 0, 0.7);
-    border: none;
+.more-btn button {
+    width: 80px;
+    height: 35px;
 }
 
-.addBtn {
-    background-color: rgba(0, 0, 0, 0.7);
-    border: none;
-}
 
 .addCloth {
-    margin-left: 1115px;
+    margin-left: 955px;
     margin-top: -40px;
-}
-
-.search {
-    margin-left: 60px;
 }
 
 .searchBtn {
     margin-left: 5px;
+}
+
+.searchBtn button {
+    width: 65px;
+    height: 35px;
 }
 
 .btn-container {
@@ -676,27 +740,19 @@ button {
     /* 필요한 경우 버튼이 줄바꿈되도록 함 */
     justify-content: space-between;
     border-top: 1px solid lightgray;
-    width: 120px;
+    width: 80px;
 
 }
 
 .btn-container button {
     padding: 5px 10px;
-    border-radius: 5px;
     cursor: pointer;
     flex: 1 0 45%;
     /* 버튼의 크기 조정 */
     margin: 5px;
     /* 버튼 사이의 간격 설정 */
-    background-color: rgba(0, 0, 0, 0.7);
-    /* background-color: rgba(18, 76, 18, 0.5); */
-    border: none;
-}
-
-.goupBtn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
+    height: 33px;
+    background-color: transparent;
 }
 
 /* ----- 옷 등록 모달창 ----- */
@@ -739,6 +795,11 @@ button {
     /* 우측에 폼이 펼쳐지면서 모달창이 가로 800px로 확장됨 */
 }
 
+.cloth-add-button-container button {
+    width: 50px;
+    height: 35px;
+}
+
 .next-button-container {
     position: absolute;
     top: 11px;
@@ -747,12 +808,22 @@ button {
     /* 기타 스타일 생략 */
 }
 
+.next-button-container button {
+    width: 50px;
+    height: 35px;
+}
+
 .before-button-container {
     position: absolute;
     top: 11px;
     right: 12px;
     /* 우측 상단에 위치 */
     /* 기타 스타일 생략 */
+}
+
+.before-button-container button {
+    width: 50px;
+    height: 35px;
 }
 
 .cloth-add-file-container {
@@ -880,9 +951,9 @@ button {
 
 .menu-wrapper {
     position: absolute;
-    top: 315px;
+    top: 186px;
     left: 10px;
-    width: 16%;
+    width: 14%;
     z-index: 1;
     /* box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1); */
 }
@@ -893,11 +964,18 @@ top: 0: 컨테이너를 페이지의 상단에 위치시킵니다.
 left: 0: 컨테이너를 페이지의 왼쪽에 위치시킵니다.
 width: 20%: 컨테이너의 너비를 부모 요소의 너비의 20%로 설정합니다.
 z-index: 100: 컨테이너의 층위를 설정하여 다른 요소 위에 나타나도록 합니다. */
+
+.menu-wrapper.sticky {
+    position: fixed;
+    top: 10px;
+    transition: top 1s ease;
+}
+
 .menu-bar {
     position: relative;
     background-color: white;
-    border: 1px solid rgb(222, 222, 222);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    /* border: 1px solid rgb(222, 222, 222); */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     padding: 12px;
 }
@@ -909,7 +987,7 @@ border: 1px solid lightgray: 메뉴 바의 테두리를 1픽셀 두께의 연한
 padding: 5px: 메뉴 바의 안쪽 여백을 5픽셀로 설정합니다. */
 
 .menu-item {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
 /* .menu-item: 각 메뉴 항목에 적용되는 클래스 선택자입니다.
@@ -919,7 +997,7 @@ margin-bottom: 10px: 메뉴 항목 아래쪽에 10픽셀의 여백을 추가합�
     cursor: pointer;
     text-align: left;
     font-weight: bold;
-    color: rgb(69, 68, 68);
+    color: rgb(90, 89, 89);
     font-size: 14px;
 }
 
@@ -934,13 +1012,14 @@ cursor: pointer: 마우스 커서를 가리킬 때 포인터 모양으로 변경
 
 .main-tag-icon {
     position: relative;
-    bottom: 25px;
+    width: 20px;
+    bottom: 15px;
     left: 205px;
 }
 
 .main-tag-icon img {
-    width: 10px;
-    height: 10px
+    width: 9px;
+    height: 9px;
 }
 
 .sub-menu {
@@ -963,7 +1042,7 @@ padding-top: 5px: 서브 메뉴의 상단 여백을 5픽셀로 설정합니다.
 transition-duration: 0.5s: 애니메이션 전환에 소요되는 시간을 0.5초로 설정합니다. (메인 태그를 열고 닫을 때의 전환 속도 조정) */
 
 .sub-menu.active {
-    height: 180px;
+    height: 140px;
 }
 
 /* .sub-menu.active: 서브 메뉴가 활성화된 상태에 적용되는 클래스 선택자입니다.
@@ -981,12 +1060,13 @@ grid-template-columns: repeat(2, 1fr): 그리드 컨테이너에서 열의 수�
 grid-gap: 10px: 그리드 항목 사이의 간격을 10픽셀로 설정합니다. */
 
 .sub-item {
-    margin-bottom: 5px;
+    margin-bottom: 0px;
     border-bottom: 1px solid lightgray;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
 }
 
 /* .sub-item: 각 서브 메뉴 항목에 적용되는 클래스 선택자입니다.
 margin-bottom: 5px: 서브 항목 아래쪽에 5픽셀의 여백을 추가합니다.
 border-bottom: 1px solid lightgray: 서브 항목의 하단에 1픽셀 두께의 연한 회색 실선 테두리를 추가합니다.
-padding-bottom: 5px: 서브 항목의 하단 여백을 5픽셀로 설정합니다. */</style>
+padding-bottom: 5px: 서브 항목의 하단 여백을 5픽셀로 설정합니다. */
+</style>
