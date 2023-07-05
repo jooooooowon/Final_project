@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +21,14 @@ public class ObookmarkController {
 	@Autowired
 	private ObookmarkService service;
 
+	//전체목록 검색
+	@GetMapping("")
+	public Map getAll() {
+		ArrayList<ObookmarkDto> list = service.getAll();
+		Map map = new HashMap();
+		map.put("list", list);
+		return map;
+	}
 	//회원번호로 북마크 리스트 검색
 	@GetMapping("/{memnum}")
 	public Map getByMemnum(@PathVariable("memnum") int memnum) {
@@ -37,6 +44,23 @@ public class ObookmarkController {
 		map.put("flag", flag);
 		return map;
 	}
+	
+	//게시글 번호로 북마크 리스트 검색
+	@GetMapping("/{commnum}")
+	public Map getByCommnum(@PathVariable("commnum") int commnum) {
+		Map map = new HashMap<>();
+		boolean flag = true;
+		try {
+			ArrayList<ObookmarkDto> list = service.getByMemnum(commnum);
+			map.put("list", list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			flag = false;
+		}
+		map.put("flag", flag);
+		return map;
+	}
+	
 
 	// 북마크 추가
 	@PutMapping("")
@@ -52,7 +76,7 @@ public class ObookmarkController {
 				service.save(dto);
 			}else {
 				// 있으면 삭제 
-				service.delOreport(result.getBmnum());
+				service.delObookmark(result.getBmnum());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -68,7 +92,7 @@ public class ObookmarkController {
 		boolean flag = true;
 		Map map = new HashMap();
 		try {
-			service.delOreport(bmnum);
+			service.delObookmark(bmnum);
 		} catch (Exception e) {
 			flag = false;
 		}

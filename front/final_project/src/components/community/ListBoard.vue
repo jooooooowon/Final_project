@@ -1,21 +1,17 @@
 <template>
 
 	<!-- 게시글 등록~검색까지 -->
-	<div>
 		<div class="add">
 			<!-- 로그인 해야 게시글 등록 버튼 보임 -->
 			<a v-if="isLoggedIn" href="/addform"> <!--v-if="isLoggedIn" : 로그인한 아이디-->
 				<button type="button" class="addBtn">게시글 등록</button>
 			</a>
 		</div>
-		<hr />
-		<div>
-			<p>
-				<input type="search" v-model="searchTag" placeholder="예) #오피스룩">
-				<button style="margin-left: 5px;" @click="search(searchTag)">검색</button>
-			</p>
+
+		<div class="search-box">
+				<input size="40" type="search" v-model="searchTag" placeholder="예) #오피스룩">
+				<button style="margin-left: 5px; cursor: pointer;" @click="search(searchTag)">검색</button>
 		</div>
-	</div>
 
 	<!-- 사진, 신고, 좋아요,삭제,북마크, 태그 포함할 전체 리스트 -->
 	<div>
@@ -26,26 +22,28 @@
 			<div id="box1">
 				<!-- 프사 & 닉네임-->
 				<div class="item-1">
-					<img style="margin-right: 8px; border-radius:50%; width: 30px; height: 30px;" :src="'http://localhost:8081/members/imgs/' + comm.memnum.memnum">
-					<a v-on:click="searchMember(comm.memnum.memnum)" style="cursor: pointer; font-size: 0.8em; font-weight: bold;">{{ comm.memnum.nickname }}</a>
+					<span><img style="margin-right: 8px; border-radius:50%; width: 30px; height: 30px;" :src="'http://localhost:8081/members/imgs/' + comm.memnum.memnum"></span>
+					<span style="margin-top: 5px;">
+						<a v-on:click="searchMember(comm.memnum.memnum)" style="cursor: pointer; font-size: 0.8em; font-weight: bold;">{{ comm.memnum.nickname }}</a>
+					</span>
 				</div>
 				
-						<div class="item-2">
-							<!--신고: 로그인이 되어야 보임(자기꺼 빼고) -->
-							<div v-if="isLoggedIn">
-								<div>
-									<button class="item-Btn" @click="modalOpen(comm.commnum)" v-if="memnum != comm.memnum.memnum">
-										<span class="material-symbols-outlined">sms_failed</span>
-									</button>
-								</div>
-							</div>
-							<!-- 삭제: 올린사람-->
-							<div>
-								<button class="item-Btn" v-if="memnum == comm.memnum.memnum" @click="delPost(comm.commnum)">
-									<span class="material-symbols-outlined" style="color: lightslategray;">delete</span>
-								</button>
-							</div>
+				<div class="item-2">
+					<!--신고: 로그인이 되어야 보임(자기꺼 빼고) -->
+					<div v-if="isLoggedIn">
+						<div>
+							<button class="item-Btn" @click="modalOpen(comm.commnum)" v-if="memnum != comm.memnum.memnum">
+								<span class="material-symbols-outlined">sms_failed</span>
+							</button>
 						</div>
+					</div>
+					<!-- 삭제: 올린사람-->
+					<div>
+						<button class="item-Btn" v-if="memnum == comm.memnum.memnum" @click="delPost(comm.commnum)">
+							<span class="material-symbols-outlined" style="color: lightslategray; cursor: pointer;">delete</span>
+						</button>
+					</div>
+				</div>
 			</div>
 			<!--box1 End-->		
 
@@ -168,8 +166,6 @@ export default {
 		},
 	},
 	methods: {
-		//test
-
 		// 게시글 삭제하는거
 		delPost(commnum) {
 			const self = this;
@@ -200,6 +196,7 @@ export default {
 					self.commlist = response.data.list
 					console.log(self.commlist)
 					for(let i=0; i<self.reportedCommnums.length; i++){
+						//신고 받은 게시글 안보이게 필터링하는거
 						self.commlist = self.commlist.filter(comm => comm.commnum != self.reportedCommnums[i])
 					}
 				} else {
@@ -207,7 +204,7 @@ export default {
 				}
 			})
 		},
-
+		//tag 검색
 		search(tag){
 			let self = this;
 			self.searchTag = tag;
@@ -224,7 +221,7 @@ export default {
 				})
 			}
 		},
-		//멤버
+		//멤버로 검색
 		searchMember(memnum){
 			let self = this;
 				self.$axios.get('http://localhost:8081/ocommunity/members/' + memnum)
@@ -318,13 +315,13 @@ export default {
 				}
 			})
 		},
+		//북마크 값 보내는거
 		bookcheck(commnum){
 			let self = this;
-			let form = new FormData();
-			form.append("commnum",commnum);
-			form.append("memnum",self.memnum);
-			
-			self.$axios.put('http://localhost:8081/obookmark',form)
+			let formdata = new FormData();
+			formdata.append("commnum",commnum);
+			formdata.append("memnum",self.memnum);
+			self.$axios.put('http://localhost:8081/obookmark',formdata)
 			.then(res => {
 				if(res.status == 200){
 					window.location.reload();
@@ -353,6 +350,7 @@ export default {
 	margin-left: 10px;
 	margin-top: 6px;
 	margin-bottom: 6px;
+	display: flex;
 }
 
 .item-2 {
@@ -363,7 +361,7 @@ export default {
 	background-color:transparent;
 	border: none;
 	font-family: sans-serif;
-	margin-top: 5px;
+	margin-top: 8px;
 	color: #f15746;
 }
 
@@ -397,7 +395,7 @@ export default {
 }
 
 .likeCount {
-	margin-top: 5px;
+	margin-top: 8px;
 }
 
 .bookBtn {
@@ -408,12 +406,14 @@ export default {
 	margin-top: 3px;
 	background-color: transparent;
 	border: none; 
+	cursor: pointer;
 }
 
 .markbtn2{
 	margin-top: 3px;
 	background-color: transparent;
 	border: none; 
+	cursor: pointer;
 }
 
 /* box4 */
@@ -431,7 +431,10 @@ export default {
 }
 /* 게시글 등록 */
 .add {
-	margin-left: 40%;
+	display: flex;
+	justify-content: right;
+	margin-top: 1%;
+	margin-right: 25%;
 }
 .addBtn {
 	background-color: transparent;
@@ -439,14 +442,28 @@ export default {
 	color:#363433;
 	font-size: 1em;
 	font-weight: bold;
+	cursor: pointer;
+}
+.addBtn:hover {
+	color: #f15746;
+}
+.search-box {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 15px;
+}
+input:focus {
+	outline: 2px solid #f15746;
+	/* border-radius: 10px ; */
+	border: none;
 }
 
-hr {
+/* hr {
 	width: 60%;
 	margin-left: auto;
 	margin-right: auto;
 	border: solid 2px #336399;
-}
+} */
 
 
 /* modal or popup */
