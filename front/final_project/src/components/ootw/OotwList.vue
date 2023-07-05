@@ -73,7 +73,7 @@ export default {
     created: function () {
         const self = this;
         self.memnum = sessionStorage.getItem('memnum');
-        self.$axios.get('http://localhost:7878/boards')
+        self.$axios.get('http://localhost:8081/boards')
             .then(function (res) {
                 if (res.status == 200) {
                     self.ootwlist = res.data.list;
@@ -135,7 +135,7 @@ export default {
             if (self.date2 < self.date1 || self.date1 == '' || self.date2 == '') {
                 alert('날짜 범위를 다시 정해주세요.')
             } else {
-                self.$axios.get('http://localhost:7878/boards/dates/' + self.date1 + "/" + self.date2)
+                self.$axios.get('http://localhost:8081/boards/dates/' + self.date1 + "/" + self.date2)
                     .then(function (res) {
                         location.reload();
                         if (res.status == 200) {
