@@ -1,61 +1,63 @@
 <template>
   <div class="background">
-    <div>
-      <h4>{{ realDate }}</h4>
+    <div :class="getBackground(nowSky)">
       <div>
-        {{ address }}<br /><br/><br/>
-        <div style="display: flex; justify-content: center; align-items: center;">
-          <div style="display: flex; align-items: center;">
-            <img class="iconImg" :src="getIcon(nowSky)"> <br />
-            <!-- <div v-if="nowPop !== '0%'">
+        <h4>{{ realDate }}</h4>
+        <div>
+          <div class="address">{{ address }}</div>
+          <div style="display: flex; justify-content: center; align-items: center;">
+            <div style="display: flex; align-items: center;">
+              <img class="iconImg" :src="getIcon(nowSky)"> <br />
+              <!-- <div v-if="nowPop !== '0%'">
               {{ nowPop }}
             </div> -->
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <div style="text-align: center;">
-              <div class="tmp">{{ nowTmp }}°</div>
-              <div class="tmx">{{ todayTmx }}° / {{ todayTmn }}°</div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+              <div style="text-align: center; color: #2c3e50;">
+                <div class="tmp">{{ nowTmp }}°</div>
+                <div class="tmx">{{ todayTmx }}° / {{ todayTmn }}°</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <!-- <p>{{ textContent }}</p> -->
-      <br /><br />
-      <!-- <h3>24HOURS</h3> -->
-      <div class="allWeather">
-        <div class="inside">
-          <table>
-            <tr>
-              <td v-for="eachTime in everyTime" :key="eachTime.fcstTime">
-                <div class="wInfo"><span class="time">{{ eachTime.fcstTime }}</span></div>
-                <div class="wInfoTwo" v-if="eachTime.pop !== ''">
-                  <img :src="getIcon(eachTime.sky)"><br />
-                  <span class="pop">{{ eachTime.pop }}</span><br />
-                </div>
-                <div class="wInfoOne" v-else>
-                  <img :src="getIcon(eachTime.sky)"><br />
-                </div>
-                <div class="wInfo">{{ eachTime.tmp }}</div>
-              </td>
-            </tr>
-          </table>
+        <!-- <p>{{ textContent }}</p> -->
+        <br /><br />
+        <!-- <h3>24HOURS</h3> -->
+        <div class="allWeather">
+          <div class="inside">
+            <table>
+              <tr>
+                <td v-for="eachTime in everyTime" :key="eachTime.fcstTime">
+                  <div class="wInfo"><span class="time">{{ eachTime.fcstTime }}</span></div>
+                  <div class="wInfoTwo" v-if="eachTime.pop !== ''">
+                    <img :src="getIcon(eachTime.sky)"><br />
+                    <span class="pop">{{ eachTime.pop }}</span><br />
+                  </div>
+                  <div class="wInfoOne" v-else>
+                    <img :src="getIcon(eachTime.sky)"><br />
+                  </div>
+                  <div class="wInfo">{{ eachTime.tmp }}</div>
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
+
+        <!-- 옷 추천~~ -->
+        <hr />
+        <div>
+          <h3>기온별 옷차림</h3>
+          <closet></closet>
+        </div>
+        <hr />
+
+        <div>
+          <h3>Outfit Of The Weather</h3>
+          <ootw></ootw>
+        </div>
+
+
       </div>
-
-      <!-- 옷 추천~~ -->
-      <hr/>
-      <div>
-        <h3>기온별 옷차림</h3>
-        <closet></closet>
-      </div>
-      <hr />
-
-      <div>
-        <h3>Outfit Of The Weather</h3>
-        <ootw></ootw>
-      </div>
-
-
     </div>
   </div>
 </template>
@@ -179,6 +181,7 @@ export default {
     // background() {
     //   const sky = this.nowSky;
     // },
+
     // 하늘 상태에 따른 아이콘 불러오기
     getIcon(sky) {
       return this.weatherIcons[sky];
@@ -574,6 +577,28 @@ export default {
           console.log(err);
           this.textContent = err.message;
         });
+    },
+    // 하늘 상태에 따라 다른 배경화면 적용 
+    getBackground(sky) {
+      const background = {
+        1: 'dayClear',
+        3: 'dayCloudy', 4: 'dayCloudy',
+        5: 'dayRainy', 8: 'dayRainy',
+        6: 'daySnowy', 7: 'daySnowy',
+        9: 'nightClear',
+        11: 'nightCloudy', 12: 'nightCloudy', 14: 'nightCloudy', 15: 'nightCloudy',
+        13: 'nightRainy', 16: 'nightRainy'
+      };
+      const backdrop = {
+        'dayClear': 'backdrop-dayClear',
+        'dayCloudy': 'backdrop-dayCloudy',
+        'dayRainy': 'backdrop-dayRainy',
+        'daySnowy': 'backdrop-daySnowy',
+        'nightClear': 'backdrop-nightClear',
+        'nightCloudy': 'backdrop-nightCloudy',
+        'nightRainy': 'backdrop-nightRainy'
+      };
+      return backdrop[background[sky]];
     }
 
   }
@@ -581,7 +606,35 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Staatliches&display=swap');
+
+@font-face {
+  font-family: 'PyeongChangPeace-Light';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChangPeace-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PyeongChang-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+    font-family: 'PyeongChangPeace-Bold';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChangPeace-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
 .background {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
   min-width: 335px;
   width: 100%;
   height: 100%;
@@ -590,28 +643,69 @@ export default {
   /* 밤 비 */
   /* background-image: linear-gradient(white, #28434e, #001813); */
   /* 밤 맑음 */
-  /* background-image: linear-gradient(white, #012083, #04092c); */
+  background-image: linear-gradient(white, #4dc4ff);
   /* 낮 눈 */
   /* background-image: linear-gradient(white, #b5c8cd, #89b0bf); */
   /* 낮 비 */
-  background-image: linear-gradient(white, #9fb1c5, #1c3f43);
+  /* background-image: linear-gradient(white, #9fb1c5, #1c3f43); */
+  /* 낮 흐림 */
+  /* background-image: linear-gradient(white, #9fb1c5, #fbd997); */
   /* 낮 맑음 */
   /* background-image: linear-gradient(white, #ffcc66, #4dc4ff);  */
+}
+
+/* 낮 맑음 */
+.backdrop-dayClear {
+  background-image: linear-gradient(white, #ffcc66, #4dc4ff);
+}
+
+/* 낮 흐림 */
+.backdrop-dayCloudy {
+  background-image: linear-gradient(white, #9fb1c5, #fbd997);
+}
+
+/* 낮 비 */
+.backdrop-dayRainy {
+  background-image: linear-gradient(white, #9fb1c5, #507774);
+}
+
+/* 낮 눈 */
+.backdrop-daySnowy {
+  background-image: linear-gradient(white, #b5c8cd, #89b0bf);
+}
+
+/* 밤 맑음 */
+.backdrop-nightClear {
+  background-image: linear-gradient(white, #012083, #04092c);
+  color: #fff;
+}
+
+/* 밤 흐림, 눈 */
+.backdrop-nightCloudy {
+  background-image: linear-gradient(white, #3a4159, #1e1f26);
+  color: #fff;
+}
+
+/* 밤 비 */
+.backdrop-nightRainy {
+  background-image: linear-gradient(white, #28434e, #001813);
+  color: #fff;
 }
 
 .allWeather {
   max-width: 900px;
   margin: 0 auto;
-  /* color: white; */
+  margin-bottom: 180px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   background: transparent;
   background-color: rgba(255, 255, 255, 0.6);
+  color: #2c3e50;
   border-radius: 10px;
   padding: 20px;
   /* 가로 스크롤 */
   overflow: auto;
-  white-space: nowrap;
   /* 자동 줄바꿈 없앰 */
+  white-space: nowrap;
 }
 
 .allWeather::-webkit-scrollbar {
@@ -622,48 +716,47 @@ export default {
 
 /* 스크롤바 막대 설정 */
 .allWeather::-webkit-scrollbar-thumb {
-  /* background: transparent; */
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.8);
   /* 스크롤바 둥글게 설정    */
   border-radius: 20px;
-  /* border: 7px solid rgba(255, 255, 255, 0.3); */
 }
 
-/* 마우스 안올리면 안보이게 */
+/* 마우스 안올리면 스크롤바 안보이게 */
 .allWeather::-webkit-scrollbar-thumb {
   background-color: rgba(255, 255, 255, 0);
   transition: background-color 0.3s;
 }
 
-/* 마우스 올리면 보이게~ */
+/* 마우스 올리면 스크롤바 보이게~ */
 .allWeather:hover::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 .inside {
-  /* padding: 20px; */
+  padding: 10px;
   display: inline-block;
+}
+
+.wInfo,
+.wInfoOne,
+.wInfoTwo {
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .wInfo {
   padding-top: 10px;
   padding-bottom: 0px;
-  padding-left: 4px;
-  padding-right: 4px;
 }
 
 .wInfoOne {
-  padding-top: 24px;
-  padding-bottom: 8px;
-  padding-left: 4px;
-  padding-right: 4px;
+  padding-top: 27px;
+  padding-bottom: 7px;
 }
 
 .wInfoTwo {
-  padding-top: 8px;
-  padding-bottom: 0px;
-  padding-left: 4px;
-  padding-right: 4px;
+  padding-top: 11px;
+  padding-bottom: 7px;
 }
 
 .pop {
@@ -693,20 +786,46 @@ export default {
 
 
 hr {
-  margin-top: 180px; 
+  margin-top: 100px;
   margin-left: auto;
   margin-right: auto;
-  width:500px; 
-  height:5px; 
-  border:0px; 
+  width: 500px;
+  height: 5px;
+  border: 0px;
   background: linear-gradient(to left, transparent, #fff, transparent);
 }
 
 h3 {
-  margin-top: 100px; 
+  font-family: 'PyeongChangPeace-Light';
+  font-weight: 300;
+  font-size: 27px;
+  margin-top: 100px;
   margin-bottom: 50px;
   margin-left: auto;
   margin-right: auto;
+  /* text-shadow: 1.5px 1.5px 1.5px white; */
+}
+
+h4 {
+  font-family: 'PyeongChangPeace-Light';
+  font-weight: 300;
+  font-size: 20px;
+  margin-top: 100px;
+  margin-bottom: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #2c3e50;
+}
+
+.address {
+  font-family: 'PyeongChang-Regular';
+  font-weight: 400;
+  font-size: 15px;
+  margin-bottom: 50px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #2c3e50;
+
 }
 
 
@@ -718,5 +837,4 @@ table {
 td {
   margin-left: 5px;
   margin-right: 5px
-}
-</style>
+}</style>

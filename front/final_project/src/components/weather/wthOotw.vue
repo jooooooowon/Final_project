@@ -1,21 +1,22 @@
 <template>
-    <div>
-        {{ message }}
+    <div class="back">
+        {{ message }} 
 
         <div v-if="showRecom">
             <p v-if="t1 === 28">{{ t1 }}℃ 이상일 때 입었던 옷 기록들</p>
             <p v-if="t1 !== 28 && t2 !== 4">{{ t1 }}℃ ~ {{ t2 }}℃일 때 입었던 옷 기록들</p>
             <p v-if="t2 === 4">{{ t2 }}℃ 이하일 때 입었던 옷 기록들</p>
+            <br/><br/><br/><br/>
             <!-- ootw 리스트 -->
             <!-- 사진1장, 기온, 날씨, 코멘트 -->
             <!-- 더보기 -->
             <div>
-                <div class="card-grid"
+                <div class="closet"
                     style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
                     <!-- v-for) additionalCloset[subtag] 배열을 반복하면서 각 cloth에 대한 작업을 수행 -->
-                    <div class="card" v-for="(ootw, i) in displayedOotw" :key="ootw.ootwnum"
+                    <div class="cloth" v-for="(ootw, i) in displayedOotw" :key="ootw.ootwnum"
                         :style="{ maxWidth: '200px', flex: '0 0 250px' }" @click="modalOpen(ootw.ootwnum)"
-                        @mouseover="cursorChange">
+                        @mouseover="cursorChange" @mouseout="resetCursor">
                         <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + allImageList[i]"> <br />
                         <!-- <p>{{ ootw.ootwnum }}</p> -->
                         <!-- <p>{{ ootw.odate }}</p> -->
@@ -25,8 +26,9 @@
                 </div>
                 <!-- 더보기 버튼 뜨기 -->
                 <div v-if="gap > 0">
-                    <button @click="moreBtn">더보기</button>
+                    <img class="plus" src="@/assets/weatherPlus.svg" @click="moreBtn" @mouseover="cursorChange" @mouseout="resetCursor">
                 </div>
+                
             </div>
 
             <!-- ootw 디테일 (모달) -->
@@ -45,6 +47,8 @@
                 </div>
             </div>
         </div>
+
+        <br/><br/><br/><br/><br/><br/><br/>
 
     </div>
 </template>
@@ -80,7 +84,7 @@ export default {
         // 현재 로그인 상태 확인.
         let token = sessionStorage.getItem('token');
         if (this.memnum == null) {
-            this.message = "지금 날씨에 입었던 옷이 궁금하신가요? 로그인하고 OOTW를 작성해보세요!";
+            this.message = "지금 날씨에 입었던 옷이 궁금하신가요? 로그인 후 OOTW를 작성해보세요!";
             this.showRecom = false;
         } else {
             this.$axios.get(`http://localhost:8081/members/${this.memnum}`,
@@ -218,9 +222,14 @@ export default {
             this.modalCheck = !this.modalCheck;
         },
 
-        // 카드에 마우스 올리면 색깔 변하는 메서드
+        // 카드에 마우스 올리면 크기 변하는 메서드
+        // 마우스를 올렸을 때 요소의 크기를 1.05배로 확대(scale up)시키는 스타일을 적용
         cursorChange(e) {
-            e.target.style.cursor = "pointer";
+            e.currentTarget.style.transform = "scale(1.05)";
+        },
+        // 마우스가 요소를 벗어났을 때 원래 크기로 되돌리는 스타일을 적용
+        resetCursor(e) {
+            e.currentTarget.style.transform = "scale(1)";
         },
 
         // 모달창에서 OOTW 삭제
@@ -242,10 +251,31 @@ export default {
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+/* @font-face {
+    font-family: 'Cafe24Ohsquareair';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202@1.0/Cafe24Ohsquareair.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+} */
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
 
-.card-grid {
+.back {
+    font-family: 'PyeongChang-Regular';
+    /* font-weight: 100; */
+    font-style: normal;
+}
+
+.closet {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    /* grid-template-columns: repeat(5, 1fr); */
+    /* 최소 200px의 폭을 가지는 열을 자동으로 생성 */
+    /* 그리드 컨테이너의 너비에 맞추어 최대한 많은 열을 표시 */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
     grid-gap: 20px;
     justify-content: center;
     align-items: center;
@@ -253,19 +283,21 @@ export default {
     margin: 0 auto;
 }
 
-.card {
-    /* z-index 속성은 position 속성이 relative, absolute, fixed로 설정된 요소에만 적용됩니다. */
-    position: relative; /* 부모 요소를 기준으로 z-index를 설정하기 위해 position 값을 설정합니다. */
-    z-index: 1; /* 카드의 쌓임 순서를 낮게 설정합니다. */
-    flex-basis: 20%;
+.cloth {
+    transition: transform 0.3s ease; /* 변화가 일어날 때 0.3초 동안 부드럽게 전환 */
     background-color: #fff;
     border-radius: 10px;
     padding: 20px;
     text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
 }
 
-.card img {
+.cloth:hover  {
+  transform: scale(1.05);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.cloth img {
     display: block;
     margin: 0 auto;
     position: relative;
@@ -276,9 +308,20 @@ export default {
     margin-bottom: 10px;
 }
 
-.card h6 {
+.cloth h6 {
     margin: 0;
 }
+
+.plus {
+    transition: transform 0.3s ease; /* 변화가 일어날 때 0.3초 동안 부드럽게 전환 */
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
+.plus:hover {
+    transform: scale(1.05);
+}
+
 
 /* dimmed */
 .modal-wrap {
