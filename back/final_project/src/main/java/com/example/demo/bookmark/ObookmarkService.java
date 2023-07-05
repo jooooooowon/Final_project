@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class ObookmarkService {
 	@Autowired
@@ -40,7 +41,14 @@ public class ObookmarkService {
 			return listDto;
 		}
 		
-		//북마크(즐겨찾기)
+		//북마크 추가 된 리스트 전체검색
+		public ArrayList<ObookmarkDto> getAll() {
+			ArrayList<Obookmark> list = (ArrayList<Obookmark>) dao.findAll();
+			ArrayList<ObookmarkDto> list2 = changeList(list);
+			return list2;
+		}
+		
+		//북마크 추가
 		public ObookmarkDto save(ObookmarkDto dto) {
 			Obookmark bm = (Obookmark)change(dto);
 			ObookmarkDto result = (ObookmarkDto)change(dao.save(bm));
@@ -55,6 +63,16 @@ public class ObookmarkService {
 			}
 			return changeList(list);
 		}
+		//게시글번호로 검색
+		public ArrayList<ObookmarkDto> getByCommnum(int commnum) {
+			ArrayList<Obookmark> list = (ArrayList<Obookmark>)dao.findByMemnum(commnum);
+			if(list == null) {
+				return null;
+			}
+			return changeList(list);
+		}
+		
+
 		
 		public ObookmarkDto getByMemnumAndCommnum(int memnum, int commnum) {
 			ArrayList<Obookmark> list = (ArrayList<Obookmark>)dao.findByMemnumAndCommnum(memnum, commnum);
@@ -66,9 +84,12 @@ public class ObookmarkService {
 		}
 		
 		//북마크 삭제
-		public void delOreport(int bmnum) {
+		public void delObookmark(int bmnum) {
 			dao.deleteById(bmnum);
 		}
+
+
+
 		
 
 }
