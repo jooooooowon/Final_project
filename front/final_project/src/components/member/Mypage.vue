@@ -1,25 +1,33 @@
 <template>
-    <div class="layout_base">
-        <div class="container">
-            <h2>마이페이지</h2>
+    <!-- <div class="layout_base"> -->
+        <!-- <div class="container"> -->
+            <div class="title">
+            <h2>프로필 관리</h2>
+            </div>
             <div class="content" id="Mypage">
                 <div class="memberInfo">
                     
                     <label for ="newimg">
-                        <div class="userDetail">
-                            <div class="">
-                                <img :src= "profileImg()" style="cursor: pointer; border-radius: 50%;"><br/>
-                                <input type="file" id="newimg" accept="img/*" @change="changeImg" v-show="isVisible"><br/>
+                        <div class="userProfile">
+                            <div class="profile_thumb">
+                                <img :src= "profileImg()" style="width:100px; height:100px; cursor: pointer; border-radius: 50%;"><br/>
+                                <!-- <input type="file" id="newimg" accept="img/*" @change="changeImg" v-show="isVisible"><br/> -->
                             </div>
-                            <div>
-                                nickname:<input type="text" v-model="nickname"><br/>
-                                id:<input type="text" v-model="id" readonly><br/>
-                                pwd:<input type="password" v-model="pwd"><br/>
-                                email:<input type="text" v-model="email" readonly><br/>
-                                gender:{{ gender }}<br/>
+                            <div class="profileDetail">
+                                
+                                    <input type="text" v-model="nickname" style=" border: none; outline: none;"><br/>
+
+                                <div class="profileBtnBox" style="margin-top: 12px;">
+                                    <button class="edit_Img_btn">이미지 변경</button> <button class="del_Img_btn">삭제</button>
+                                </div>
                             </div>
                         </div>
-
+                        <div class="profileInfo" style="padding-top:38px; max-width:480px;">
+                            id:<input type="text" v-model="id" readonly><br/>
+                            pwd:<input type="password" v-model="pwd"><br/>
+                            email:<input type="text" v-model="email" readonly><br/>
+                            gender:{{ gender }}<br/>
+                        </div>   
                     </label>
                         <div>
 
@@ -33,8 +41,8 @@
                 <button v-on:click="out">탈퇴</button>
                 <button v-on:click="logout">로그아웃</button>
             </div>
-        </div>
-    </div>
+        <!-- </div> -->
+    <!-- </div> -->
 </template>
 <script>
 export default{
@@ -167,7 +175,7 @@ export default{
 </script>
 
 <style scoped>
-.layout_base{
+/* .layout_base{
     margin-top:100px;
 }
 .container{
@@ -175,19 +183,61 @@ export default{
     margin-right: auto;
     max-width: 1200px;
     padding: 40px 40px 160px;
-}
-.memberInfo{
+} */
+/* .memberInfo{
     display:flex;
-    width:80%;
+    width:100%;
     border: 1px solid #ebebeb;
     border-radius: 10px;
     margin:0 auto;
     background-color:#ffffff;
+} */
+
+.title{
+    padding:10px 0 16px;
+    border-bottom: 2px solid #222;
 }
-.userDetail{
+
+.userProfile{
     display: flex;
     text-align: left;
+    border-bottom: 1px solid #ebebeb;
+    padding: 38px 0;
 }
+
+.profile_thumb{
+    width: 100px;
+    height: 100px;
+    flex: none;
+    margin-right: 12px;
+}
+
+/* btn {
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    text-align: center;
+    color: rgba(34,34,34,.8);
+    background-color: #fff;
+} */
+/* .editImgBtn{
+    border: 1px solid #d3d3d3;
+    color: rgba(34, 34, 34, .8);
+    font-size: 12px;
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #fff;
+}
+.delImgBtn{
+    margin-left: 8px;
+} */
+
 h2{
     display: block;
     font-size: 24px;

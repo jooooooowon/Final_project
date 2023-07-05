@@ -222,6 +222,7 @@ label{
     text-align: left;
     font-size: 13px;
     padding-left: 8px;
+    color:#222;
 }
 
 /* 유효성검사 통과 못하면 색상 변경 */
@@ -296,6 +297,9 @@ button {
     margin: auto;
     display: inline-flex;
     font-size: 13px;
+    text-decoration: none;
+    color: #222;
+    letter-spacing: -.07px;
 }
 
 </style>

@@ -1,6 +1,5 @@
 package com.example.demo.member;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import jakarta.persistence.Column;

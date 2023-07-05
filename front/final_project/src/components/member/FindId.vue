@@ -13,7 +13,7 @@
                 <div class="input_title">
                     <p>이메일</p>
                 </div>
-                <input type="text" v-model="email" placeholder="가입하신 이메일" class="input_field"><br/>
+                <input type="text" id="email" v-model="email" placeholder="가입하신 이메일" class="input_field" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)"><br/>
             </div>
 
             {{ idMasked }}<br/>
@@ -56,7 +56,30 @@ export default{
                 }else{
                     alert('에러코드:'+self.status)
                 }
+            })
+            //데이터 없을 경우 에러 발생
+            .catch(function(error){
+                console.log(error);
+                alert('일치하는 사용자 정보를 찾을 수 없습니다.');
             });
+
+        },
+
+        cPlaceholder(event){
+            event.target.previousElementSibling.classList.add('active');
+            event.target.placeholder='';
+        },
+        rPlaceholder(event){
+            const inputField = event.target;
+            const label = inputField.previousElementSibling;
+            if(!inputField.value){
+                label.classList.remove('active');
+                if(inputField.id === 'email'){
+                    inputField.placeholder = '가입하신 이메일';
+                }
+
+
+            }
         }
     }
 }
@@ -64,6 +87,7 @@ export default{
 
 <style scoped>
 .content{
+    color:#222;
     margin-left: auto;
     margin-right: auto;
     max-width: 1280px;
@@ -78,6 +102,7 @@ export default{
 .title{
     font-size: 32px;
     font-weight: bold;
+    text-align: center;
     border-bottom: 2px solid #000;
     padding-bottom: 40px;
 }
@@ -96,6 +121,7 @@ export default{
 }
 
 .input_title{
+    color:#222;
     font-size: 14px;
     font-weight: bold;
     text-align: left;
@@ -108,6 +134,11 @@ export default{
     width: 100%;
     padding: 8px 0;
     font-size: 15px;
+    outline: none;
+}
+
+.input_field:focus{
+    border-bottom: 2px solid #000;
 }
 
 .btn_box{
