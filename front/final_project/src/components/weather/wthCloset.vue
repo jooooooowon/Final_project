@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <div class="rgyPostIt">{{ recommend }}</div> <br/><br/>
+    <div class="back">
+        <div class="rgyPostIt">{{ recommend }}</div> <br /><br />
         {{ message }}
 
         <!-- 태그별 옷추천 -->
@@ -14,36 +14,37 @@
                 <h5>{{ subtag }}</h5>
                 <div v-if="naverList[subtag] != null">
                     {{ message2 }} <br />
-                    <router-link to="/closetadd"><button>옷장에 {{ subtag }} 추가하기</button></router-link>
+                    <router-link to="/closetlist"><button>옷장에 {{ subtag }} 추가하기</button></router-link>
                     <button @click="shopping(subtag)">{{ subtag }} 쇼핑하러 가기</button>
                 </div>
                 <div>
                     <!-- :key="subtag"는 Vue의 key 속성을 사용하여 "각 그룹"을 고유하게 식별 => subtag 별 그룹 생성 -->
-                    <div class="card-grid" :key="subtag"
+                    <div class="closet" :key="subtag"
                         style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
                         <!-- v-for) additionalCloset[subtag] 배열을 반복하면서 각 cloth에 대한 작업을 수행 -->
-                        <div class="card" v-for="cloth in additionalCloset[subtag]" :key="cloth.closetnum"
-                            :style="{ maxWidth: '200px', flex: '0 0 250px' }" @click="modalOpen(cloth.closetnum)"
-                            @mouseover="cursorChange">
+                        <div class="cloth" v-for="cloth in additionalCloset[subtag]" :key="cloth.closetnum"
+                            :style="{ maxWidth: '160px', flex: '0 0 250px' }" @click="modalOpen(cloth.closetnum)"
+                            @mouseover="cursorChange" @mouseout="resetCursor">
                             <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + cloth.closetnum">
-                            <h6>{{ cloth.cloth }}</h6>
+                            <span>{{ cloth.cloth }}</span>
                         </div>
                     </div>
                     <!-- 더 추가할 옷이 있을 때에만 더보기 버튼 뜨기 -->
                     <div v-if="gap[subtag] > 0">
-                        <button @click="moreBtn(subtag)">더보기</button>
+                        <img class="plus" src="@/assets/weatherPlus.svg" @click="moreBtn(subtag)" @mouseover="cursorChange" @mouseout="resetCursor">
+                        <!-- <button @click="moreBtn(subtag)">더보기</button> -->
                     </div>
                 </div>
 
                 <!-- 옷이 없을 때 띄울 네이버 쇼핑 링크 -->
                 <div>
-                    <div class="card-grid" :key="subtag"
+                    <div class="closet" :key="subtag"
                         style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
-                        <div class="card" v-for="(dto, i) in naverList[subtag]" :key="i"
-                            :style="{ maxWidth: '200px', flex: '0 0 250px' }" @click="shoppingLink(subtag, i)"
-                            @mouseover="cursorChange">
+                        <div class="cloth" v-for="(dto, i) in naverList[subtag]" :key="i"
+                            :style="{ maxWidth: '160px', flex: '0 0 250px' }" @click="shoppingLink(subtag, i)"
+                            @mouseover="cursorChange" @mouseout="resetCursor">
                             <img :src="dto.img">
-                            <h6>{{ dto.price }}원</h6>
+                            {{ dto.price }}원
                         </div>
                     </div>
 
@@ -114,24 +115,24 @@ export default {
             this.showRecom = false;
         } else {
             this.$axios.get(`http://localhost:8081/members/${this.memnum}`,
-            { headers: { 'token': token } })
-            .then(async res => {
-                if (res.status == 200) {
-                    this.showRecom = !this.showRecom;
-                    const dto = res.data.dto
-                    if (dto != null) {
-                        if (dto.gender === 'male') {
-                            this.gender = '남성'
+                { headers: { 'token': token } })
+                .then(async res => {
+                    if (res.status == 200) {
+                        this.showRecom = !this.showRecom;
+                        const dto = res.data.dto
+                        if (dto != null) {
+                            if (dto.gender === 'male') {
+                                this.gender = '남성'
+                            } else {
+                                this.gender = '여성'
+                            }
                         } else {
-                            this.gender = '여성'
+                            console.log('없는 아이디거나 만료된 토큰')
                         }
                     } else {
-                        console.log('없는 아이디거나 만료된 토큰')
+                        alert("오류 발생으로 인한 로그인 정보 불러오기 실패")
                     }
-                } else {
-                    alert("오류 발생으로 인한 로그인 정보 불러오기 실패")
-                }
-            })
+                })
         }
         this.recommendation();
     },
@@ -356,9 +357,13 @@ export default {
             window.open(link, "_blank");
         },
 
-        // 카드에 마우스 올리면 색깔 변하는 메서드
+        // 마우스를 올렸을 때 요소의 크기를 1.05배로 확대(scale up)시키는 스타일을 적용
         cursorChange(e) {
-            e.target.style.cursor = "pointer";
+            e.currentTarget.style.transform = "scale(1.05)";
+        },
+        // 마우스가 요소를 벗어났을 때 원래 크기로 되돌리는 스타일을 적용
+        resetCursor(e) {
+            e.currentTarget.style.transform = "scale(1)";
         }
 
     }
@@ -368,44 +373,90 @@ export default {
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Nanum+Pen+Script&display=swap");
+/* @font-face {
+font-family: 'UhBeeSeulvely';
+src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_five@.2.0/UhBeeSeulvely.woff') format('woff');
+font-weight: normal;
+font-style: normal;
+} */
 
-.card-grid {
+
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+.back {
+    font-family: 'PyeongChang-Regular';
+    /* font-family: 'Cafe24Ohsquareair'; */
+    /* font-weight: 100; */
+    font-style: normal;
+}
+.closet {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-gap: 20px;
+    /* grid-template-columns: repeat(5, 1fr); */
+    /* 최소 200px의 폭을 가지는 열을 자동으로 생성 */
+    /* 그리드 컨테이너의 너비에 맞추어 최대한 많은 열을 표시 */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    grid-gap: 25px;
     justify-content: center;
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-.card {
-    flex-basis: 20%;
-    background-color: #fff;
-    border-radius: 10px;
+.cloth {
+    transition: transform 0.3s ease; /* 변화가 일어날 때 0.3초 동안 부드럽게 전환 */
+    background: transparent;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
     padding: 20px;
     text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
 }
 
-.card img {
+.cloth:hover {
+  transform: scale(1.05);
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.cloth img {
     display: block;
     margin: 0 auto;
     position: relative;
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
     object-fit: cover;
-    /* border-radius: 10%; */
+    border-radius: 3px;
     margin-bottom: 10px;
 }
 
-.card h6 {
+.cloth span {
     margin: 0;
+    font-size: 16px;
+    /* font-family: 'Nanum Pen Script'; */
 }
+
+.plus {
+    transition: transform 0.3s ease; /* 변화가 일어날 때 0.3초 동안 부드럽게 전환 */
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
+.plus:hover {
+    transform: scale(1.05);
+}
+
 
 /* dimmed */
 .modal-wrap {
-    z-index: 999; /* 모달의 배경을 카드보다 상위로 올립니다. */
+    z-index: 999;
+    /* 모달의 배경을 카드보다 상위로 올립니다. */
     position: fixed;
     left: 0;
     top: 0;
@@ -417,7 +468,8 @@ export default {
 
 /* modal or popup */
 .modal-container {
-    z-index: 9999; /* 모달창을 다른 요소들보다 상위로 올림 */
+    z-index: 9999;
+    /* 모달창을 다른 요소들보다 상위로 올림 */
     overflow: auto;
     position: relative;
     top: 50%;
@@ -449,21 +501,33 @@ div.rgyPostIt {
     display: inline-block;
     padding: 20px 45px 20px 15px;
     margin: 5px 0;
+    margin-bottom: 50px;
     border: 1px solid #f8f861;
     border-left: 30px solid #f8f861;
     border-bottom-right-radius: 60px 10px;
     font-family: 'Nanum Pen Script';
+    /* font-family: 'UhBeeSeulvely'; */
+    /* font-family: 'Yoonwoo'; */
     font-size: 27px;
+    /* font-size: 20px; */
     color: #555;
     word-break: break-all;
-    background: #ffff88; /* Old browsers */
-    background: -moz-linear-gradient(-45deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right bottom, color-stop(81%, #ffff88), color-stop(82%, #ffff88), color-stop(82%, #ffff88), color-stop(100%, #ffffc6)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(-45deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(-45deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(-45deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%); /* IE10+ */
-    background: linear-gradient(135deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffff88', endColorstr='#ffffc6', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+    background: #ffff88;
+    /* Old browsers */
+    background: -moz-linear-gradient(-45deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%);
+    /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right bottom, color-stop(81%, #ffff88), color-stop(82%, #ffff88), color-stop(82%, #ffff88), color-stop(100%, #ffffc6));
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(-45deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%);
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(-45deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%);
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(-45deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%);
+    /* IE10+ */
+    background: linear-gradient(135deg, #ffff88 81%, #ffff88 82%, #ffff88 82%, #ffffc6 100%);
+    /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffff88', endColorstr='#ffffc6', GradientType=1);
+    /* IE6-9 fallback on horizontal gradient */
     transition: all 0.2s;
     -webkit-transition: all 0.2s;
 }
@@ -497,12 +561,12 @@ div.rgyPostIt:hover::after {
     -webkit-box-shadow: 2px 37px 7px rgba(0, 0, 0, 0.37);
 }
 
-div.rgyPostIt > p {
+div.rgyPostIt>p {
     padding: 5px 0 !important;
 }
 
-div.rgyPostIt > p::before {
-    content:"\f198";
+div.rgyPostIt>p::before {
+    content: "\f198";
     margin-right: 7px;
     font-family: "FontAwesome";
     font-weight: normal;
@@ -510,8 +574,9 @@ div.rgyPostIt > p::before {
     vertical-align: middle;
 }
 
-div.rgyPostIt > p > a {
+div.rgyPostIt>p>a {
     color: #555;
 }
+
 /* 포스트잇 모듈 (마크1) 끝 */
 </style>
