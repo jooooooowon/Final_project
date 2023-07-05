@@ -348,4 +348,23 @@ public class OmemberController {
 		}
 		return map;
 	}
+	
+	//닉네임 중복체크
+//	@GetMapping("/check/{nickname}")
+//	public Map getNickname(@PathVariable("nickname") String nickname) {
+//		Map map = new HashMap();
+//		OmemberDto dto = null;
+//		boolean tf = true;
+//		try {
+//			dto = service.getById(nickname);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		if (dto != null) {
+//			tf = false;
+//		}
+//		System.out.println("tf : " + tf);
+//		map.put("tf", tf);
+//		return map;
+//	}
 }

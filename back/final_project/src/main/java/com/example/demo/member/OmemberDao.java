@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface OmemberDao extends JpaRepository<Omember, Integer> {
 	Omember findById(String id);
+	Omember findByNickname(String nickname);
 	void findByPwd(String pwd);
 	
 	@Transactional

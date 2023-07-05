@@ -60,9 +60,11 @@
 
             <!-- 인증번호 받기 누르면 시작되는 타이머 -->
             <div id="timer" style="display: flex; justify-content: spcae-between; align-items: center;">
-                <span id="displayedTime" style="text-align: center; margin: 0 auto; color:lightgray">3분0초</span>
-                <button v-on:click="checkKey" id="checkKey" class="checkKey_disabled" v-if="compKey==''" disabled>인증번호 확인</button>
-                <button v-on:click="checkKey" id="checkKey" class="checkKey" v-else>인증번호 확인</button>
+                <span id="displayedTime" style="text-align: center;  color:lightgray">3분0초</span>
+                <div style="display: inline-block; flex-direction: row; justify-content: flex-end;">
+                    <button v-on:click="checkKey" id="checkKey" class="checkKey_disabled" v-if="compKey==''" disabled>인증번호 확인</button>
+                    <button v-on:click="checkKey" id="checkKey" class="checkKey" v-else>인증번호 확인</button>
+                </div>
             </div>
         </div>
 
@@ -86,13 +88,23 @@
         <!-- 이미지 선택 -->
         <div class="form_group">
             <label for="f1" :class="{'input_label': f1}">프로필사진</label>
-            <input type="file" id="f1" placeholder="사진을 선택하세요." class="input_field">
+
+            <!-- 프로필 기본 이미지 -->
+            <span v-if="!f1">
+                <img style="width:150px; height:150px; border-radius:50%;" src="../../assets/imageadd.png">
+            </span>
+            <!-- 선택한 프로필 이미지 -->
+            <span v-else>
+                <img style="width:150px; height:150px; border-radius:50%;" :src="f1">    
+            </span>
+            <input type="file" id="f1" class="input_field" @change="profileImg">
         </div>
-        img(수정예정):<input type="file" id="f1"><br/>
 
         <!-- 가입버튼 -->
-        <div class="join_btn_box"> <!--padding:20px; 을 위해-->
-        <button v-on:click="join" :disabled="!isJoinable">가입</button>
+        <div class="join_btn_box"> 
+        
+        <button v-on:click="join" >가입</button>
+        <!-- <button v-on:click="join" :disabled="!isJoinable">가입</button> -->
         <!-- <button v-else v-on:click="join" :disabled="isJoinable" class="joinBtn">가입</button> -->
         </div>
     </div>
@@ -118,6 +130,8 @@ export default{
             hasPwdError:false,
             hasEmailError:false,
             hasNicknameError:false,
+            f1:'',
+            file:[]
         }
     },
 
@@ -134,6 +148,15 @@ export default{
             console.log('id:' + this.id);
         },
 
+        //이미지 불러오기
+        profileImg(event){
+            const file = event.target.files[0];
+            if(file){
+                this.f1 = URL.createObjectURL(file);
+                console.log('f1:'+this.f1);
+            }
+        },
+
         //회원가입
         join(){
             const self = this;
@@ -146,7 +169,6 @@ export default{
             formdata.append('nickname', self.nickname)
 
             const file = document.getElementById('f1')
-
             //이미지O 회원가입
             if(file.files[0]){
                 formdata.append('mf', file.files[0]);
@@ -180,8 +202,8 @@ export default{
         //중복체크
         idcheck(){
             const self =this;
-            if(self.id.trim() === ''){ //trim: 문자열 양쪽 끝 공백제거
-                self.msg = '아이디를 입력하시오.'
+            if(self.id.trim() === ''){ //trim: 문자열 양쪽 끝 공백제거(아이디 입력 후 다 지우거나, 한글 첫글자시 오류 발생해서 넣은 코드)
+                // self.msg = '아이디를 입력하시오.'
                 return;
             }
             self.$axios.get('http://localhost:8081/members/check/'+self.id)
@@ -199,14 +221,6 @@ export default{
                 }
             });
         },
-
-        // idchecknull(){
-        //     const self =this;
-        //     if(self.id.trim() === ''){ //trim: 문자열 양쪽 끝 공백제거
-        //         self.msg = '아이디를 입력하시오.'
-        //         return;
-        //     }
-        // },
 
         //아이디 정규식(8~12자리 이상 영문+숫자, 영문, 숫자X)
         validateId(event){
@@ -237,6 +251,7 @@ export default{
 
         //닉네임 정규식
         validateNickname(event){
+            //3~8자리, 공백X, 특수문자X 외 다 가능
             const nickname = event.target.value
             const pattern = /^(?!\s)(?!.*\s$)(?!.*[!@#$%^&*(),.?":{}|<>])[^\s]{3,8}$/
             this.hasNicknameError = !pattern.test(nickname);
@@ -366,7 +381,7 @@ export default{
 }
 
 .form_group{
-    margin-bottom:10px;
+    margin-bottom:15px;
     width: 100%;
 }
 
