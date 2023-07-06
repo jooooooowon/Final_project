@@ -200,10 +200,7 @@ export default {
         },
         addBoard() {
             const self = this
-            var year = self.odate.substring(0, 4);
-            var month = self.odate.substring(5, 7);
-            var day = self.odate.substring(8, 10);
-            var date = year + "/" + month + "/" + day;
+            var odate = new Date(self.odate)
             let formdata = new FormData();
             if (self.closetnumlist == '') {
                 alert('입으신 옷을 등록해주세요.')
@@ -213,7 +210,7 @@ export default {
                 alert('커멘트를 입력해주세요.')
             } else {
                 formdata.append('memnum', self.memnum)
-                formdata.append('odate', date)
+                formdata.append('odate', odate)
                 formdata.append('weather', self.weather)
                 formdata.append('temp', self.temp)
                 formdata.append('comments', self.comments)
