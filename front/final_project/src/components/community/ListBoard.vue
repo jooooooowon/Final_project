@@ -390,7 +390,7 @@ hr {
 }
 
 .img1:hover {
-	transform: scale(1.2);  
+	transform: scale(1.08);  
 }
 
 /* box3(좋아요&북마크 버튼) */
