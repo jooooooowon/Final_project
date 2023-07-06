@@ -36,20 +36,24 @@
                                     </div>
                                 </div>
 
-                                <div class="unit" v-show="!showModify">
+                                <div class="unit" v-show="!showModifyPwd">
                                     <h5 class="title">비밀번호</h5> 
                                     <div class="unit_content">
-                                        <input type="text" v-model="pwd" class="info pwd_content">
+                                        <input type="text" v-model="pwd" class="info pwd_content" readonly>
                                     
                                     <button class="btn btn_modify small" @click="modifyPwd">변경</button>
                                     </div>
                                 </div>
-                                <div class="modify pwd" v-show="showModify">
+                                <div class="modify pwd" v-show="showModifyPwd">
                                     <div class="input_box">
                                         <h6 class="input_title">비밀번호</h6>
-                                        <input type="text" v-model="pwd" class="info pwd_content">
+                                        <div class= "input_item">
+                                            <input type="text" v-model="modifiedPwd" class="info input_text">
+                                        </div>
                                         <p class="input_error"></p>
-                                        <button class="btn medium">취소</button><button class="btn medium">저장</button>
+                                        <div class="modify_btn_box">
+                                            <button class="btn medium cancel" @click="cancelModifyPwd">취소</button> <button class="btn medium save" @click="saveModifyPwd">저장</button>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -58,16 +62,30 @@
                                     <div class="unit_content">
                                         <input type="text" v-model="email" class="info email_content" readonly>
                                     </div>
+
                                 </div>
-                                <div class="unit">
+                                <div class="unit" v-show="!showModifyNickname">
                                     <h5 class="title">닉네임</h5> 
                                     <div class="unit_content">
-                                        <input type="text" v-model="nickname" class="info nickname_content">
+                                        <input type="text" v-model="nickname" class="info nickname_content" readonly>
                                     
-                                    <button class="btn btn_modify small">변경</button>
+                                    <button class="btn btn_modify small" @click="modifyNickname">변경</button>
 
                                     </div>
                                 </div>
+                                <div class="modify nickname" v-show="showModifyNickname">
+                                    <div class="input_box">
+                                        <h6 class="input_title">닉네임</h6>
+                                        <div class= "input_item">
+                                            <input type="text" v-model="modifiedNickname" class="info input_text">
+                                        </div>
+                                        <p class="input_error"></p>
+                                        <div class="modify_btn_box">
+                                            <button class="btn medium cancel" @click="cancelModifyNickname">취소</button> <button class="btn medium save" @click="saveModifyNickname">저장</button>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="unit">
                                     <h5 class="title">성별</h5> 
                                     <div class="unit_content">
@@ -111,7 +129,8 @@ export default{
             uploadImg:'null',
             defaultImg: require('@/assets/default.jpg'),
             previewImg:'',
-            showModify: false
+            showModifyPwd: false,
+            showModifyNickname: false
         }
     },
 
@@ -145,7 +164,40 @@ export default{
 
         //변경버튼 클릭시 변경창 보여주기
         modifyPwd(){
-            this.showModify = !this.showModify;
+            this.originalPwd = this.pwd;
+            this.modifiedPwd = this.pwd;
+            this.showModifyPwd = true;
+        },
+
+        //취소버튼 클릭시 기존비밀번호+ 기존변경창 보여주기
+        cancelModifyPwd(){
+            this.modifiedPwd = this.originalPwd;
+            this.showModifyPwd = false;
+        },
+
+        //수정버튼
+        saveModifyPwd(){
+            this.pwd = this.modifiedPwd;
+            this.edit();
+        },
+
+        //변경버튼 클릭시 변경창 보여주기
+        modifyNickname(){
+            this.originalNickname = this.nickname;
+            this.modifiedNickname = this.nickname;
+            this.showModifyNickname = true;
+        },
+
+        //취소버튼 클릭시 기존비밀번호+ 기존변경창 보여주기
+        cancelModifyNickname(){
+            this.modifiedNickname = this.originalNickname;
+            this.showModifyNickname = false;
+        },
+
+        //수정버튼
+        saveModifyNickname(){
+            this.nickname = this.modifiedNickname;
+            this.edit();
         },
 
         //프로필사진
@@ -281,6 +333,24 @@ export default{
     background-color: #fff;
 }
 
+.medium{
+    padding: 0 38px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.cancel{
+    border: 1px solid #ebebeb;
+}
+
+.save{
+    color: #ffffff;
+    background-color: #222;
+    margin-left: 8px;
+}
+
 .small{
     font-size: 12px;
     padding: 0 14px;
@@ -312,11 +382,32 @@ export default{
     overflow: hidden;
     text-overflow: ellipsis;
     border: none;
+    outline: none;
 }
 
 .input_title{
     font-size: 13px;
+    font-weight: bold;
 }
+
+.modify.pwd{
+    padding-top: 25px;
+}
+
+.modify.nickname{
+    padding-top: 25px;
+}
+
+.input_text{
+    width: 99%;
+    border-bottom: 1px solid #ebebeb;
+    padding-bottom: 20px;
+}
+.modify_btn_box{
+    padding-top: 25px;
+    text-align: center;
+}
+
 
 /* .editImgBtn{
     border: 1px solid #d3d3d3;
