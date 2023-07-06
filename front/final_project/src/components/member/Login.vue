@@ -100,6 +100,30 @@ export default{
                 }
             });
         },
+
+        // 토큰 만료시 로그아웃 및 홈으로 이동
+        checkToken(){
+            const token = sessionStorage.getItem('token');
+            if (!token){
+                //토큰 없으면 로그아웃 및 홈으로 이동
+                sessionStorage.clear();
+                location.href='/';
+            } else{
+                //토큰이 있으면 만료 여부 확인
+                const expiration = new Date(localStorage.getItem('tokenExpiration'));
+                const now = new Date();
+                if(expiration <= now){
+                    //토큰 만료되었으면 로그아웃 및 홈으로 이동
+                    sessionStorage.clear();
+                    location.href='/';
+                }
+            }
+
+        },
+
+        mounted() {
+            this.checkToken();
+        },
         
         //로그인, 패스워드 포커스시 초기화, 복구
         cPlaceholder(event){

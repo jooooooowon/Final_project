@@ -1,8 +1,10 @@
 <template>
     <!-- <div class="layout_base"> -->
         <!-- <div class="container"> -->
-            <div class="title">
-            <h2>프로필 관리</h2>
+            <div class="content_title border">
+                <div class="title">
+                    <h3>프로필 관리</h3>
+                </div>
             </div>
             <div class="content" id="Mypage">
                 <div class="memberInfo">
@@ -10,23 +12,73 @@
                     <label for ="newimg">
                         <div class="userProfile">
                             <div class="profile_thumb">
-                                <img :src= "profileImg()" style="width:100px; height:100px; cursor: pointer; border-radius: 50%;"><br/>
+                                <img :src= "profileImg()" style="width:100%; height:100%; cursor: pointer; border-radius: 50%;"><br/>
                                 <!-- <input type="file" id="newimg" accept="img/*" @change="changeImg" v-show="isVisible"><br/> -->
                             </div>
                             <div class="profileDetail">
-                                
-                                    <input type="text" v-model="nickname" style=" border: none; outline: none;"><br/>
+                                    
+                                    <div style="font-size: 18px; margin-top: 12px; font-weight: bold;">{{ nickname }}</div>
+                                    <!-- <input type="text" v-model="nickname" style=" border: none; outline: none;"> -->
 
-                                <div class="profileBtnBox" style="margin-top: 12px;">
-                                    <button class="edit_Img_btn">이미지 변경</button> <button class="del_Img_btn">삭제</button>
+                                <div class="profileBtnBox" style="margin-top: 12px; font-weight: bold;">
+                                    <button class="edit Img btn small">이미지 변경</button> <button class="del Img btn small">삭제</button>
                                 </div>
                             </div>
                         </div>
-                        <div class="profileInfo" style="padding-top:38px; max-width:480px;">
-                            id:<input type="text" v-model="id" readonly><br/>
-                            pwd:<input type="password" v-model="pwd"><br/>
-                            email:<input type="text" v-model="email" readonly><br/>
-                            gender:{{ gender }}<br/>
+                        <div class="profile_info" style="padding-top:38px; max-width:480px;">
+                            <div class="profile_group">
+                                <h4 class="group_title" style="font-size: 18px;">프로필 정보</h4>
+
+                                <div class="unit">
+                                    <h5 class="title">아이디</h5> 
+                                    <div class="unit_content">
+                                        <input type="text" v-model="id" class="info id_content" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="unit" v-show="!showModify">
+                                    <h5 class="title">비밀번호</h5> 
+                                    <div class="unit_content">
+                                        <input type="text" v-model="pwd" class="info pwd_content">
+                                    
+                                    <button class="btn btn_modify small" @click="modifyPwd">변경</button>
+                                    </div>
+                                </div>
+                                <div class="modify pwd" v-show="showModify">
+                                    <div class="input_box">
+                                        <h6 class="input_title">비밀번호</h6>
+                                        <input type="text" v-model="pwd" class="info pwd_content">
+                                        <p class="input_error"></p>
+                                        <button class="btn medium">취소</button><button class="btn medium">저장</button>
+                                    </div>
+                                </div>
+
+                                <div class="unit">
+                                    <h5 class="title">이메일</h5> 
+                                    <div class="unit_content">
+                                        <input type="text" v-model="email" class="info email_content" readonly>
+                                    </div>
+                                </div>
+                                <div class="unit">
+                                    <h5 class="title">닉네임</h5> 
+                                    <div class="unit_content">
+                                        <input type="text" v-model="nickname" class="info nickname_content">
+                                    
+                                    <button class="btn btn_modify small">변경</button>
+
+                                    </div>
+                                </div>
+                                <div class="unit">
+                                    <h5 class="title">성별</h5> 
+                                    <div class="unit_content">
+                                        <input type="text" v-model="gender" class="info gender_content" readonly>
+                                    </div>
+                                </div>
+                                pwd:<input type="password" v-model="pwd"><br/>
+                                email:<input type="text" v-model="email" readonly><br/>
+                                nickname:<input type="text" v-model="nickname"><br/>
+                                gender:{{ gender }}<br/>
+                            </div>
                         </div>   
                     </label>
                         <div>
@@ -58,7 +110,8 @@ export default{
             img:'',
             uploadImg:'null',
             defaultImg: require('@/assets/default.jpg'),
-            previewImg:''
+            previewImg:'',
+            showModify: false
         }
     },
 
@@ -89,6 +142,11 @@ export default{
     },
     
     methods:{
+
+        //변경버튼 클릭시 변경창 보여주기
+        modifyPwd(){
+            this.showModify = !this.showModify;
+        },
 
         //프로필사진
         profileImg(){
@@ -193,9 +251,9 @@ export default{
     background-color:#ffffff;
 } */
 
-.title{
+.content_title.border{
     padding:10px 0 16px;
-    border-bottom: 2px solid #222;
+    border-bottom: 3px solid #222;
 }
 
 .userProfile{
@@ -206,13 +264,13 @@ export default{
 }
 
 .profile_thumb{
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     flex: none;
     margin-right: 12px;
 }
 
-/* btn {
+.btn {
     display: inline-flex;
     cursor: pointer;
     align-items: center;
@@ -221,7 +279,45 @@ export default{
     text-align: center;
     color: rgba(34,34,34,.8);
     background-color: #fff;
-} */
+}
+
+.small{
+    font-size: 12px;
+    padding: 0 14px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #d3d3d3;
+}
+
+.unit{
+    display:flex;
+    flex-direction: column;
+    padding: 25px 0 12px;
+    position: relative;
+    border-bottom: 1px solid #ebebeb;
+}
+.unit_content{
+    width:100%;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+}
+
+.info{
+    flex: 1;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: none;
+}
+
+.input_title{
+    font-size: 13px;
+}
+
 /* .editImgBtn{
     border: 1px solid #d3d3d3;
     color: rgba(34, 34, 34, .8);
@@ -238,11 +334,16 @@ export default{
     margin-left: 8px;
 } */
 
-h2{
+h3{
     display: block;
     font-size: 24px;
     font-weight:bolder;
     text-align: left;
+}
+h5{
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(34,34,34,.5);
 }
 ul {
   list-style-type: none;
