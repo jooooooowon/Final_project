@@ -2,7 +2,7 @@
     <div class="body-css">
         <h3> 나 뭐 입었더라?</h3>
         <span v-for="src in clothnum" :key="src">
-            <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + src" alt="sdf">
+            <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + src" alt="sdf">
         </span>
         <br /><br />
         날짜: <input type="text" v-model="odate" readonly><br />
@@ -31,7 +31,7 @@ export default {
     created: function () {
         const self = this;
         self.memnum = sessionStorage.getItem('memnum')
-        self.$axios.get('http://localhost:8081/boards/' + self.ootwnum)
+        self.$axios.get('http://localhost:7878/boards/' + self.ootwnum)
             .then(function (res) {
                 if (res.status == 200) {
                     let dto = res.data.dto;
@@ -55,7 +55,7 @@ export default {
     methods: {
         deleteOootw(ootwnum) {
             const self = this;
-            self.$axios.delete('http://localhost:8081/boards/' + ootwnum)
+            self.$axios.delete('http://localhost:7878/boards/' + ootwnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         location.href = "/ootwlist";

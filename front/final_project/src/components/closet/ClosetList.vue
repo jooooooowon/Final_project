@@ -96,11 +96,11 @@
         </div>
 
         <!-- 옷장에 등록된 옷 리스트 -->
-        <div v-show="memnum == checkMemnum" class="main-list">
+        <div v-if="memnum == checkMemnum" class="main-list">
             <div class="container" v-for="(row, index) in additionalCloset" :key="index"
                 style="display: flex; align-items: center;">
                 <div class="card" v-for="closet in row" :key="closet.closetnum">
-                    <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closet.closetnum">
+                    <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + closet.closetnum" v-on:click="modalOpenDetail(closet.closetnum)" style="cursor: pointer;">
                     <div class="favImg">
                         <a v-on:click="favorite(closet.closetnum)">
                             <span v-if="closet.favorite == 1">
@@ -124,14 +124,14 @@
             </div>
             <span class="more-btn"><button v-on:click="moreBtn">더보기</button></span><br />
         </div><br />
-        <div v-show="closetlist == ''">등록된 옷이 없습니다.</div>
+        <div v-if="memnum != checkMemnum">등록된 옷이 없습니다.</div>
 
         <!-- 옷 디테일 모달창 -->
         <div class="modal-wrap-detail" v-show="modalCheckDetail" @click="modalCloseDetail" id="modalWrapDetail">
             <div class="modal-container-detail" @click.stop="" id="containerDetail">
                 <label for="detailEditFile">
                     <span v-if="detailEditImg == ''">
-                        <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + setClosetnum"
+                        <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + setClosetnum"
                             class="modal-img-detail">
                     </span>
                     <span v-if="detailEditImg != ''">
@@ -142,7 +142,7 @@
                 <div class="modal-tags-detail">{{ maintag }} | {{ sub }}</div>
                 <div class="modal-search-detail"><input type="search" v-model="modalCloth" size="15"
                         style="height: 38px; text-align: center;"></div>
-                <div class="modal-btn-detail"><b-button v-on:click="change(setClosetnum)">수정</b-button></div>
+                <div class="modal-btn-detail"><button v-on:click="change(setClosetnum)">수정</button></div>
             </div>
         </div>
     </div>
@@ -203,7 +203,7 @@ export default {
     created: function () { // 해당 컴포넌트가 처음 실행될 때만 적용... 그 다음부터는 변경된 컴포넌트(같은 컴포넌트로 이동할 때 적용이 안됨)
         const self = this;
         self.memnum = sessionStorage.getItem('memnum')
-        self.$axios.get('http://localhost:8081/closets')
+        self.$axios.get('http://localhost:7878/closets')
             .then(function (res) {
                 if (res.status == 200) {
                     // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default 걸러서 리스트에 넣기
@@ -285,7 +285,7 @@ export default {
             if (favorite == 1) {
                 let answer = confirm('즐겨찾기된 옷입니다. 정말 삭제하시겠습니까?')
                 if (answer) {
-                    self.$axios.delete('http://localhost:8081/closets/' + closetnum)
+                    self.$axios.delete('http://localhost:7878/closets/' + closetnum)
                         .then(function (res) {
                             if (res.status == 200) {
                                 if (res.data.flag) {
@@ -306,7 +306,7 @@ export default {
                     alert('삭제가 취소되었습니다.')
                 }
             } else {
-                self.$axios.delete('http://localhost:8081/closets/' + closetnum)
+                self.$axios.delete('http://localhost:7878/closets/' + closetnum)
                     .then(function (res) {
                         if (res.status == 200) {
                             if (res.data.flag) {
@@ -327,7 +327,7 @@ export default {
         },
         favorite(closetnum) {
             const self = this;
-            self.$axios.patch('http://localhost:8081/closets/' + closetnum)
+            self.$axios.patch('http://localhost:7878/closets/' + closetnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         const updatedCloset = self.closetlist.find(closet => closet.closetnum == closetnum);
@@ -490,7 +490,7 @@ export default {
                 formdata.append('cloth', self.clothname)
                 formdata.append('maintag', self.selectedmain)
                 formdata.append('subtag', self.selectedsub)
-                self.$axios.post('http://localhost:8081/closets', formdata)
+                self.$axios.post('http://localhost:7878/closets', formdata)
                     .then(function () {
                         location.reload();
                     })
@@ -501,7 +501,7 @@ export default {
             const self = this;
             this.setClosetnum = closetnum;
             self.modalCheckDetail = !self.modalCheckDetail;
-            self.$axios.get('http://localhost:8081/closets/' + closetnum)
+            self.$axios.get('http://localhost:7878/closets/' + closetnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         let dto = res.data.dto
@@ -527,7 +527,7 @@ export default {
             const self = this;
             let formdata = new FormData();
             if (self.uploadimg == null) {
-                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.cloth)
+                self.$axios.patch('http://localhost:7878/closets/editcloth/' + closetnum + "/" + self.cloth)
                     .then(function (res) {
                         if (res.status == 200) {
                             let newdto = res.data.dto
@@ -539,7 +539,7 @@ export default {
                     })
             } else {
                 formdata.append('newf', self.uploadimg)
-                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.cloth, formdata)
+                self.$axios.patch('http://localhost:7878/closets/editcloth/' + closetnum + "/" + self.cloth, formdata)
                     .then(function (res) {
                         if (res.status == 200) {
                             let newdto = res.data.dto
@@ -640,7 +640,13 @@ li {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: transform 0.3s ease;
     align-items: center;
+}
+
+.card:hover {
+    background-color: rgb(242, 242, 242);
+    transform: scale(1.05);
 }
 
 .card img {
@@ -656,6 +662,8 @@ li {
 
 .favImg {
     margin-left: 150px;
+    /* width: 50px; */
+    /* height: 50px; */
     cursor: pointer;
 }
 
@@ -674,9 +682,10 @@ a {
 }
 
 button {
-    border: none;
-    background-color: rgb(196, 215, 178, 0.6);
-    border: none;
+    border: 1px solid rgb(177, 177, 177);
+    background-color: white;
+    /* background-color: rgb(196, 215, 178, 0.6); */
+    /* border: none; */
     border-radius: 5px;
     transition: .5s;
     font-size: 15px;
@@ -686,8 +695,9 @@ button {
 button:hover {
     background-color: #85b380;
     color: #ffffff;
+    /* color: #85b380; */
     cursor: pointer;
-    font-weight: bold;
+    /* font-weight: bold; */
 }
 
 .more-btn {
@@ -728,6 +738,7 @@ button:hover {
 }
 
 .btn-container button {
+    border: none;
     padding: 5px 10px;
     cursor: pointer;
     flex: 1 0 45%;
@@ -736,6 +747,10 @@ button:hover {
     /* 버튼 사이의 간격 설정 */
     height: 33px;
     background-color: transparent;
+}
+
+.btn-container button:hover {
+    color: #85b380;
 }
 
 /* ----- 옷 등록 모달창 ----- */
@@ -906,6 +921,10 @@ button:hover {
     margin-bottom: -110px;
 }
 
+.modal-btn-detail button {
+    background-color: transparent;
+}
+
 .modal-search-detail {
     margin-bottom: 10px;
 }
@@ -934,7 +953,7 @@ button:hover {
 
 .menu-wrapper {
     position: absolute;
-    top: 186px;
+    top: 270px;
     left: 10px;
     width: 14%;
     z-index: 1;
@@ -951,7 +970,7 @@ z-index: 100: 컨테이너의 층위를 설정하여 다른 요소 위에 나타
 .menu-wrapper.sticky {
     position: fixed;
     top: 10px;
-    transition: top 1s ease;
+    transition: top 1.5s ease;
 }
 
 .menu-bar {
