@@ -23,7 +23,6 @@
                 </ul>
             </div>
         </div>
-
         <div class="board-list" v-if="memnum == checkMemnum">
             <span class="board-title">Outfit Of the Weather</span>
             <a href="/ootwadd">게시글 작성</a>
@@ -36,7 +35,7 @@
                 </tr>
                 <tr v-for="(ootw, index) in displayedootw" :key="index">
                     <!-- <td>{{ datelist[index] }}</td> -->
-                    <td>{{ ootw.odate }}</td>
+                    <td>{{ datelist[index] }}</td>
                     <td><a v-on:click="detail(ootw.ootwnum)">{{ ootw.comments }}</a></td>
                     <td>{{ ootw.weather }}</td>
                     <td>{{ ootw.temp }}</td>
@@ -62,12 +61,11 @@ export default {
             ootwlist: [],
             displayedootw: [],
             pageIndex: [],
-            beforePage: '',
             datelist: [],
+            displayedDate: [],
             ootwPerPage: 5,
             currentPage: 1,
-            testNumPerPage: 5,
-            testPage: 0,
+            NumPerPage: 5,
             weather: '',
             date1: '',
             date2: '',
@@ -84,7 +82,7 @@ export default {
     created: function () {
         const self = this;
         self.memnum = sessionStorage.getItem('memnum');
-        self.$axios.get('http://localhost:8081/boards')
+        self.$axios.get('http://localhost:7878/boards')
             .then(function (res) {
                 if (res.status == 200) {
                     self.ootwlist = res.data.list;
@@ -116,6 +114,7 @@ export default {
                         }
                     }
                     self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
+                    self.displayedDate = self.datelist.slice(0, self.ootwPerPage);
                 } else {
                     alert('에러코드: ' + res.status);
                 }
@@ -143,9 +142,10 @@ export default {
         },
         pageBtn(page, index) {
             const self = this;
-            const startPage = (page - 1) * self.testNumPerPage;
-            const endPage = startPage + self.testNumPerPage;
+            const startPage = (page - 1) * self.NumPerPage;
+            const endPage = startPage + self.NumPerPage;
             self.displayedootw = self.ootwlist.slice(startPage, endPage);
+            self.displayedDate = self.datelist.slice(startPage, endPage);
             let selected = document.querySelectorAll('#selected');
             for(let i=0; i<this.pageIndex.length; i++) {
                 selected[i].style.color = 'black';
@@ -169,7 +169,7 @@ export default {
             if (self.date2 < self.date1 || self.date1 == '' || self.date2 == '') {
                 alert('날짜 범위를 다시 정해주세요.')
             } else {
-                self.$axios.get('http://localhost:8081/boards/dates/' + self.date1 + "/" + self.date2)
+                self.$axios.get('http://localhost:7878/boards/dates/' + self.date1 + "/" + self.date2)
                     .then(function (res) {
                         if (res.status == 200) {
                             if (res.data.list != '') {
