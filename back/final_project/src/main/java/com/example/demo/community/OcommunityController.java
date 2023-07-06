@@ -191,6 +191,12 @@ public class OcommunityController {
 			ArrayList<OcommunityDto> list = service.getByMemnum(memnum);
 			for(OcommunityDto dto : list) {
 				dto.setBtnlike(likeservice.likeCount(dto.getCommnum()));
+				// 로그인 되어 있는 멤버가 현재 dto (list를 for문으로 돌리고 있다는 것을 잊지말자.)
+				// 에 좋아요를 눌렀는 지 확인한다.
+				// 좋아요를 눌렀었다면 chklike를 true로 바꾼다.
+				if(likeservice.getByMemnumAndCommnum(memnum, dto.getCommnum()) != null) {
+					dto.setChklike(true);
+				}
 			}
 			map.put("list", list);
 		} catch (Exception e) {

@@ -1,14 +1,20 @@
 <template>
 
   <!-- 신고 리스트 -->
-  
+
+  <div class="icon1">
+    <span style="color: #f15746; font-size: 40px" class="material-symbols-outlined">release_alert</span>
+    <span class="msg">{{msg}}</span>
+  </div>
   <div class="box1">
+    <span class="box1-item">신고번호</span>
     <span class="box1-item">신고자</span>
-    <span class="box1-item">신고 내용</span>
-    <span class="box1-item">확인 사항</span>
+    <span class="box1-item">신고내용</span>
+    <span class="box1-item">확인사항</span>
   </div>
   
       <div class="reportBox" v-for="report in reportList" :key="report.repnum">
+        <div>{{ report.repnum }}</div>
         <div>{{ report.memnum.nickname }}</div>
         <div>{{ report.category }}</div>
         <div><button class="checkBtn" @click="modalOpen(report.commnum.commnum, report.repnum)">확인</button></div>
@@ -21,7 +27,7 @@
       <div class="close">
         <button class="checkBtn" @click="modalClose"><span class="material-symbols-outlined">close</span></button>
       </div>
-      <div class="icon"><span style="color: #f15746" class="material-symbols-outlined">release_alert</span></div>
+      <div class="icon2"><span style="color: #f15746" class="material-symbols-outlined">release_alert</span></div>
       <div class="content1">
         <div>Nickname: {{ reportedMember }}</div>
       </div>
@@ -52,7 +58,8 @@ export default {
       repnum: '',
       reportedMember: '',
       reportedCommTag: '',
-      modalCheck: false
+      modalCheck: false,
+      msg: '신고 리스트'
     };
   },
   mounted() {
@@ -147,29 +154,42 @@ export default {
 	left: 50%;
 	transform: translate(-50%, -50%);
 	width: 48%;
-	height: 70%;
+	height: 65%;
 	background: #fff;
 	border-radius: 10px;
 	padding: 20px;
 	box-sizing: border-box;
 }
-.reportBox {
-  max-width: 50%;
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.icon1 {
+  display: flex;
+  justify-content: center;
+  margin-top: 3%;
 }
-
+.msg {
+  margin-top: 10px; 
+  margin-left: 5px; 
+  font-size: 1.2em; 
+  font-weight: bold; 
+  color: #f15746;
+}
 .box1 {
-  max-width: 50%;
-  margin-left: 24.5%;
-  margin-bottom: 15px;
+  margin-top: 2%;
+  margin-bottom: 10px;
+  text-align: center;
+  margin-left: 28%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-bottom: 2px solid darkorange
+  grid-template-columns: 100px 200px 100px 100px;
+  grid-column-gap: 5%;
 }
 .box1-item {
   margin-bottom: 5px;
+}
+.reportBox {
+  text-align: center;
+  margin-left: 28%;
+  display: grid;
+  grid-template-columns: 100px 200px 100px 100px;
+  grid-column-gap: 5%;
 }
 
 .checkBtn {
@@ -177,6 +197,7 @@ export default {
 	border: none; 
   font-weight: bold;
   color: rgb(9, 9, 137);
+  cursor: pointer;
 }
 .close {
 position: absolute;
@@ -187,36 +208,36 @@ right: 10px;
 .imgBox {
   position: absolute;
   top: 12%;
-  left: 20px;
-  right: 20px;
+  left: 5%;
+  /* right: 30px; */
 }
 .img1 {
   width: 220px;
   height: 330px;
 }
-.icon {
+.icon2 {
   position: absolute;
   top: 6%;
   left: 5%;
 }
 .content1 {
   position: absolute;
-  top: 6%;
+  top: 6.5%;
   left: 9%;
   font-size: 1em;
   font-weight: bold;
 }
 .content2 {
   position: absolute;
-  bottom: 15%;
+  bottom: 10%;
   left: 5%;
   font-size: 1em;
   font-weight: bold;
 }
 .repBtn {
   position: absolute;
-  bottom: 15%;
-  right: 6%;
+  bottom: 10%;
+  right: 5%;
 }
 .repBtn-item1 {
   background-color: transparent;
@@ -224,11 +245,13 @@ right: 10px;
   font-weight: bold;
   color:rgb(9, 9, 137);
   border-right: solid black 2px ;
+  font-size: 1em;
 }
 .repBtn-item2 {
   background-color: transparent;
 	border: none; 
   font-weight: bold;
   color:rgb(9, 9, 137);
+  font-size: 1em;
 }
 </style>

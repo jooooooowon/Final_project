@@ -22,12 +22,13 @@
 			<div id="box1">
 				<!-- 프사 & 닉네임-->
 				<div class="item-1">
-					<span><img style="margin-right: 8px; border-radius:50%; width: 30px; height: 30px;" :src="'http://localhost:8081/members/imgs/' + comm.memnum.memnum"></span>
+					<span><img style="margin-right: 8px; border-radius:50%; width: 30px; height: 30px;" 
+						:src="'http://localhost:8081/members/imgs/' + comm.memnum.memnum"></span>
 					<span style="margin-top: 5px;">
 						<a v-on:click="searchMember(comm.memnum.memnum)" style="cursor: pointer; font-size: 0.8em; font-weight: bold;">{{ comm.memnum.nickname }}</a>
 					</span>
 				</div>
-				
+
 				<div class="item-2">
 					<!--신고: 로그인이 되어야 보임(자기꺼 빼고) -->
 					<div v-if="isLoggedIn">
@@ -46,7 +47,7 @@
 				</div>
 			</div>
 			<!--box1 End-->		
-
+			<!-- <hr /> -->
 
 			<!--box2 img-->
 			<div id="box2">
@@ -143,12 +144,12 @@ export default {
 	
 	data() {
 		return {
+			memnum: sessionStorage.getItem('memnum'),
 			commlist: [],
 			reportContent: '',
 			reportlist: [],
 			reportedCommnums: [],
 			reportCommnum: '',
-			memnum: sessionStorage.getItem('memnum'),
 			modalCheck: false,
 			searchTag : '',
 		}
@@ -240,13 +241,13 @@ export default {
 			.then(function (res) {
 				if (res.status == 200) {
 					self.reportlist = res.data.list;
-					console.log(res.data.list)
-					console.log("aaa:" + self.reportlist)
+					// console.log(res.data.list)
+					// console.log("aaa:" + self.reportlist)
 					for (let dto of self.reportlist) {
-						console.log(dto)
+						// console.log(dto)
 						self.reportedCommnums.push(dto.commnum.commnum);
 					}
-					console.log("reportlist : " + self.reportedCommnums)
+					// console.log("reportlist : " + self.reportedCommnums)
 					method();
 				} else {
 					alert('에러코드: ' + res.status);
@@ -336,11 +337,19 @@ export default {
 </script>
 
 <style scoped>  
+hr {
+	background: linear-gradient(to left, transparent, #fff, transparent);
+}
 /* box1 */
 #box1 {
-	border: #336399 solid 2px;
-	max-width: 48%;
-	margin: auto;
+	/* border-bottom: #68a1627e solid 2px; */
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	background-color: #c1f2ca2a;
+	max-width: 601px;
+	margin-top: 2%;
+	margin-left: auto;
+	margin-right: auto;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
@@ -367,8 +376,8 @@ export default {
 
 /* box2(이미지) */
 #box2 {
-	border: #336399 solid 2px;
-	max-width: 48%;
+	/* border-bottom: #68a1627e solid 2px; */
+	max-width: 45%;
 	margin: auto;
 	display: flex;
 	justify-content: center;
@@ -386,8 +395,10 @@ export default {
 
 /* box3(좋아요&북마크 버튼) */
 #box3 {
-	border: #336399 solid 2px;
-	max-width: 48%;
+	/* border-top: #68a1627e solid 2px; */
+	/* border-bottom: #68a1627e solid 2px; */
+	background: #fff;
+	max-width: 601px;
 	margin: auto;
 	display: flex;
 	flex-direction: row;
@@ -396,6 +407,8 @@ export default {
 
 .likeCount {
 	margin-top: 8px;
+	font-size: 0.7em;
+	font-weight: bold;
 }
 
 .bookBtn {
@@ -416,18 +429,24 @@ export default {
 	cursor: pointer;
 }
 
-/* box4 */
+/* box4 Tag */
 #box4 {
-	border: #336399 solid 2px;
-	max-width: 48%;
+	/* border-bottom: #68a1627e solid 2px; */
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	max-width: 601px;
 	margin: auto;
 	display: flex;
+	box-shadow: 16px 16px 16px rgba(195, 192, 192, 0.345);
+	/* border-radius: 5	0px; */
 }
 
 .box4-item {
 	margin-left: 10px;
-	margin-top: 12px;
+	margin-top: 8px;
 	margin-bottom: 12px;
+	font-size: 0.8em;
+	font-weight: bold;
 }
 /* 게시글 등록 */
 .add {
@@ -457,14 +476,6 @@ input:focus {
 	/* border-radius: 10px ; */
 	border: none;
 }
-
-/* hr {
-	width: 60%;
-	margin-left: auto;
-	margin-right: auto;
-	border: solid 2px #336399;
-} */
-
 
 /* modal or popup */
 .modal-wrap {
