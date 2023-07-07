@@ -170,11 +170,26 @@ public class OmemberController {
 				if (memnum != tempMemnum) {
 					flag = false;
 				}
-			} catch (Exception e) {
+			} catch (Exception e) {	
 				flag = false;
 			}
 		}
 		if (flag) {
+			OmemberDto dto = service.getByMemnum(memnum);
+			String oldImgPath = dto.getImg();
+			if(oldImgPath != null && !oldImgPath.isEmpty()) {
+				try {
+					File oldImgFile = new File(URLDecoder.decode(oldImgPath, "utf-8"));
+					oldImgFile.delete();
+					File dir = new File(path + dto.getMemnum());
+					dir.delete();
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+			}else {
+				File dir = new File(path + dto.getMemnum());
+				dir.delete();
+			}
 			service.delMember(memnum);
 		}
 		map.put("flag", flag);
@@ -202,7 +217,34 @@ public class OmemberController {
 		}
 		return result;
 	}
-
+	
+	//이미지 삭제
+	@DeleteMapping("/imgs/{memnum}")
+	public Map removeImg(@PathVariable("memnum") int memnum){
+		Map map = new HashMap();
+		boolean flag = true;
+		try {
+			OmemberDto dto = service.getByMemnum(memnum);
+			String oldImgPath = dto.getImg();
+			System.out.println(oldImgPath);
+			if(oldImgPath != null && !oldImgPath.isEmpty()) {
+				File oldImgFile = new File(URLDecoder.decode(oldImgPath, "utf-8"));
+				System.out.println(oldImgFile);
+				oldImgFile.delete();
+				
+				dto.setImg(null);
+				service.save(dto);
+			}else {
+				flag = false;
+			}
+			
+		}catch(Exception e) {
+			flag = false;
+		}
+		map.put("flag", flag);
+		return map;
+	}
+	
 	// 내 정보 보기.
 	@GetMapping("/{memnum}")
 	public Map getInfo(@PathVariable("memnum") int memnum, @RequestHeader(name = "token", required = false) String token) {

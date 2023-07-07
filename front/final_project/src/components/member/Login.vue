@@ -1,11 +1,14 @@
 <template>
+    <div id="container">
     <div id="login">
-        <h3>옷짱(로고)</h3>
+        <div class= "title_box">
+            <h3 class="title">OTZZANG</h3>
+        </div>
         
         <!-- 아이디 입력 폼 -->
         <div class="form_group">
-            <label for ="id"  :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">ID</label>
-            <input type="text" id="id" v-model="id" placeholder="ID" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
+            <label for ="id"  :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">아이디</label>
+            <input type="text" id="id" v-model="id" placeholder="아이디" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
 
             <!-- 아이디 유효성 검사 -->
             <p class="input_error" v-if="hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p>
@@ -13,8 +16,8 @@
 
         <!-- 패스워드 입력 폼 -->
         <div class="form_group">
-            <label for="pwd" :class="{'input_label': !hasPwdError, 'input_label_error': hasPwdError}">Password</label>
-            <input type="password" id="pwd" v-model="pwd" placeholder="Password" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)"><br/>
+            <label for="pwd" :class="{'input_label': !hasPwdError, 'input_label_error': hasPwdError}">패스워드</label>
+            <input type="password" id="pwd" v-model="pwd" placeholder="패스워드" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)"><br/>
 
             <!-- 패스워드 유효성 검사 -->
             <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
@@ -45,7 +48,7 @@
             </li>
         </ul>
     </div>
-    
+</div>
 </template>
 
 <script>
@@ -100,30 +103,6 @@ export default{
                 }
             });
         },
-
-        // 토큰 만료시 로그아웃 및 홈으로 이동
-        checkToken(){
-            const token = sessionStorage.getItem('token');
-            if (!token){
-                //토큰 없으면 로그아웃 및 홈으로 이동
-                sessionStorage.clear();
-                location.href='/';
-            } else{
-                //토큰이 있으면 만료 여부 확인
-                const expiration = new Date(localStorage.getItem('tokenExpiration'));
-                const now = new Date();
-                if(expiration <= now){
-                    //토큰 만료되었으면 로그아웃 및 홈으로 이동
-                    sessionStorage.clear();
-                    location.href='/';
-                }
-            }
-
-        },
-
-        mounted() {
-            this.checkToken();
-        },
         
         //로그인, 패스워드 포커스시 초기화, 복구
         cPlaceholder(event){
@@ -136,9 +115,9 @@ export default{
             if(!inputField.value){
                 label.classList.remove('active');
                 if(inputField.id ==='id'){
-                    inputField.placeholder = 'ID';
+                    inputField.placeholder = '아이디';
                 }else if(inputField.id === 'pwd'){
-                    inputField.placeholder = 'Password';
+                    inputField.placeholder = '패스워드';
                 }
             }
         },
@@ -173,7 +152,39 @@ export default{
 </script>
 
 <style scoped>
+/* 로고폰트 */
+@font-face {
+  font-family: "Flood Std"; 
+  src: url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.eot"); 
+  src: url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.woff") format("woff"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.svg#Flood Std") format("svg"); 
+}
 
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+#container{
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
+}
+
+.title_box{
+    width: 310px;
+    height: 70px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+.title{
+    font-family: "Flood Std";
+    font-size: 50px;
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 /* placeholder 색상 */
 /* input::placeholder{
     color:#ebebeb
@@ -195,6 +206,7 @@ export default{
     background-color: #000000;
     color: #fff;
     font-weight: bold;
+    font-family: 'PyeongChang-Regular';
 }
 
 .loginBtn_disabled{
@@ -206,6 +218,7 @@ export default{
     background-color: #ededed;
     color: #fff;
     font-weight: bold;
+    font-family: 'PyeongChang-Regular';
 }
 
 .loginBtn:hover{
@@ -302,6 +315,8 @@ button {
     color: #ebebeb;
     font-size: 16px;
     font-weight: bold;
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
 }
 
 .look_box{
