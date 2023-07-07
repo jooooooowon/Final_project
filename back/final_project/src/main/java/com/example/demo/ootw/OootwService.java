@@ -57,6 +57,16 @@ public class OootwService {
 		return dtoList;
 	}
 	
+	// 커멘트 like 검색
+	public ArrayList<OootwDto> getByCommentsLike(String comments, int memnum) {
+		ArrayList<Oootw> list = dao.findByCommentsLike("%" + comments + "%", memnum);
+		ArrayList<OootwDto> dtoList = new ArrayList<>();
+		for(Oootw o:list) {
+			dtoList.add(new OootwDto(o.getOotwnum(), o.getMemnum(), o.getOdate(), o.getWeather(), o.getTemp(), o.getComments()));
+		}
+		return dtoList;
+	}
+	
 	// 게시글 삭제
 	public void delete(int ootwnum) {
 		dao.deleteById(ootwnum);

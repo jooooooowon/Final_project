@@ -1,54 +1,70 @@
 <template>
     <div class="body-css">
+        <!-- 좌측 검색바 -->
         <div ref="stickyPoint">
             <div class="board-search" :class="{ sticky: isSticky }">
-                <ul style="list-style-type: none;">
-                    <li style="border:1px solid lightgray; width:360px; height:70px;">
-                        <br />날짜 검색<br />
-                        <input type="date" v-model="date1" id="date1">
-                        ~ <input type="date" v-model="date2" id="date2">&nbsp;&nbsp;<button
-                            v-on:click="searchByDate">검색</button>
-                    </li><br />
-                    <li style="border:1px solid lightgray; width:360px; height:70px">
-                        <br />기온 검색<br />
-                        <input type="number" v-model="temp1" id="temp1" style="width:130px;">
-                        ~ <input type="number" v-model="temp2" id="temp2" style="width:130px;">
-                        &nbsp;<button v-on:click="a">검색</button>
-                    </li><br />
-                    <li style="border:1px solid lightgray; width:360px; height:70px">
-                        <br />내용 검색<br />
-                        <input type="text" v-model="comments" id="comments" style="width:277px;">
-                        &nbsp;<button v-on:click="b">검색</button>
+                <ul style="list-style-type: none; width:360px;" class="board-search-ul">
+                    <li style="width:360px; height:130px;"><br /><br /><br />
+                        <input type="date" v-model="date1" id="date1"
+                            style="font-family: 'PyeongChang-Regular'; ont-size:13px; width:126px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
+                            data-placeholder="시작일" aria-required="true" required>
+                        &nbsp;<input type="date" v-model="date2" id="date2"
+                            style="font-family: 'PyeongChang-Regular'; font-size:13.5px; width:126px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
+                            data-placeholder="종료일" aria-required="true" required>
+                        <button v-on:click="searchByDate"
+                            style="font-family: 'PyeongChang-Regular'; width:60px; height:32px; background-color: transparent; border:none">검색</button>
+                    </li>
+                    <li style="width:360px; height:130px"><br /><br /><br />
+                        <input type="number" v-model="temp1" id="temp1"
+                            style="font-family: 'PyeongChang-Regular'; font-size:13.5px; width:123px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
+                            placeholder="최저 기온" onfocus="this.placeholder=''" onblur="this.placeholder='최저 기온'">
+                        &nbsp;<input type="number" v-model="temp2" id="temp2"
+                            style="font-family: 'PyeongChang-Regular'; font-size:13.5px; width:123px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
+                            placeholder="최고 기온" onfocus="this.placeholder=''" onblur="this.placeholder='최고 기온'">
+                        <button v-on:click="searchByTemp"
+                            style="font-family: 'PyeongChang-Regular'; width:60px; height:32px; background-color: transparent; border:none">검색</button>
+                    </li>
+                    <li style="width:360px; height:130px;"><br /><br /><br />
+                        <input type="search" v-model="comments" id="comments"
+                            style="font-family: 'PyeongChang-Regular'; font-size:13.5px; width:270px; height: 35px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
+                            placeholder="커멘트 검색하기" onfocus="this.placeholder=''" onblur="this.placeholder='커멘트 검색하기'">
+                        <button v-on:click="searchByComments"
+                            style="font-family: 'PyeongChang-Regular'; width:60px; height:32px; background-color: transparent; border:none">검색</button>
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="board-list" v-if="memnum == checkMemnum">
-            <span class="board-title">Outfit Of the Weather</span>
-            <a href="/ootwadd">게시글 작성</a>
-            <table style="border:1px solid lightgray;">
-                <tr style="border:1px solid lightgray;">
-                    <th>날짜</th>
-                    <th>Comment</th>
-                    <th>날씨</th>
-                    <th>기온</th>
-                </tr>
-                <tr v-for="(ootw, index) in displayedootw" :key="index">
-                    <!-- <td>{{ datelist[index] }}</td> -->
-                    <td>{{ datelist[index] }}</td>
-                    <td><a v-on:click="detail(ootw.ootwnum)">{{ ootw.comments }}</a></td>
-                    <td>{{ ootw.weather }}</td>
-                    <td>{{ ootw.temp }}</td>
-                </tr>
-            </table><br />
-            <ul>
-                <il v-for="(page, index) in pageIndex" :key="index">
-                    <a v-on:click="pageBtn(page, index)" style="cursor: pointer; font-size:18px" id="selected">{{ page }}&nbsp;&nbsp;</a>
-                </il>
-            </ul>
-            <!-- <button v-on:click="moreBtn">더보기</button> -->
+
+
+        <div class="ootw-title">
+            <span style="font-size: 30px; font-weight: bold; margin-left: 205px;" class="ootw-title-title">
+                <a href="/ootwlist" class="ootw-title-link">Outfit Of the Weather</a>
+            </span>
+            <span style="margin-left:150px;"><a class="ootw-title-add" href="/ootwadd" style="">게시글 작성</a></span>
         </div>
-        <div class="empty-board-list" v-if="memnum != checkMemnum">등록된 게시글이 없습니다.</div>
+        <div class="ootw-wrap" v-if="memnum == checkMemnum">
+            <div class="ootw-list">
+                <div class="ootw-item" v-for="(ootw, index) in ootwlist" :key="ootw.ootwnum"
+                    v-on:click="detail(ootw.ootwnum)">
+                    <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closetNumList[index]"><br />
+                    <div class="ootw-contents"
+                        style="text-align: left; margin-left:10px; margin-top:10px; font-size: 14px; color: rgb(158, 157, 157)">
+                        {{ datelist[index] }}&nbsp;&nbsp;&nbsp;{{ ootw.weather }}&nbsp;&nbsp;&nbsp;{{ ootw.temp }}도
+                    </div>
+                    <div style="text-align: left; margin-left:10px; margin-top:8px; font-size: 16px; font-weight: bold;">
+                        가나다라마바사 이것은 커멘트입니다.
+                        <!-- {{ ootw.comments }} asdasdsadasdqwdasdawdawd -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="empty-ootw-list" v-if="memnum != checkMemnum">등록된 게시글이 없습니다.</div>
+
+
+        <div class="naver-shopping">
+            <router-link to="naverShoppingList"><img src="../../assets/navershopping2.png"
+                    alt="naver-shopping-icon"></router-link>
+        </div>
     </div>
 </template>
 
@@ -59,16 +75,20 @@ export default {
     data() {
         return {
             ootwlist: [],
-            displayedootw: [],
+            closetNumList: [],
+            // displayedootw: [],
             pageIndex: [],
             datelist: [],
-            displayedDate: [],
+            // displayedDate: [],
             ootwPerPage: 5,
             currentPage: 1,
-            NumPerPage: 5,
+            // NumPerPage: 5,
             weather: '',
             date1: '',
             date2: '',
+            temp1: '',
+            temp2: '',
+            comments: '',
             memnum: sessionStorage.getItem('memnum'),
             checkMemnum: '',
             // 검색창
@@ -86,35 +106,36 @@ export default {
             .then(function (res) {
                 if (res.status == 200) {
                     self.ootwlist = res.data.list;
+                    self.closetNumList = res.data.closetNumList;
                     if (self.ootwlist != '') {
                         self.checkMemnum = self.ootwlist[0].memnum.memnum;
                         for (let i = 0; i < self.ootwlist.length; i++) {
                             var year = self.ootwlist[i].odate.substring(0, 4);
                             var month = self.ootwlist[i].odate.substring(5, 7);
                             var day = self.ootwlist[i].odate.substring(8, 10);
-                            var date = year + "년 " + month + "월 " + day + "일";
+                            var date = year + "/" + month + "/" + day;
                             self.datelist[i] = date;
                         }
-                        // list사이즈 나누기 한페이지에 보여줄 게시글 수 floor값 = max page
-                        let left = (self.ootwlist.length % 5);
-                        let maxPage = '';
-                        if(left == 0) {
-                            maxPage = Math.floor(self.ootwlist.length / 5);
-                        } else if(left > 0) {
-                            maxPage = Math.floor(self.ootwlist.length / 5) + 1;
-                        }
-                        // 한페이지에 보여줄 게시글 수보다 리스트에 담긴 수가 적으면 floor값은 0이므로, 강제로 page에 1 넣었음
-                        if (maxPage == 0) {
-                            self.pageIndex[0] = 1;
-                        } else {
-                            // 그 외, page 배열에 사이즈만큼 페이지 수 넣어주기
-                            for (let j = 1; j <= maxPage; j++) {
-                                self.pageIndex.push(j)
-                            }
-                        }
+                        // // list사이즈 나누기 한페이지에 보여줄 게시글 수 floor값 = max page
+                        // let left = (self.ootwlist.length % 5);
+                        // let maxPage = '';
+                        // if (left == 0) {
+                        //     maxPage = Math.floor(self.ootwlist.length / 5);
+                        // } else if (left > 0) {
+                        //     maxPage = Math.floor(self.ootwlist.length / 5) + 1;
+                        // }
+                        // // 한페이지에 보여줄 게시글 수보다 리스트에 담긴 수가 적으면 floor값은 0이므로, 강제로 page에 1 넣었음
+                        // if (maxPage == 0) {
+                        //     self.pageIndex[0] = 1;
+                        // } else {
+                        //     // 그 외, page 배열에 사이즈만큼 페이지 수 넣어주기
+                        //     for (let j = 1; j <= maxPage; j++) {
+                        //         self.pageIndex.push(j)
+                        //     }
+                        // }
                     }
-                    self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
-                    self.displayedDate = self.datelist.slice(0, self.ootwPerPage);
+                    // self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
+                    // self.displayedDate = self.datelist.slice(0, self.ootwPerPage);
                 } else {
                     alert('에러코드: ' + res.status);
                 }
@@ -140,27 +161,19 @@ export default {
                 }
             }
         },
-        pageBtn(page, index) {
-            const self = this;
-            const startPage = (page - 1) * self.NumPerPage;
-            const endPage = startPage + self.NumPerPage;
-            self.displayedootw = self.ootwlist.slice(startPage, endPage);
-            self.displayedDate = self.datelist.slice(startPage, endPage);
-            let selected = document.querySelectorAll('#selected');
-            for(let i=0; i<this.pageIndex.length; i++) {
-                selected[i].style.color = 'black';
-            }
-            selected[index].style.color = 'red';
+        // pageBtn(page, index) {
+        //     const self = this;
+        //     const startPage = (page - 1) * self.NumPerPage;
+        //     const endPage = startPage + self.NumPerPage;
+        //     self.displayedootw = self.ootwlist.slice(startPage, endPage);
+        //     self.displayedDate = self.datelist.slice(startPage, endPage);
+        //     let selected = document.querySelectorAll('#selected');
+        //     for (let i = 0; i < this.pageIndex.length; i++) {
+        //         selected[i].style.color = 'black';
+        //     }
+        //     selected[index].style.color = 'red';
 
-        },
-        moreBtn() {
-            const self = this;
-            const startIndex = self.currentPage * self.ootwPerPage;
-            const endIndex = startIndex + self.ootwPerPage;
-            self.displayedootw = self.displayedootw.concat(self.ootwlist.slice(startIndex, endIndex));
-            // self.displayedootw = [...self.displayedootw, ...self.ootwlist.slice(startIndex, endIndex)];
-            self.currentPage++;
-        },
+        // },
         detail(ootwnum) {
             this.$router.push({ name: 'OotwDetail', query: { ootwnum: ootwnum } })
         },
@@ -174,7 +187,19 @@ export default {
                         if (res.status == 200) {
                             if (res.data.list != '') {
                                 self.ootwlist = res.data.list;
-                                self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
+                                self.closetNumList = res.data.closetNumList;
+                                if (self.ootwlist != '') {
+                                    self.checkMemnum = self.ootwlist[0].memnum.memnum;
+                                    for (let i = 0; i < self.ootwlist.length; i++) {
+                                        var year = self.ootwlist[i].odate.substring(0, 4);
+                                        var month = self.ootwlist[i].odate.substring(5, 7);
+                                        var day = self.ootwlist[i].odate.substring(8, 10);
+                                        var date = year + "/" + month + "/" + day;
+                                        self.datelist[i] = date;
+                                    }
+                                }
+                                self.date1 = '';
+                                self.date2 = '';
                             } else {
                                 alert('선택한 범위의 검색 결과가 없습니다.')
                             }
@@ -183,25 +208,201 @@ export default {
                         }
                     });
             }
+        },
+        searchByTemp() {
+            const self = this;
+            if (self.temp1 > self.temp2 || self.temp1 == '' || self.temp2 == '') {
+                alert("기온 범위를 다시 정해주세요.")
+            } else {
+                self.$axios.get('http://localhost:8081/boards/temps/' + self.memnum + "/" + self.temp1 + "/" + self.temp2)
+                    .then(function (res) {
+                        if (res.status == 200) {
+                            if (res.data.list != '') {
+                                self.ootwlist = res.data.list;
+                                self.closetNumList = res.data.closetNumList;
+                                if (self.ootwlist != '') {
+                                    self.checkMemnum = self.ootwlist[0].memnum.memnum;
+                                    for (let i = 0; i < self.ootwlist.length; i++) {
+                                        var year = self.ootwlist[i].odate.substring(0, 4);
+                                        var month = self.ootwlist[i].odate.substring(5, 7);
+                                        var day = self.ootwlist[i].odate.substring(8, 10);
+                                        var date = year + "/" + month + "/" + day;
+                                        self.datelist[i] = date;
+                                    }
+                                }
+                                self.temp1 = '';
+                                self.temp2 = '';
+                            } else {
+                                alert('선택한 범위의 검색 결과가 없습니다.')
+                            }
+                        } else {
+                            alert('에러코드: ' + res.status);
+                        }
+                    })
+            }
+        },
+        searchByComments() {
+            const self = this;
+            if (self.comments == '') {
+                alert("커멘트 키워드를 검색해 주세요.")
+            } else {
+                self.$axios.get('http://localhost:8081/boards/comments/' + self.comments + "/" + self.memnum)
+                    .then(function (res) {
+                        if (res.status == 200) {
+                            if (res.data.list != '') {
+                                self.ootwlist = res.data.list;
+                                self.closetNumList = res.data.closetNumList;
+                                if (self.ootwlist != '') {
+                                    self.checkMemnum = self.ootwlist[0].memnum.memnum;
+                                    for (let i = 0; i < self.ootwlist.length; i++) {
+                                        var year = self.ootwlist[i].odate.substring(0, 4);
+                                        var month = self.ootwlist[i].odate.substring(5, 7);
+                                        var day = self.ootwlist[i].odate.substring(8, 10);
+                                        var date = year + "/" + month + "/" + day;
+                                        self.datelist[i] = date;
+                                    }
+                                }
+                                self.comments = '';
+                            } else {
+                                alert('검색하신 키워드에 해당하는 게시글이 없습니다.')
+                            }
+                        } else {
+                            alert('에러코드: ' + res.status);
+                        }
+                    })
+            }
         }
     }
 }
 </script>
 
 <style scoped>
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
 .body-css {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-family: 'PyeongChang-Regular';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
 }
 
+a {
+    cursor: pointer;
+}
+
+button {
+    border: 1px solid rgb(177, 177, 177);
+    background-color: white;
+    /* background-color: rgb(196, 215, 178, 0.6); */
+    /* border: none; */
+    border-radius: 5px;
+    transition: .5s;
+    font-size: 15px;
+    font-weight: normal;
+}
+
+button:hover {
+    background-color: #85b380;
+    color: #85b380;
+    /* color: #85b380; */
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.ootw-title {
+    margin-top: 60px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.ootw-title-link {
+    color: rgb(97, 97, 97);
+    text-decoration: none;
+}
+
+.ootw-title-link:hover {
+    color: #85b380;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.ootw-title-add {
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 17px;
+    color: black;
+}
+
+.ootw-title-add:hover {
+    color: #85b380;
+}
+
+/* 카드 5열 형식 */
+.ootw-wrap {
+    position: relative;
+    /* max-width: 50%; */
+}
+
+.ootw-list {
+    display: grid;
+    width: 63%;
+    grid-template-columns: repeat(auto-fill, minmax(25%, auto));
+    gap: 30px;
+    row-gap: 50px;
+    margin-left: 390px;
+    margin-top: 5px;
+}
+
+.ootw-item {
+    /* display: flex;
+    flex-direction: column;
+    align-items: flex-start; */
+    transition: transform 0.3s ease;
+    height: 250px;
+}
+
+.ootw-item:hover {
+    background-color: rgb(242, 242, 242);
+    transform: scale(1.05);
+}
+
+.ootw-contents {
+    margin-left: 10px;
+}
+
+.ootw-item img {
+    position: relative;
+    margin-top: 6px;
+    width: 280px;
+    /* 가로 사이즈 200px로 고정 */
+    height: 180px;
+    /* 세로 사이즈 200px로 고정 */
+    object-fit: cover;
+    /* 이미지가 카드 영역에 꽉 차도록 설정 */
+    border-radius: 3px;
+}
+
+.empty-ootw-list {
+    margin-top: 100px;
+    margin-bottom: 10px;
+}
+
 .board-search {
     position: absolute;
-    top: 186px;
-    left: 40px;
+    top: 278px;
+    left: 18px;
     width: 14%;
     z-index: 1;
+}
+
+.board-search-ul {
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
 }
 
 .board-search.sticky {
@@ -210,33 +411,32 @@ export default {
     transition: top 1s ease;
 }
 
-.board-list {
-    margin-top: 100px;
-    margin-bottom: 10px;
+input[type='date']::before {
+    content: attr(data-placeholder);
+    width: 100%;
 }
 
-.empty-board-list {
-    margin-top: 100px;
-    margin-bottom: 10px;
+input[type='date']:focus::before,
+input[type='date']:valid::before {
+    display: none;
 }
 
-.board-list span {
-    margin-right: 180px;
-    font-size: 30px;
-    font-weight: bold;
+/* 네이버 쇼핑 */
+.naver-shopping img {
+    position: fixed;
+    right: -26px;
+    bottom: -30px;
+    margin: 70px;
+    z-index: 1;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+    transition: .5s;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
 }
 
-.board-list a {
-    text-decoration: none;
-    text-decoration-color: black;
-}
-
-table {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-a {
-    cursor: pointer;
+.naver-shopping:hover img {
+    bottom: 15px;
 }
 </style>

@@ -32,4 +32,9 @@ public interface OootwDao extends JpaRepository<Oootw, Integer> {
 	@Query(value="select * from oootw where memnum=:memnum and temp between :temp1 and :temp2 order by odate desc", nativeQuery = true)
 	ArrayList<Oootw> findByTempBetween(@Param("memnum") int memnum, @Param("temp1") double temp1, @Param("temp2") double temp2);
 	
+	// 커멘트 like 검색
+	@Transactional
+	@Modifying
+	@Query(value="select * from oootw where comments like :comments and memnum=:memnum order by odate desc", nativeQuery = true)
+	ArrayList<Oootw> findByCommentsLike(@Param("comments") String comments, @Param("memnum") int memnum);
 }

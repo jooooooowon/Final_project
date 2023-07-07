@@ -96,12 +96,13 @@
             </div>
         </div>
 
-        <!-- 옷장에 등록된 옷 리스트 -->
-        <div v-if="memnum == checkMemnum" class="main-list">
+         <!-- 옷장에 등록된 옷 리스트 -->
+         <div v-if="memnum == checkMemnum" class="main-list">
             <div class="container" v-for="(row, index) in additionalCloset" :key="index"
                 style="display: flex; align-items: center;">
                 <div class="card" v-for="closet in row" :key="closet.closetnum">
-                    <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closet.closetnum">
+                    <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closet.closetnum"
+                        v-on:click="modalOpenDetail(closet.closetnum)" style="cursor: pointer;" title="수정하려면 클릭하세요.">
                     <div class="favImg">
                         <a v-on:click="favorite(closet.closetnum)">
                             <span v-if="closet.favorite == 1">
@@ -145,6 +146,10 @@
                         style="height: 38px; text-align: center;"></div>
                 <div class="modal-btn-detail"><b-button v-on:click="change(setClosetnum)">수정</b-button></div>
             </div>
+        </div>
+        <div class="naver-shopping">
+            <router-link to="naverShoppingList"><img src="../../assets/navershopping2.png"
+                    alt="naver-shopping-icon"></router-link>
         </div>
     </div>
 
@@ -571,8 +576,14 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
 .body-css {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-family: 'PyeongChang-Regular';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
@@ -690,6 +701,7 @@ button {
     transition: .5s;
     font-size: 15px;
     font-weight: normal;
+    font-family: 'PyeongChang-Regular';
 }
 
 button:hover {
@@ -1029,7 +1041,7 @@ cursor: pointer: 마우스 커서를 가리킬 때 포인터 모양으로 변경
     overflow: hidden;
     transition: height 0.5s ease;
     /* border-bottom: 1px solid lightgray; */
-    padding-top: 5px;
+    padding-top: 10px;
     transition-duration: 0.5s;
     /* 열리고 닫히는 속도를 0.8초로 조정 */
     cursor: pointer;
@@ -1071,4 +1083,23 @@ grid-gap: 10px: 그리드 항목 사이의 간격을 10픽셀로 설정합니다
 margin-bottom: 5px: 서브 항목 아래쪽에 5픽셀의 여백을 추가합니다.
 border-bottom: 1px solid lightgray: 서브 항목의 하단에 1픽셀 두께의 연한 회색 실선 테두리를 추가합니다.
 padding-bottom: 5px: 서브 항목의 하단 여백을 5픽셀로 설정합니다. */
+
+/* 네이버 쇼핑 */
+.naver-shopping img {
+    position: fixed;
+    right: -26px;
+    bottom: -30px;
+    margin: 70px;
+    z-index: 1;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+    transition: .5s;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+}
+
+.naver-shopping:hover img {
+    bottom: 15px;
+}
 </style>

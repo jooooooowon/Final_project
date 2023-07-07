@@ -1,11 +1,11 @@
 <template>
     <div class="body-css">
         <div class="search">
-            <input type="text" v-model="cloth" size="30" style="height: 30px; text-align: center; border-color: lightgray;"
+            <input type="text" v-model="cloth" size="30" style="font-family: 'PyeongChang-Regular'; height: 30px; text-align: center; border-color: lightgray;"
                 placeholder="옷 검색하기" onfocus="this.placeholder=''" onblur="this.placeholder='옷 검색하기'">
-            <span class="searchBtn"><button v-on:click="clothserach">검색</button></span>
+            <span class="searchBtn"><button v-on:click="clothserach" style="font-family: 'PyeongChang-Regular';">검색</button></span>
             <div class="addCloth">
-                <button v-on:click="modalOpenAdd" style="width:130px; height:38px;" class="addBtn">내옷 등록하기</button>
+                <button v-on:click="modalOpenAdd" style="font-family: 'PyeongChang-Regular'; width:130px; height:38px;" class="addBtn">내옷 등록하기</button>
             </div>
         </div>
 
@@ -34,16 +34,16 @@
                 </div>
                 <div class="cloth-add-info-container" v-if="isExpanded">
                     내옷 상위분류
-                    <select v-model="selectedmain" @change="updatesub" style="width:150px">
+                    <select v-model="selectedmain" @change="updatesub" style="font-family: 'PyeongChang-Regular'; width:150px">
                         <option v-for="maintag in addmaintags" v-bind:value="maintag" v-bind:key="maintag">{{ maintag }}
                         </option>
                     </select><br />
                     내옷 하위분류
-                    <select v-model="selectedsub" style="width:150px">
+                    <select v-model="selectedsub" style="font-family: 'PyeongChang-Regular'; width:150px">
                         <option v-for="subtag in addsubtags" v-bind:value="subtag" v-bind:key="subtag">{{ subtag }}</option>
                     </select><br />
                     내옷 별명
-                    <input type="text" v-model="clothname" size="16" style="height:25px"><br />
+                    <input type="text" v-model="clothname" size="16" style="font-family: 'PyeongChang-Regular'; height:25px"><br />
                     <div class="cloth-add-button-container">
                         <!-- 등록하기 버튼 -->
                         <button v-on:click="addcloset">등록</button> |
@@ -58,7 +58,6 @@
                 <div class="before-button-container" v-if="addThumbnailfile && isExpanded">
                     <button class="reduce-button" @click="reduceModal">이전</button>
                 </div>
-
             </div>
         </div>
 
@@ -86,7 +85,7 @@
                             <div class="sub-items-container">
                                 <div v-for="(subtag, subIndex) in item.subItems" :key="subIndex" class="sub-item"
                                     v-on:click="listbytag(subtag, subIndex)"
-                                    style="font-size: 13px;font-weight: bold; color:rgb(142, 140, 140)">
+                                    style="font-size: 12px; font-weight: 600; color:rgb(142, 140, 140)">
                                     {{ subtag }}
                                 </div>
                             </div>
@@ -101,7 +100,8 @@
             <div class="container" v-for="(row, index) in additionalCloset" :key="index"
                 style="display: flex; align-items: center;">
                 <div class="card" v-for="closet in row" :key="closet.closetnum">
-                    <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closet.closetnum">
+                    <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closet.closetnum"
+                        v-on:click="modalOpenDetail(closet.closetnum)" style="cursor: pointer;" title="수정하려면 클릭하세요.">
                     <div class="favImg">
                         <a v-on:click="favorite(closet.closetnum)">
                             <span v-if="closet.favorite == 1">
@@ -139,14 +139,19 @@
                         <img :src="detailEditImg" class="modal-img-detail">
                     </span>
                 </label>
-                <input type="file" id="detailEditFile" style="display: none" accept="image/*" @change="thumbnailChange">
+                <input type="file" id="detailEditFile" style="font-family: 'PyeongChang-Regular'; display: none" accept="image/*" @change="thumbnailChange">
                 <div class="modal-tags-detail">{{ maintag }} | {{ sub }}</div>
                 <div class="modal-search-detail"><input type="search" v-model="modalCloth" size="15"
                         style="height: 38px; text-align: center;"></div>
-                <div class="modal-btn-detail"><b-button v-on:click="change(setClosetnum)">수정</b-button></div>
+                <div class="modal-btn-detail"><button v-on:click="change(setClosetnum)">수정</button></div>
             </div>
         </div>
+        <div class="naver-shopping">
+            <router-link to="naverShoppingList"><img src="../../assets/navershopping2.png"
+                    alt="naver-shopping-icon"></router-link>
+        </div>
     </div>
+
     <br />
 </template>
 
@@ -586,8 +591,14 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
 .body-css {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-family: 'PyeongChang-Regular';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
@@ -705,6 +716,7 @@ button {
     transition: .5s;
     font-size: 15px;
     font-weight: normal;
+    font-family: 'PyeongChang-Regular';
 }
 
 button:hover {
@@ -1044,7 +1056,7 @@ cursor: pointer: 마우스 커서를 가리킬 때 포인터 모양으로 변경
     overflow: hidden;
     transition: height 0.5s ease;
     /* border-bottom: 1px solid lightgray; */
-    padding-top: 5px;
+    padding-top: 10px;
     transition-duration: 0.5s;
     /* 열리고 닫히는 속도를 0.8초로 조정 */
     cursor: pointer;
@@ -1086,4 +1098,23 @@ grid-gap: 10px: 그리드 항목 사이의 간격을 10픽셀로 설정합니다
 margin-bottom: 5px: 서브 항목 아래쪽에 5픽셀의 여백을 추가합니다.
 border-bottom: 1px solid lightgray: 서브 항목의 하단에 1픽셀 두께의 연한 회색 실선 테두리를 추가합니다.
 padding-bottom: 5px: 서브 항목의 하단 여백을 5픽셀로 설정합니다. */
+
+/* 네이버 쇼핑 */
+.naver-shopping img {
+    position: fixed;
+    right: -26px;
+    bottom: -30px;
+    margin: 70px;
+    z-index: 1;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+    transition: .5s;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+}
+
+.naver-shopping:hover img {
+    bottom: 15px;
+}
 </style>
