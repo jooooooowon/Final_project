@@ -1085,7 +1085,6 @@ margin-bottom: 5px: 서브 항목 아래쪽에 5픽셀의 여백을 추가합니
 border-bottom: 1px solid lightgray: 서브 항목의 하단에 1픽셀 두께의 연한 회색 실선 테두리를 추가합니다.
 padding-bottom: 5px: 서브 항목의 하단 여백을 5픽셀로 설정합니다. */
 
-네이버 쇼핑
 /* .naver-shopping img {
   position: fixed;
   right: 0;
