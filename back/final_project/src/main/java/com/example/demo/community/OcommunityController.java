@@ -214,6 +214,16 @@ public class OcommunityController {
 		boolean flag = true;
 		try {
 			ArrayList<OcommunityDto> tags = service.getByTag(tag);
+			Collections.sort(tags, new Comparator<OcommunityDto>() {
+				@Override
+				public int compare(OcommunityDto dto1, OcommunityDto dto2) {
+					return dto2.getCommnum() - dto1.getCommnum();
+				}
+			});
+			
+			for(OcommunityDto dto : tags) {
+				dto.setBtnlike(likeservice.likeCount(dto.getCommnum()));
+			}
 			map.put("tags", tags);
 		} catch (Exception e) {
 			e.printStackTrace();

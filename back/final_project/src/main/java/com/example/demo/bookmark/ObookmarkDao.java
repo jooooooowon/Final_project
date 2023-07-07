@@ -17,7 +17,7 @@ public interface ObookmarkDao extends JpaRepository<Obookmark, Integer> {
 	//Omember - memnum으로 검색
 	@Transactional
 	@Modifying
-	@Query(value = "select * from obookmark where memnum = :memnum", nativeQuery = true)
+	@Query(value = "select * from obookmark where memnum = :memnum order by commnum desc", nativeQuery = true)
 	List<Obookmark> findByMemnum(@Param("memnum") int memnum);
 
 	@Transactional

@@ -1,59 +1,68 @@
 <template>
-  <div class="body">
-    <div class="bookmark-box" v-for="(bookmark, index) in filterBmList" :key="index">
-      <!-- {{ bookmark.bmnum }} -->
-      <!-- <div v-if="memnum == bookmark.memnum.memnum"> -->
 
-      <div class="box1">
-        <div class="item-1">
-          <img style="margin-right: 8px; border-radius:50%; width: 30px; height: 30px;"
-            :src="'http://localhost:8081/members/imgs/' + bookmark.memnum.memnum">
-          {{ bookmark.memnum.nickname }}
+    <div id="container">
+      <div class="bookmark-box" v-for="(bookmark, index) in filterBmList" :key="index">
+        <!-- {{ bookmark.bmnum }} -->
+        <!-- <div v-if="memnum == bookmark.memnum.memnum"> -->
+        <!-- box1 start -->
+        <div id="box1">
+          <!-- 프사 & 닉네임 -->
+          <div class="item-1">
+            <span><img style="margin-right: 5px; border-radius:50%; width: 20px; height: 20px;"
+              :src="'http://localhost:8081/members/imgs/' + bookmark.memnum.memnum"></span>
+            <span style="margin-top: 6px; margin-left: 5px; font-size: 0.5em; font-weight: bold;" >
+            {{ bookmark.memnum.nickname }}</span>
+          </div>
+          <!-- <div class="item2">
+            <button class="delBtn" @click="delComm(bookmark.bmnum)"><span class="material-symbols-outlined">close</span></button>
+          </div> -->
         </div>
-        <!-- <div class="item2">
-          <button class="delBtn" @click="delComm(bookmark.bmnum)"><span class="material-symbols-outlined">close</span></button>
-        </div> -->
-      </div>
+        <!-- box1 End -->
 
-      <div class="box2">
-        <div class="imgBox">
+        <!-- box2 start -->
+        <div id="box2">
           <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + bookmark.commnum + '/' + 1">
-          <span v-if="bookmark.img2 != undefined">
+
+          <div v-if="bookmark.img2 != undefined">
             <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + bookmark.commnum + '/' + 2">
-          </span>
-          <span v-if="bookmark.img3 != undefined">
+          </div>
+
+          <div v-if="bookmark.img3 != undefined">
             <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + bookmark.commnum + '/' + 3">
-          </span>
+          </div>
         </div>
-      </div>
-      <!-- box3 Button -->
-      <div id="box3">
-        <div class="likeBtn"> <!--좋아요 버튼-->
-          <button class="markbtn1" @click="pushLike(bookmark.commnum)">
-            <span class="material-symbols-outlined"
-              :style="{ 'color': bookmark.chklike ? '#f15746' : 'lightslategray' }"> favorite</span>
-          </button>
+        <!-- box2 End -->
+
+        <!-- box3 start -->
+        <div id="box3">
+          <div class="likeBtn">
+            <button class="markbtn1" @click="pushLike(bookmark.commnum)">
+              <span class="material-symbols-outlined"
+                :style="{ 'color': bookmark.chklike ? '#f15746' : 'lightslategray' }"> favorite</span>
+            </button>
+          </div>
+          <div class="likeCount">{{ bookmark.btnlike }}명이 좋아합니다.</div>
+
+          <div class="bookBtn">
+            <button class="markbtn2" @click="bookcheck(bookmark.commnum)">
+              <span class="material-symbols-outlined"
+                :style="{ 'color': bookmark.chkbookmark ? 'black' : 'lightslategray' }">bookmark</span>
+            </button>
+          </div>
         </div>
+        <!-- box3 End -->
 
-        <div class="likeCount">{{ bookmark.btnlike }}명이 좋아합니다.</div>
-
-        <div class="bookBtn"> 북마크 버튼
-          <button class="markbtn2" @click="bookcheck(bookmark.commnum)">
-            <span class="material-symbols-outlined"
-              :style="{ 'color': bookmark.chkbookmark ? 'black' : 'lightslategray' }">bookmark</span>
-          </button>
+        <!-- box4 start -->
+        <div id="box4">
+          <div class="box4-item">{{ bookmark.tag }}</div>
         </div>
-      </div>
-      <!-- box3 End -->
-      <div class="box4">
-        <div>{{ bookmark.tag }}</div>
-      </div>
-      <!-- </div> -->
+        <!-- box4 End -->
 
+      </div>
     </div>
 
-  </div>
 </template>
+
 <script>
 export default {
   data() {
@@ -63,7 +72,7 @@ export default {
       allList: [],
       filterBmList: [],
       bookmarkedCommnums: [],
-      bmnum: ''
+      bmnum: '',
     }
   },
   mounted() {
@@ -137,18 +146,17 @@ export default {
       formdata.append("commnum", commnum);
       formdata.append("memnum", self.memnum);
       self.$axios.put('http://localhost:8081/obookmark', formdata)
-        .then(res => {
-          if (res.status == 200) {
-            window.location.reload();
-          } else {
-            alert(res.data.flag);
-            alert('실패');
-          }
-        })
-    }
+      .then(res => {
+        if (res.status == 200) {
+          window.location.reload();
+        } else {
+          alert(res.data.flag);
+          alert('실패');
+        }
+      })
+    },
   }
 }
-
 
 </script>
 <style scoped>
@@ -159,44 +167,94 @@ export default {
   font-style: normal;
 }
 
-.body {
+#container {
   font-family: 'PyeongChang-Regular';
   font-weight: 400;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(25%, auto));
+  gap: 15px;
 }
-
-.box1 {
-  border: #336399 solid 2px;
-  max-width: 48%;
-  margin: auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+#box1 {
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	background-color: #c1f2ca2a;
+	max-width: 601px;
+	margin-top: 8%;
+	margin-left: auto;
+	margin-right: auto;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
-
-.delBtn {
-  background-color: transparent;
-  border: none;
-  font-weight: bold;
-  color: rgb(9, 9, 137);
+.item-1 {
+	margin-block-start: auto;
+	margin-left: 10px;
+	margin-top: 6px;
+	margin-bottom: 6px;
+	display: flex;
 }
-
+.item-Btn {
+	background-color:transparent;
+	border: none;
+	margin-top: 5px;
+	color: #f15746;
+}
 #box2 {
-  border: #336399 solid 2px;
-  max-width: 48%;
-  margin: auto;
-  display: flex;
-  justify-content: center;
+	max-width: 45%;
+	margin: auto;
+	display: flex;
+	justify-content: center;
 }
-
-.imgBox {
-  border: #336399 solid 2px;
-  max-width: 48%;
-  margin: auto;
-  display: flex;
-  justify-content: center;
-}
-
 .img1 {
-  width: 200px;
-  height: 300px;
-}</style>
+  width: 80px;
+  height: 120px;
+  transition: transform 0.3s 
+}
+.img1:hover {
+	transform: scale(1.08);  
+}
+#box3 {
+	background: #fff;
+	max-width: 601px;
+	margin: auto;
+	display: flex;
+	flex-direction: row;
+}
+.markbtn1{
+	/* margin-top: 3px; */
+	background-color: transparent;
+	border: none; 
+	cursor: pointer;
+  margin-left: 6px;
+}
+.likeCount {
+	margin-top: 8px;
+	font-size: 0.6em;
+	font-weight: bold;
+}
+.bookBtn {
+	margin-left: 90px;
+}
+.markbtn2{
+	margin-top: 3px;
+	background-color: transparent;
+	border: none; 
+	cursor: pointer;
+}
+
+#box4 {
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	max-width: 601px;
+	margin: auto;
+	display: flex;
+	box-shadow: 16px 16px 16px rgba(195, 192, 192, 0.345);
+}
+.box4-item {
+	margin-left: 10px;
+	margin-top: 3px;
+	margin-bottom: 12px;
+	font-size: 0.6em;
+	font-weight: bold;
+}
+</style>
