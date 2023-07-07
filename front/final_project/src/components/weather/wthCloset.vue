@@ -1,47 +1,60 @@
 <template>
     <div class="back">
+        <!-- 기온별 옷추천 -->
         <div class="rgyPostIt">{{ recommend }}</div> <br /><br />
         {{ message }}
 
         <!-- 태그별 옷추천 -->
         <div v-if="showRecom">
 
-            <!-- v-for) subtags 배열을 반복하면서 각 subtag에 대한 작업을 수행
-                v-bind:value와 v-bind:key는 subtag 값을 해당 HTML 요소의 속성에 바인딩합니다. 
-                이렇게 하면 각 subtag에 대해 고유한 값을 가지게 됩니다. -->
-            <div v-for="subtag in subtags" v-bind:value="subtag" v-bind:key="subtag">
-                <br />
-                <h5>{{ subtag }}</h5>
-                <div v-if="naverList[subtag] != null">
-                    {{ message2 }} <br />
-                    <router-link to="/closetlist"><button>옷장에 {{ subtag }} 추가하기</button></router-link>
-                    <button @click="shopping(subtag)">{{ subtag }} 쇼핑하러 가기</button>
+            <!-- subtag 아이콘 -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; margin-top: 20px;">
+                <div v-for="subtag in subtags" v-bind:value="subtag" v-bind:key="subtag">
+                    <!-- subtag 값을 클래스 이름으로 사용 -->
+                    <div style="padding-left: 15px;" :style="{ maxWidth: '160px', flex: '0 0 250px' }">
+                        <div class="iconBG" @click="restartBounce(subtag, $event)">
+                            <img :src="getIcon(subtag)" :title=subtag>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <!-- :key="subtag"는 Vue의 key 속성을 사용하여 "각 그룹"을 고유하게 식별 => subtag 별 그룹 생성 -->
-                    <div class="closet" :key="subtag"
+            </div>
+
+            <!-- subtag 별 리스트 -->
+            <div>
+                <!-- 옷장 추천 리스트 -->
+                <div style="margin-top: 100px; margin-bottom: 50px;">
+                    <!-- 옷장 비었을 때 뜰 메시지 -->
+                    <div v-if="message2 !== ''">
+                        {{ message2 }} <br /><br />
+                    </div>
+                    <div class="closet"
                         style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
-                        <!-- v-for) additionalCloset[subtag] 배열을 반복하면서 각 cloth에 대한 작업을 수행 -->
-                        <div class="cloth" v-for="cloth in additionalCloset[subtag]" :key="cloth.closetnum"
+                        <div class="cloth" v-for="cloth in additionalCloset" :key="cloth.closetnum"
                             :style="{ maxWidth: '160px', flex: '0 0 250px' }" @click="modalOpen(cloth.closetnum)"
                             @mouseover="cursorChange" @mouseout="resetCursor">
                             <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + cloth.closetnum">
                             <span>{{ cloth.cloth }}</span>
                         </div>
                     </div>
-                    <!-- 더 추가할 옷이 있을 때에만 더보기 버튼 뜨기 -->
-                    <div v-if="gap[subtag] > 0">
-                        <img class="plus" src="@/assets/weatherPlus.svg" @click="moreBtn(subtag)" @mouseover="cursorChange" @mouseout="resetCursor">
-                        <!-- <button @click="moreBtn(subtag)">더보기</button> -->
-                    </div>
                 </div>
 
-                <!-- 옷이 없을 때 띄울 네이버 쇼핑 링크 -->
+
                 <div>
-                    <div class="closet" :key="subtag"
+                    <!-- 옷장 버튼 -->
+                    <img class="plus" style="padding-right: 50px;" src="@/assets/weatherPlus.svg"
+                        @click="listbytag(currentSubtag, 1)" @mouseover="cursorChange" @mouseout="resetCursor"
+                        title="옷장에 추가하기">
+                    <!-- 쇼핑 버튼 -->
+                    <img class="plus" style="height:73px" src="@/assets/shopping.svg" @click="shopping(currentSubtag, 1)"
+                        @mouseover="cursorChange" @mouseout="resetCursor" title="쇼핑하러 가기">
+                </div>
+
+                <!-- 옷이 없을 때 띄울 네이버 쇼핑 리스트 -->
+                <div style="margin-top: 50px;">
+                    <div class="closet"
                         style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
-                        <div class="cloth" v-for="(dto, i) in naverList[subtag]" :key="i"
-                            :style="{ maxWidth: '160px', flex: '0 0 250px' }" @click="shoppingLink(subtag, i)"
+                        <div class="cloth" v-for="(dto, i) in naverList" :key="i"
+                            :style="{ maxWidth: '160px', flex: '0 0 250px' }" @click="shoppingLink(currentSubtag, i)"
                             @mouseover="cursorChange" @mouseout="resetCursor">
                             <img :src="dto.img">
                             {{ dto.price }}원
@@ -78,24 +91,14 @@ export default {
             memnum: sessionStorage.getItem("memnum"),
             recommend: '...로딩중 *^^*',
             message: '', // 로그인하면 옷장에서 옷 추천해드림~
-            message2: '옷장이 비었네요!',
+            message2: '', // 옷장이 비었네요
             showRecom: false,
             gender: '', // 로그인 한 사람의 성별 담음 -> 네이버 검색에 쓰임
-            subtags: [],
-            /*
-            additionalCloset을 []로 데이터 속성으로 선언
-            -> Vue의 반응적인(reactive) 데이터 시스템에 의해 관리되는 배열
-            --> JavaScript 객체처럼 사용하여 동적으로 속성을 추가하고 값을 할당할 수 있음!!
-            => this.additionalCloset[sub] :  additionalCloset 객체에 sub라는 속성을 동적으로 추가
-            추가된 속성은 Vue에 의해 반응적으로 추적되지는 않지만, 반복문 등을 통해 해당 속성을 접근하여 사용할 수 있음~
-            
-            즉, additionalCloset 객체는 Vue의 반응성과는 별개로 동작하는 일반적인 JavaScript 객체이며, 
-            동적으로 속성을 추가하고 값을 할당할 수 있는 특징을 가지고 있음~~
-            */
-            additionalCloset: [], // 여기에 사실상 additionalCloset['반팔'], additionalCloset['셔츠'] .. 가 다 들어있는거임!
+            subtags: [], // 기온별 옷차림 subtag 다 담겨있음
+            currentSubtag: '', // 아이콘을 누르면 하나의 subtag 만 담김. -> 리스트 검색
             closetlist: [], // 처음 검색했을 때 전체 리스트 담음 --> additionalCloset 에 5개씩 부분으로 담음
-            currentPage: [], // 더보기 버튼 누르면 1씩 업됨
-            gap: [], // closetlist[subtag] - additionalCloset[subtag] ---> 더보기버튼 띄우는 조건으로 쓰임
+            additionalCloset: [],
+            goToCloset: false, // 옷장버튼 띄우는 조건으로 쓰임
             naverList: [],
             //~~~~~~~~~~~~~~~옷 디테일 모달~~~~~~~~~~~~~~~~
             setClosetnum: null,
@@ -104,10 +107,34 @@ export default {
             sub: '',
             modalCheck: false,
             uploadimg: '', // 디테일 -> 이미지수정 -> 바뀐 이미지 주소 담는 변수
-            thumbimg: ''
+            thumbimg: '',
+            // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            clothesIcons: {
+                '반팔': require('@/assets/clothesIcons/1.png'),
+                '민소매': require('@/assets/clothesIcons/2.png'),
+                '반바지': require('@/assets/clothesIcons/3.png'),
+                '치마': require('@/assets/clothesIcons/4.png'),
+                '셔츠': require('@/assets/clothesIcons/5.png'),
+                '면바지': require('@/assets/clothesIcons/6.png'),
+                '가디건': require('@/assets/clothesIcons/7.png'),
+                '긴팔티': require('@/assets/clothesIcons/8.png'),
+                '청바지': require('@/assets/clothesIcons/9.png'),
+                '니트': require('@/assets/clothesIcons/10.png'),
+                '맨투맨': require('@/assets/clothesIcons/11.png'),
+                '자켓': require('@/assets/clothesIcons/12.png'),
+                '야상': require('@/assets/clothesIcons/13.png'),
+                '스타킹': require('@/assets/clothesIcons/14.png'),
+                '트렌치코트': require('@/assets/clothesIcons/15.png'),
+                '코트': require('@/assets/clothesIcons/16.png'),
+                '히트텍': require('@/assets/clothesIcons/17.png'),
+                '레깅스': require('@/assets/clothesIcons/18.png'),
+                '패딩': require('@/assets/clothesIcons/19.png'),
+                '방한용품': require('@/assets/clothesIcons/20.png'),
+                '기모제품': require('@/assets/clothesIcons/21.png')
+            }
         }
     },
-    async created() {
+    created() {
         // 현재 로그인 상태 확인.
         let token = sessionStorage.getItem('token');
         if (this.memnum == null) {
@@ -137,10 +164,14 @@ export default {
         this.recommendation();
     },
     methods: {
+        // 서브태그 아이콘 불러오기
+        getIcon(subtag) {
+            return this.clothesIcons[subtag];
+        },
         // 동기 함수로 하게되면 데이터가 완전히 로드되기 전에 b-card-group 및 b-card 요소가 렌더링되므로 원하는 리스트가 생성되지 않습니다.
         // async -> 비동기 함수 정의. 
         // 온도 별 옷추천 및 소분류로 옷장 옷 검색 (전체 중 5개만)
-        async recommendation() {
+        recommendation() {
             const tmp = this.nowTmp;
             let recommend = '';
             let subtags = [];
@@ -178,63 +209,84 @@ export default {
             }
             this.recommend = recommend;
             this.subtags = subtags;
+            this.search(subtags[0]);
 
-            // 소분류로 옷장 옷 검색 (전체 중 5개만)
-            for (let i = 0; i < this.subtags.length; i++) {
-                const subtag = this.subtags[i];
-                try {
-                    // await -> 비동기 작업인 self.$axios.get(...)의 결과를 기다립니다.
-                    const res = await this.$axios.get('http://localhost:8081/closets/subtags/' + subtag);
-                    if (res.status === 200) {
-                        // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default(기본이미지) 걸러서 리스트에 넣기
-                        this.closetlist[subtag] = res.data.list.filter(closet => closet.closetnum !== 999999999);
-                        let addtionalRow = this.closetlist[subtag].slice(0, 5);
-                        // 배열에 subtag 속성 추가해서 검색 결과를 각각 담음.
-                        this.additionalCloset[subtag] = addtionalRow; // additionalCloset 객체에 속성으로 추가
-                        this.currentPage[subtag] = 1;
-                        this.gap[subtag] = this.closetlist[subtag].length - this.additionalCloset[subtag].length
-
-                        // 검색된 옷이 없으면 네이버 검색 띄워주기
-                        if (this.closetlist[subtag].length === 0) {
-                            const result = await this.$axios.get('http://localhost:8081/naver/' + this.gender + subtag)
-                            if (result.status == 200) {
-                                const allList = result.data.list;
-                                const fivelist = allList.slice(0, 5);
-                                this.naverList[subtag] = fivelist;
-
-                                // window 객체의 scrollTo 메서드는 문서를 지정된 좌표로 스크롤해주는 기능을 한다. (window는 생략 가능)
-                                // top은 세로 위치, left는 가로 위치, scroll-behavior은 스크롤 효과를 지정하는 속성
-                                // auto는 기본값이며, 바로 위치로 이동한다. instant도 같은 동작을 한다. smooth는 부드럽게 이동하는 애니메이션 효과를 보여준다.
-                                // window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-                            } else {
-                                alert("네이버 실패..!")
-                            }
-                        }
-                    } else {
-                        alert('에러코드 이건가?: ' + res.status);
-                    }
-                } catch (error) {
-                    alert('에러 발생: ' + error);
-                }
-            }
-
-
+            // .classList.add('clicked')를 호출하는 코드가 element에 적용되기 전에 실행되므로 element가 undefined일 수 있습니다.
+            // const elements = document.querySelectorAll('.iconBG');
+            // if (elements.length > 0) {
+            //     const element = elements[0];
+            //     element.classList.add('clicked');
+            // }
         },
 
-        // 더보기 버튼 누르면 5개씩 추가 
-        moreBtn(subtag) {
-            // 변수의 값이 변하지 않고 상수로 사용될 경우에는 const
-            // 값이 재할당될 수 있는 경우에는 let
-            // this.currentPage[subtag] = 1;
-            const n = this.currentPage[subtag];
-            // n=1이면 5개, n=2이면 10개 떠있음
-            // (0, 5) -> (5, 10) -> (10, 15)
-            const start = n * 5; // n=1 -> 5
-            const end = start + 5; // start=5 -> 10
-            let additionalRow = this.closetlist[subtag].slice(start, end)
-            this.additionalCloset[subtag] = this.additionalCloset[subtag].concat(additionalRow);
-            this.currentPage[subtag]++;
-            this.gap[subtag] = this.closetlist[subtag].length - this.additionalCloset[subtag].length;
+        // 아이콘 클릭하면 튕기다가 멈춤 + subtag로 옷 검색
+        // Vue에서 이벤트 핸들러에 추가로 전달할 인수가 있는 경우, 해당 인수는 첫 번째 인수로 전달되어야 합니다.
+        restartBounce(subtag, e) {
+            e.preventDefault(); // 태그의 값을 전송하면서 해당 페이지를 새로고침 하는 기능을 막음
+
+            // 이전에 클릭된 아이콘 배경 리셋시키기
+            const elements = document.querySelectorAll('.iconBG');
+            elements.forEach(element => {
+                element.classList.remove('clicked');
+            });
+
+            const targetElement = e.currentTarget;
+            targetElement.classList.remove("bounce"); // Removing the class
+            // offsetWidth는 margin을 제외한, padding값, border값까지 계산한 값을 가져온다.
+            targetElement.offsetWidth; // Triggering reflow
+            targetElement.classList.add("bounce"); // Re-adding the class
+            targetElement.classList.add('clicked');
+
+            this.search(subtag);
+        },
+
+        // 리스트 검색
+        async search(subtag) {
+            this.currentSubtag = subtag;
+            // 값 초기화 
+            this.message2 = '';
+            this.additionalCloset = [];
+            this.naverList = [];
+
+            // 소분류로 옷장 옷 검색 (전체 중 5개만)
+            try {
+                // await -> 비동기 작업인 self.$axios.get(...)의 결과를 기다립니다.
+                // 메서드 내에서 옷장 데이터를 비동기적으로 요청
+                const res = await this.$axios.get('http://localhost:8081/closets/subtags/' + subtag);
+                if (res.status === 200) {
+                    // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default(기본이미지) 걸러서 리스트에 넣기
+                    this.closetlist = res.data.list.filter(closet => closet.closetnum !== 999999999);
+                    this.additionalCloset = this.closetlist.slice(0, 20);
+                    if (this.closetlist.length > 20) {
+                        this.goToCloset = true;
+                    } else {
+                        this.goToCloset = false;
+                    }
+
+                    // 검색된 옷이 없으면 네이버 검색 띄워주기
+                    if (this.closetlist.length === 0) {
+                        this.message2 = '옷장이 비었네요!'
+                        const result = await this.$axios.get('http://localhost:8081/naver/' + this.gender + subtag)
+                        if (result.status == 200) {
+                            const allList = result.data.list;
+                            this.naverList = allList.slice(0, 10);
+
+                        } else {
+                            alert("네이버 실패..!")
+                        }
+                    }
+                } else {
+                    alert('에러코드 이건가?: ' + res.status);
+                }
+            } catch (error) {
+                alert('에러 발생: ' + error);
+            }
+        },
+
+        // 옷장 태그검색 더보기
+        listbytag(subtag, index) {
+            const self = this;
+            self.$router.push({ name: 'ClosetListByTag2', query: { tag: subtag, index: index } });
         },
 
         // 카드 누르면 옷 디테일 페이지로 넘어감
@@ -368,6 +420,7 @@ export default {
 
     }
 }
+
 </script>
 
 <style scoped>
@@ -395,12 +448,94 @@ font-style: normal;
     /* font-weight: 100; */
     font-style: normal;
 }
+
+.iconBG {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: transparent;
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    margin-left: auto;
+    margin-right: auto;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.3s ease;
+    /* transform 속성에 0.5초의 애니메이션을 부드럽게 적용합니다 */
+
+}
+
+.iconBG:hover {
+    /* transform: translateY(-15px); */
+    transform: scale(1.05);
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.iconBG.clicked {
+    background-color: rgba(255, 255, 255, 1);
+}
+
+@-webkit-keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        -webkit-transform: translateY(0);
+    }
+
+    40% {
+        -webkit-transform: translateY(-30px)
+    }
+
+    60% {
+        -webkit-transform: translateY(-20px);
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-30px);
+    }
+
+    60% {
+        transform: translateY(-20px);
+    }
+}
+
+
+.bounce {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-name: bounce;
+    animation-name: bounce;
+}
+
+.iconBG img {
+    padding-top: 11px;
+    width: 35px;
+    height: auto;
+    /* align-items: center;
+    justify-content: center;
+    text-align: center; */
+}
+
 .closet {
     display: grid;
     /* grid-template-columns: repeat(5, 1fr); */
     /* 최소 200px의 폭을 가지는 열을 자동으로 생성 */
     /* 그리드 컨테이너의 너비에 맞추어 최대한 많은 열을 표시 */
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     grid-gap: 25px;
     justify-content: center;
     align-items: center;
@@ -409,7 +544,8 @@ font-style: normal;
 }
 
 .cloth {
-    transition: transform 0.3s ease; /* 변화가 일어날 때 0.3초 동안 부드럽게 전환 */
+    transition: transform 0.3s ease;
+    /* 변화가 일어날 때 0.3초 동안 부드럽게 전환 */
     background: transparent;
     background-color: rgba(255, 255, 255, 0.6);
     border-radius: 8px;
@@ -421,8 +557,8 @@ font-style: normal;
 }
 
 .cloth:hover {
-  transform: scale(1.05);
-  background-color: rgba(255, 255, 255, 0.8);
+    transform: scale(1.05);
+    background-color: rgba(255, 255, 255, 0.8);
 }
 
 .cloth img {
@@ -443,9 +579,10 @@ font-style: normal;
 }
 
 .plus {
-    transition: transform 0.3s ease; /* 변화가 일어날 때 0.3초 동안 부드럽게 전환 */
-    margin-top: 50px;
-    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+    /* 변화가 일어날 때 0.3초 동안 부드럽게 전환 */
+    margin-top: 30px;
+    margin-bottom: 50px;
 }
 
 .plus:hover {

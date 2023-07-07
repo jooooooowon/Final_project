@@ -1,6 +1,7 @@
 <template>
   <div class="background">
     <div :class="getBackground(nowSky)">
+      
       <div>
         <h4>{{ realDate }}</h4>
         <div>
@@ -56,6 +57,11 @@
           <ootw></ootw>
         </div>
 
+        <!-- 네이버 쇼핑 아이콘 -->
+        <div class="naver-shopping">
+          <router-link to="naverShoppingList"><img src="@/assets/navershopping2.png"
+              alt="naver-shopping-icon"></router-link>
+        </div>
 
       </div>
     </div>
@@ -623,10 +629,10 @@ export default {
 }
 
 @font-face {
-    font-family: 'PyeongChangPeace-Bold';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChangPeace-Bold.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
+  font-family: 'PyeongChangPeace-Bold';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChangPeace-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
 }
 
 .background {
@@ -638,20 +644,7 @@ export default {
   min-width: 335px;
   width: 100%;
   height: 100%;
-  /* 밤 흐림, 눈 */
-  /* background-image: linear-gradient(white, #3a4159, #1e1f26); */
-  /* 밤 비 */
-  /* background-image: linear-gradient(white, #28434e, #001813); */
-  /* 밤 맑음 */
   background-image: linear-gradient(white, #4dc4ff);
-  /* 낮 눈 */
-  /* background-image: linear-gradient(white, #b5c8cd, #89b0bf); */
-  /* 낮 비 */
-  /* background-image: linear-gradient(white, #9fb1c5, #1c3f43); */
-  /* 낮 흐림 */
-  /* background-image: linear-gradient(white, #9fb1c5, #fbd997); */
-  /* 낮 맑음 */
-  /* background-image: linear-gradient(white, #ffcc66, #4dc4ff);  */
 }
 
 /* 낮 맑음 */
@@ -676,7 +669,7 @@ export default {
 
 /* 밤 맑음 */
 .backdrop-nightClear {
-  background-image: linear-gradient(white, #012083, #04092c);
+  background-image: linear-gradient(white, #0d1f5a, #004c5f);
   color: #fff;
 }
 
@@ -837,4 +830,32 @@ table {
 td {
   margin-left: 5px;
   margin-right: 5px
-}</style>
+}
+
+
+
+/* 네이버 쇼핑 아이콘 */
+
+.naver-shopping img {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin: 70px;
+  z-index: 1;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+  transition: .5s;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+}
+
+.naver-shopping:hover img {
+  bottom: 15px;
+}
+
+
+
+
+
+</style>

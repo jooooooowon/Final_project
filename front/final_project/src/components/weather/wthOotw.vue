@@ -1,6 +1,6 @@
 <template>
     <div class="back">
-        {{ message }} 
+        <p style="margin-top: 100px; margin-bottom: 100px;">{{ message }}</p> 
 
         <div v-if="showRecom">
             <p v-if="t1 === 28">{{ t1 }}℃ 이상일 때 입었던 옷 기록들</p>
