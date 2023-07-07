@@ -172,17 +172,17 @@
   <style scoped>
   
   .material-symbols-outlined {
-    font-variation-settings:
-    'FILL' 1,
+    /* font-variation-settings:
+    'FILL' 1
     'wght' 400,
     'GRAD' 0,
-    'opsz' 48
-    
+    'opsz' 48, */
+    cursor: pointer;
   }
   
   
   .main{
-    width: 500px;
+    width: 800px;
     left:0;
     right:0;
     margin:40px auto;
@@ -217,7 +217,7 @@
   
   ul li{
     border:1px solid #000;
-    padding:10px 50px;
+    padding:10px 70px;
   }
   
   span{

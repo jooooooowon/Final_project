@@ -21,7 +21,7 @@ public interface OcommunityDao extends JpaRepository<Ocommunity, Integer> {
 	//Omember - memnum으로 검색
 	@Transactional
 	@Modifying
-	@Query(value="select * from ocommunity where memnum=:memnum", nativeQuery = true )
+	@Query(value="select * from ocommunity where memnum=:memnum order by commnum desc", nativeQuery = true )
 	ArrayList<Ocommunity> findByMemnum(int memnum);
 	
 	//태그별 검색
