@@ -1,4 +1,5 @@
 <template>
+    <div id="container">
     <!-- <div class="layout_base"> -->
         <!-- <div class="container"> -->
             <div class="content_title border">
@@ -12,19 +13,23 @@
                     <label for ="newimg">
                         <div class="userProfile">
                             <div class="profile_thumb">
-                                <img :src= "profileImg()" style="width:100%; height:100%; cursor: pointer; border-radius: 50%;"><br/>
+                                <img :src= "profileImg()" style="width:100%; height:100%; border-radius: 50%;"><br/>
                                 <!-- <input type="file" id="newimg" accept="img/*" @change="changeImg" v-show="isVisible"><br/> -->
                             </div>
                             <div class="profileDetail">
                                     
-                                    <div style="font-size: 18px; margin-top: 12px; font-weight: bold;">{{ nickname }}</div>
-                                    <!-- <input type="text" v-model="nickname" style=" border: none; outline: none;"> -->
+                                <div style="font-size: 18px; margin-top: 12px; font-weight: bold;">{{ nickname }}</div>
+                                <!-- <input type="text" v-model="nickname" style=" border: none; outline: none;"> -->
 
-                                <div class="profileBtnBox" style="margin-top: 12px; font-weight: bold;">
-                                    <button class="edit Img btn small">이미지 변경</button> <button class="del Img btn small">삭제</button>
+                                    <div class="profileBtnBox" style="margin-top: 12px; font-weight: bold;">
+
+                                            <input type="file" accept="image/*" style="display: none" ref="fileInput" @change="changeImg">
+                                            <button class="edit Img btn small" @click="editImg">이미지 변경</button>
+
+                                            <button class="del Img btn small" style="margin-left:8px;" @click="delImg" >삭제</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         <div class="profile_info" style="padding-top:38px; max-width:480px;">
                             <div class="profile_group">
                                 <h4 class="group_title" style="font-size: 18px;">프로필 정보</h4>
@@ -32,7 +37,7 @@
                                 <div class="unit">
                                     <h5 class="title">아이디</h5> 
                                     <div class="unit_content">
-                                        <input type="text" v-model="id" class="info id_content" readonly>
+                                          <input type="text" v-model="id" class="info id_content" readonly>
                                     </div>
                                 </div>
 
@@ -92,10 +97,13 @@
                                         <input type="text" v-model="gender" class="info gender_content" readonly>
                                     </div>
                                 </div>
-                                pwd:<input type="password" v-model="pwd"><br/>
-                                email:<input type="text" v-model="email" readonly><br/>
-                                nickname:<input type="text" v-model="nickname"><br/>
-                                gender:{{ gender }}<br/>
+                                <div class="out">
+                                    <button v-on:click="out" class="outBtn">회원 탈퇴</button>
+                                </div>
+                                <!-- pwd:<input type="password" v-model="pwd"><br/> -->
+                                <!-- email:<input type="text" v-model="email" readonly><br/> -->
+                                <!-- nickname:<input type="text" v-model="nickname"><br/> -->
+                                <!-- gender:{{ gender }}<br/> -->
                             </div>
                         </div>   
                     </label>
@@ -104,15 +112,13 @@
                         </div>
                 </div>
                 
-               
             
-                
-                <button v-on:click="edit">수정</button>
-                <button v-on:click="out">탈퇴</button>
-                <button v-on:click="logout">로그아웃</button>
+                <!-- <button v-on:click="edit">수정</button> -->
+                <!-- <button v-on:click="logout">로그아웃</button> -->
             </div>
         <!-- </div> -->
     <!-- </div> -->
+    </div>
 </template>
 <script>
 export default{
@@ -152,7 +158,11 @@ export default{
                     self.nickname=dto.nickname
                     self.img=dto.img
                 }else{
+                    alert("여기가 아닌가?")
+                    sessionStorage.removeItem("memnum");
+                    sessionStorage.removeItem("token");
                     alert('없는 아이디거나 만료된 토큰')
+                    location.href='/'
                 }
             }else{
                 alert('에러코드:'+self.status)
@@ -200,6 +210,26 @@ export default{
             this.edit();
         },
 
+        //이미지변경
+        editImg(){
+            this.$refs.fileInput.click();
+        },
+
+        //프로필 이미지 수정
+        changeImg(event){
+            const file = event.target.files[0];
+            if(file){
+                const reader = new FileReader();
+                const self = this;
+                reader.onload = function(){
+                    self.previewImg = reader.result;
+                    self.uploadImg = file;
+                    self.edit();
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+
         //프로필사진
         profileImg(){
             if(this.img != null){
@@ -241,20 +271,6 @@ export default{
             });
         },
 
-        //프로필 이미지 수정
-        changeImg(event){
-            const file = event.target.files[0];
-            if(file){
-                const reader = new FileReader();
-                const self = this;
-                reader.onload = function(){
-                    self.previewImg = reader.result;
-                    self.uploadImg = file;
-                };
-                reader.readAsDataURL(file);
-            }
-        },
-
         //로그아웃
         logout(){
             sessionStorage.removeItem('token')
@@ -267,16 +283,38 @@ export default{
         out(){
             const self = this;
             let token = sessionStorage.getItem('token')
+            let answer = confirm('탈퇴하시겠습니까? 진짜 큰일납니다.')
+            if(answer){
             self.$axios.delete('http://localhost:8081/members/'+self.num,
             {headers:{'token':token}})
             .then(function(res){
                 if(res.status == 200){
                     if(res.data.flag){
+                        self.delImg()
                         alert('탈퇴완료')
                         self.logout()
                     }
                 }else{
                     alert('에러코드:'+res.status)
+                }
+            })
+        }else{
+            alert('탈퇴 취소되었습니다.')
+        }
+        },
+
+        //이미지 삭제
+        delImg(){
+            const self = this;
+            self.$axios.delete('http://localhost:8081/members/imgs/'+self.num)
+            .then(function(res){
+                if(res.status == 200){
+                    if(res.data.flag){
+                        self.img = null; //이미지경로 null로 설정하여 기본 이미지로 변경
+                        self.uploadImg = null; //업로드된 이미지 초기화
+                    }
+                }else{
+                    alert('에러코드:' + res.status)
                 }
             });
         }
@@ -285,6 +323,16 @@ export default{
 </script>
 
 <style scoped>
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+#container{
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
+}
 /* .layout_base{
     margin-top:100px;
 }
@@ -331,6 +379,21 @@ export default{
     text-align: center;
     color: rgba(34,34,34,.8);
     background-color: #fff;
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
+}
+
+.small{
+    font-size: 12px;
+    padding: 0 14px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #d3d3d3;
+}
+
+.small:hover{
+    background-color: #85b380;
+    transition: .5s;
 }
 
 .medium{
@@ -339,6 +402,12 @@ export default{
     border-radius: 12px;
     font-size: 14px;
     font-weight: 500;
+    border: 1px solid #d3d3d3;
+}
+
+.medium:hover{
+    background: #85b380;
+    transition: .5s;
 }
 
 .cancel{
@@ -349,14 +418,6 @@ export default{
     color: #ffffff;
     background-color: #222;
     margin-left: 8px;
-}
-
-.small{
-    font-size: 12px;
-    padding: 0 14px;
-    height: 34px;
-    border-radius: 10px;
-    border: 1px solid #d3d3d3;
 }
 
 .unit{
@@ -407,8 +468,22 @@ export default{
     padding-top: 25px;
     text-align: center;
 }
-
-
+.out{
+    display: flex;
+    justify-content: right;
+    padding-top: 25px;
+}
+.outBtn{
+    background-color: #fff;
+    color: rgba(34,34,34,.5);
+    border: none;
+    outline: none;
+    font-size: 13px;
+    text-align: center;
+    text-decoration: underline;
+    cursor: pointer;
+    /* padding-right: 15px; */
+}
 /* .editImgBtn{
     border: 1px solid #d3d3d3;
     color: rgba(34, 34, 34, .8);

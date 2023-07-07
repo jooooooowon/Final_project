@@ -1,12 +1,12 @@
 <template>
-
+    <div id="container">
     <div id="myjoin">
         <h2 class="join_title">회원가입</h2>
 
         <!-- 아이디 입력 폼 -->
         <div class="form_group">
-            <label for="id" :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">ID*</label>
-            <input type="text" id="id" v-model="id" placeholder="ID" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="idcheck(); validateId($event)">
+            <label for="id" :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">아이디*</label>
+            <input type="text" id="id" v-model="id" placeholder="아이디" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="idcheck(); validateId($event)">
             <!-- {{ msg }} -->
         
 
@@ -24,8 +24,8 @@
         
         <!-- 비밀번호 입력 폼 -->
         <div class="form_group">
-            <label for="pwd" :class="{'input_label': !hasPwdError, 'input_label_error': hasPwdError}">Password*</label>
-            <input type="password" id="pwd" v-model="pwd" placeholder="Password" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)">
+            <label for="pwd" :class="{'input_label': !hasPwdError, 'input_label_error': hasPwdError}">패스워드*</label>
+            <input type="password" id="pwd" v-model="pwd" placeholder="패스워드" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)">
 
         <!-- 비밀번호 유효성검사 메시지 -->
         <p class="input_error" v-if="hasPwdError">영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
@@ -33,7 +33,7 @@
 
         <!-- 이메일 입력 폼 -->
         <div class="form_group">
-            <label for="email" :class="{'input_label': !hasEmailError, 'input_label_error': hasEmailError}">Email*</label>
+            <label for="email" :class="{'input_label': !hasEmailError, 'input_label_error': hasEmailError}">이메일*</label>
             <input type="text" id="email" v-model="emailId" placeholder="예) intheham@tistory.com" :class="{'input_field': !hasEmailError, 'input_field_error': hasEmailError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateEmail($event)">
 
         <!-- 이메일 유효성검사 메시지  -->
@@ -107,6 +107,7 @@
         <!-- <button v-on:click="join" :disabled="!isJoinable">가입</button> -->
         <!-- <button v-else v-on:click="join" :disabled="isJoinable" class="joinBtn">가입</button> -->
         </div>
+    </div>
     </div>
 </template>
 
@@ -337,9 +338,9 @@ export default{
             if(!inputField.value){
                 label.classList.remove('active');
                 if(inputField.id === 'id'){
-                    inputField.placeholder = 'ID';
+                    inputField.placeholder = '아이디';
                 }else if(inputField.id === 'pwd'){
-                    inputField.placeholder = 'Password';
+                    inputField.placeholder = '패스워드';
                 }else if(inputField.id === 'email'){
                     inputField.placeholder = '예) intheham@tistory.com';
                 }else if(inputField.id === 'nickname'){
@@ -352,6 +353,17 @@ export default{
 </script>
 
 <style scoped>
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+#container{
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
+}
 #myjoin{
     display: flex;
     flex-direction: column;
@@ -378,6 +390,7 @@ export default{
     padding-bottom: 46px;
     text-align: center;
     font-size: 28px;
+    font-weight: bold;
 }
 
 .form_group{
