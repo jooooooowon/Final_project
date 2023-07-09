@@ -1,66 +1,91 @@
 <template>
     <div class="body-css">
-        <h3>Ootw 게시글 등록하기</h3>
+        <h3 style="font-size: 25px">Outfit Of the Weather</h3><br/>
         <!-- 옷장에서 옷 꺼내서 이미지 저장시키기 버튼-->
         <label for="addLabel1">
-            <img src="../../assets/imageadd.png">
+            <span v-if="thumbImg1 == ''"><img src="../../assets/imageadd.png" class="thumimg"></span>
+            <span v-else-if="thumbImg1 != ''"><img :src="thumbImg1" class="thumimg"></span>
         </label>
-        <button v-on:click="modalOpen(1)" id="addLabel1" style="display:none"></button>
+        <button v-on:click="modalOpen(1)" id="addLabel1" style="display:none"></button>&nbsp;
         <label for="addLabel2">
-            <img src="../../assets/imageadd.png">
+            <span v-if="thumbImg2 == ''"><img src="../../assets/imageadd.png" class="thumimg"></span>
+            <span v-else-if="thumbImg2 != ''"><img :src="thumbImg2" class="thumimg"></span>
         </label>
-        <button v-on:click="modalOpen(2)" id="addLabel2" style="display:none"></button>
+        <button v-on:click="modalOpen(2)" id="addLabel2" style="display:none"></button>&nbsp;
         <label for="addLabel3">
-            <img src="../../assets/imageadd.png">
+            <span v-if="thumbImg3 == ''"><img src="../../assets/imageadd.png" class="thumimg"></span>
+            <span v-else-if="thumbImg3 != ''"><img :src="thumbImg3" class="thumimg"></span>
         </label>
-        <button v-on:click="modalOpen(3)" id="addLabel3" style="display:none"></button>
+        <button v-on:click="modalOpen(3)" id="addLabel3" style="display:none"></button>&nbsp;
         <label for="addLabel4">
-            <img src="../../assets/imageadd.png">
+            <span v-if="thumbImg4 == ''"><img src="../../assets/imageadd.png" class="thumimg"></span>
+            <span v-else-if="thumbImg4 != ''"><img :src="thumbImg4" class="thumimg"></span>
         </label>
-        <button v-on:click="modalOpen(4)" id="addLabel4" style="display:none"></button>
+        <button v-on:click="modalOpen(4)" id="addLabel4" style="display:none"></button>&nbsp;
         <label for="addLabel5">
-            <img src="../../assets/imageadd.png">
+            <span v-if="thumbImg5 == ''"><img src="../../assets/imageadd.png" class="thumimg"></span>
+            <span v-else-if="thumbImg5 != ''"><img :src="thumbImg5" class="thumimg"></span>
         </label><br />
-        <button v-on:click="modalOpen(5)" id="addLabel5" style="display:none"></button>
-        날짜: <input type="date" v-model="odate"><br />
-        날씨: <input type="text" v-model="weather"><br />
-        기온: <input type="number" v-model="temp"><br />
+        <button v-on:click="modalOpen(5)" id="addLabel5" style="display:none"></button><br/>
+        
+        <!-- 날짜 입력 -->
+        <input type="date" v-model="odate" id="date" style="font-family: 'PyeongChang-Regular';
+        font-size:13px; width:162px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500;
+        border-color: lightgray; border-radius: 5px;" data-placeholder="날짜 선택" aria-required="true" required><br /><br/>
+        
+        <!-- 날씨 입력 -->
+        <input type="text" v-model="weather" id="weather" style="font-family: 'PyeongChang-Regular'; font-size:13.5px;
+        width:160px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
+        placeholder="날씨 입력 ex)맑음" onfocus="this.placeholder=''" onblur="this.placeholder='날씨 입력 ex)맑음'" maxlength="10"><br /><br/>
+        
+        <!-- 온도 입력 -->
+        <input type="number" v-model="temp" id="temp" style="font-family: 'PyeongChang-Regular'; font-size:13.5px;
+        width:161px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
+            placeholder="온도 입력 ex)31.5" onfocus="this.placeholder=''" onblur="this.placeholder='온도 입력 ex)31.5'"><br /><br/>
+        
+        <!-- 커멘트 입력 -->
         Comment<br />
-        <textarea v-model="comments" cols="30" rows="5" style="resize:none" maxlength="100"
-            placeholder="커멘트는 최대 50자까지 입력 가능합니다."></textarea><br />
-        <button v-on:click="addBoard">등록</button>
-
+        <textarea v-model="comments" cols="30" rows="5" style="resize:none; font-weight: 500; border-color: lightgray; border-radius: 5px;
+        font-family: 'PyeongChang-Regular';" maxlength="100"
+            placeholder="커멘트는 최대 100자까지 입력 가능합니다." onfocus="this.placeholder=''" onblur="this.placeholder='커멘트는 최대 100자까지 입력 가능합니다.'"></textarea><br />
+        
+        <!-- 등록 버튼 -->
+        <br/><button v-on:click="addBoard">등록</button><br/><br/><br/>
 
         <!-- 옷장에서 옷 선택하는 모달창 -->
         <div class="modal-wrap" v-show="modalCheck" @click="modalClose" id="modalWrap">
             <div class="modal-container" @click.stop="" id="container">
-                <div id="up"></div>
-                <button href="#down">Go down</button>
-                <div>
+                <div class="maintags">
                     <ul v-for="(maintag, index) in maintags" v-bind:value="maintag" v-bind:key="maintag">
                         <li v-on:mouseover="selectsub(index)" v-on:click="getall(index)">{{ maintag }}</li>
-                    </ul><br />
-                    <div class="follow" id="follow">
-                        <ul v-for="(subtag, index) in subtags" v-bind:value="subtag" v-bind:key="subtag">
-                            <li class="second" v-on:click="listbytag(index)" id="sub">{{ subtag }}</li>
-                        </ul>
-                    </div>
+                    </ul><br /><br/>
+                </div>
+                <div class="subtags">
+                    <ul v-for="(subtag, index) in subtags" v-bind:value="subtag" v-bind:key="subtag">
+                        <li class="second" v-on:click="listbytag(index)" id="sub">{{ subtag }}</li>
+                    </ul>
+                </div>
 
-                    <h3>옷장 전체리스트</h3>
-                    <div class="container">
-                        <div class="item" v-for="closet in closetlist" :key="closet.closetnum">
-                            <img
-                                :src="'http://localhost:7878/closets/img/' + closet.memnum.memnum + '/' + closet.closetnum"><br />
-                            {{ closet.cloth }}<br />
-                            {{ closet.maintag }}<br />
-                            {{ closet.subtag }}<br />
-                            <button v-on:click="addCloth(closet.closetnum)">추가</button>
+                    <h3 style="font-size:20px">나의 옷장</h3><br/>
+                    <div v-if="closetlist != null">
+                        <div class="container">
+                            <div class="item" v-for="closet in closetlist" :key="closet.closetnum">
+                                <span v-if="closet.img != 'basicImage'">
+                                <img :src="'http://localhost:8081/closets/img/' + closet.memnum.memnum + '/' + closet.closetnum">
+                                </span>
+                                <span v-if="closet.img == 'basicImage'">
+                                <img :src="'http://localhost:8081/closets/img/addimg/' + 0">
+                                </span>
+                                <br />
+                                {{ closet.cloth }}<br/>{{ closet.maintag }}<br />
+                                {{ closet.subtag }}<br/>
+                                <button v-on:click="addCloth(closet.closetnum, closet.img)" style="margin-top: 3px;border:1px solid lightgray; width:50px; height:30px">추가</button>
+                            </div>
                         </div>
                     </div>
+                    <div v-if="closetlist == ''">등록된 옷이 없습니다.</div>
                     <br />
                     <button @click="modalClose">취소</button>
-                    <div id="down"><br /></div><button href="#up">Go up</button>
-                </div>
             </div>
         </div>
     </div>
@@ -71,11 +96,11 @@ export default {
     name: 'OotwAdd',
     data() {
         return {
-            thumbImg1: 'http://localhost:7878/closets/img/addimg/' + 0,
-            thumbImg2: 'http://localhost:7878/closets/img/addimg/' + 0,
-            thumbImg3: 'http://localhost:7878/closets/img/addimg/' + 0,
-            thumbImg4: 'http://localhost:7878/closets/img/addimg/' + 0,
-            thumbImg5: 'http://localhost:7878/closets/img/addimg/' + 0,
+            thumbImg1: '',
+            thumbImg2: '',
+            thumbImg3: '',
+            thumbImg4: '',
+            thumbImg5: '',
             modalCheck: false,
             closetlist: [],
             closetPerPage: 3,
@@ -98,7 +123,7 @@ export default {
     created: function () {
         const self = this;
         self.memnum = sessionStorage.getItem('memnum')
-        self.$axios.get('http://localhost:7878/closets')
+        self.$axios.get('http://localhost:8081/closets/members/' + self.memnum)
             .then(function (res) {
                 if (res.status == 200) {
                     self.closetlist = res.data.list;
@@ -122,7 +147,8 @@ export default {
         getall(index) {
             const self = this;
             if (index == 0) {
-                self.$axios.get('http://localhost:7878/closets')
+                self.memnum = sessionStorage.getItem('memnum')
+                self.$axios.get('http://localhost:8081/closets/members/' + self.memnum)
                     .then(function (res) {
                         if (res.status == 200) {
                             self.closetlist = res.data.list;
@@ -145,22 +171,23 @@ export default {
             if (index == 0) {
                 self.subtags = []
             } else if (index == 1) {
-                self.subtags = ['아우터(전체)', '가디건', '자켓', '야상', '트렌치코트', '코트', '패딩', 'etc']
+                self.subtags = ['아우터(전체)', '가디건', '자켓', '야상', '트렌치코트', '코트', '패딩', '아우터(기타)']
             } else if (index == 2) {
-                self.subtags = ['상의(전체)', '민소매', '반팔', '긴팔티', '셔츠', '니트', '맨투맨', 'etc']
+                self.subtags = ['상의(전체)', '민소매', '반팔', '긴팔티', '셔츠', '니트', '맨투맨', '상의(기타)']
             } else if (index == 3) {
-                self.subtags = ['하의(전체)', '반바지', '치마', '면바지', '청바지', '레깅스', 'etc']
+                self.subtags = ['하의(전체)', '반바지', '치마', '면바지', '청바지', '레깅스', '하의(기타)']
             } else if (index == 4) {
                 self.subtags = ['기타(전체)', '스타킹', '히트텍', '기모제품', '방한용품', 'etc']
             } else if (index == 5) {
-                self.subtags = ['신발(전체)', '샌들', '슬리퍼', '운동화', '등산화', '구두', 'etc']
+                self.subtags = ['신발(전체)', '샌들', '슬리퍼', '운동화', '등산화', '구두', '신발(기타)']
             }
         },
         listbytag(index) {
             const self = this;
             if (index == 0) {
+                self.memnum = sessionStorage.getItem('memnum')
                 var maintag = self.subtags[0].split('(', 1)
-                self.$axios.get('http://localhost:7878/closets/maintags/' + maintag)
+                self.$axios.get('http://localhost:8081/closets/maintags/' + self.memnum + "/" + maintag)
                     .then(function (res) {
                         if (res.status == 200) {
                             self.closetlist = res.data.list;
@@ -169,8 +196,9 @@ export default {
                         }
                     })
             } else {
+                self.memnum = sessionStorage.getItem('memnum')
                 var subtag = self.subtags[index]
-                self.$axios.get('http://localhost:7878/closets/subtags/' + subtag)
+                self.$axios.get('http://localhost:8081/closets/subtags/' + self.memnum + "/" + subtag)
                     .then(function (res) {
                         if (res.status == 200) {
                             self.closetlist = res.data.list;
@@ -180,25 +208,29 @@ export default {
                     })
             }
         },
-        addCloth(closetnum) {
+        addCloth(closetnum, img) {
             const self = this;
-            if (self.thumbnum == 1) {
-                self.thumbImg1 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnumlist[0] = closetnum
-            } else if (self.thumbnum == 2) {
-                self.thumbImg2 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnumlist[1] = closetnum
-            } else if (self.thumbnum == 3) {
-                self.thumbImg3 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnumlist[2] = closetnum
-            } else if (self.thumbnum == 4) {
-                self.thumbImg4 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnumlist[3] = closetnum
-            } else if (self.thumbnum == 5) {
-                self.thumbImg5 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
-                self.closetnumlist[4] = closetnum
+            if(img == 'basicImage') { 
+                alert("기본 이미지는 Ootw에 등록할 수 없습니다.")
+            } else {
+                if (self.thumbnum == 1) {
+                    self.thumbImg1 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
+                    self.closetnumlist[0] = closetnum
+                } else if (self.thumbnum == 2) {
+                    self.thumbImg2 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
+                    self.closetnumlist[1] = closetnum
+                } else if (self.thumbnum == 3) {
+                    self.thumbImg3 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
+                    self.closetnumlist[2] = closetnum
+                } else if (self.thumbnum == 4) {
+                    self.thumbImg4 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
+                    self.closetnumlist[3] = closetnum
+                } else if (self.thumbnum == 5) {
+                    self.thumbImg5 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
+                    self.closetnumlist[4] = closetnum
+                }
+                this.modalCheck = !this.modalCheck
             }
-            this.modalCheck = !this.modalCheck
         },
         addBoard() {
             const self = this
@@ -217,7 +249,7 @@ export default {
                 formdata.append('temp', self.temp)
                 formdata.append('comments', self.comments)
                 formdata.append('closetnumlist', self.closetnumlist)
-                self.$axios.post('http://localhost:7878/boards', formdata)
+                self.$axios.post('http://localhost:8081/boards', formdata)
                     .then(function (res) {
                         if (res.status == 200) {
                             location.href = '/ootwlist'
@@ -244,11 +276,45 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
 .body-css {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-family: 'PyeongChang-Regular';
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
+}
+
+button {
+    border: none;
+    background-color: white;
+    font-family: 'PyeongChang-Regular';
+    border-radius: 5px;
+    transition: .5s;
+    font-size: 15px;
+    font-weight: normal;
+}
+
+button:hover {
+    /* background-color: #85b380; */
+    color: #85b380;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+input[type='date']::before {
+    content: attr(data-placeholder);
+    width: 100%;
+}
+
+input[type='date']:focus::before,
+input[type='date']:valid::before {
+    display: none;
 }
 
 h3 {
@@ -256,29 +322,38 @@ h3 {
 }
 
 img {
-    width: 100px;
-    height: 100px;
-}
-
-table {
-    margin-left: auto;
-    margin-right: auto;
-}
-
-ul {
-    margin-left: 8%;
+    width: 130px;
+    height: 130px;
     cursor: pointer;
+}
+
+.thumimg {
+    transition: transform 0.3s ease;
+}
+.thumimg:hover {
+    transform: scale(1.1);
 }
 
 li {
     list-style: none;
     float: left;
-    margin-right: 30px;
-    cursor: pointer;
 }
 
-.follow {
-    clear: left;
+.maintags {
+    cursor: pointer;
+    margin-left: 174px;
+}
+.maintags li {
+    font-size: 17px;
+    margin: 0 15px 0 15px;
+}
+.subtags {
+    cursor: pointer;
+    margin-left: 122px;
+}
+.subtags li {
+    font-size: 15px;
+    margin: 0 13px 0 13px;
 }
 
 /* dimmed */
@@ -307,24 +382,27 @@ li {
     box-sizing: border-box;
 }
 
-.parent {
-
-    width: 100%;
-
-    margin: 10px auto;
-
-    display: flex;
-
-}
-
-
 .container {
-    display: flex;
-    flex-wrap: wrap;
+    /* display: flex;
+    flex-wrap: wrap; */
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(auto-fill, minmax(18%, auto));
+    column-gap: 3px;
+    row-gap: 5px;
+    margin-top: 5px;
 }
 
 .item {
-    flex-basis: 20%;
+    transition: transform 0.3s ease;
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     /* Adjust the width percentage based on your needs */
+}
+.item:hover {
+    background-color: rgb(255, 252, 252);
+    transform: scale(1.05);
 }
 </style>

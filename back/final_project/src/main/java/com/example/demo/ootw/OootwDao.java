@@ -17,14 +17,14 @@ public interface OootwDao extends JpaRepository<Oootw, Integer> {
 	// 날짜 범위로 검색해서 리스트 뿌리기
 	@Transactional
 	@Modifying
-	@Query(value="select * from oootw where odate between :odate1 and :odate2 order by odate desc", nativeQuery = true)
-	ArrayList<Oootw> findByOdateBetween(@Param("odate1") String odate1, @Param("odate2") String odate2);
+	@Query(value="select * from oootw where memnum=:memnum and odate between :odate1 and :odate2 order by odate desc", nativeQuery = true)
+	ArrayList<Oootw> findByOdateBetween(@Param("memnum") int memnum, @Param("odate1") String odate1, @Param("odate2") String odate2);
 	
 	// 최신 날짜순 전체 리스트 조회
 	@Transactional
 	@Modifying
-	@Query(value="select * from oootw order by odate desc", nativeQuery = true)
-	ArrayList<Oootw> findAllListByOrder();
+	@Query(value="select * from oootw where memnum=:memnum order by odate desc", nativeQuery = true)
+	ArrayList<Oootw> findAllListByOrder(@Param("memnum") int memnum);
 	
 	// 기온 between 자기 게시글만 검색(예은)
 	@Transactional

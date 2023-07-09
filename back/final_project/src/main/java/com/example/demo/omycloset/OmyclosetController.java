@@ -90,15 +90,25 @@ public class OmyclosetController {
 		return map;
 	}
 	
-//	// 옷장 등록_이미지 파일 안받는 버전(기본 이미지 사용.. img컬럼에 경로만 저장).. 옷 이미지 없으면 등록 불가능하게 프론트에서 작업
-//	@PostMapping("/nofile")
-//	public Map addCloth2(OmyclosetDto dto) {
-//		boolean flag = true;
-//		OmyclosetDto dto2 = service.save(dto);
-//		Map map = new HashMap<>();
-//		map.put("dto", dto2);
-//		return map;
-//	}
+	// 옷장 등록_이미지 파일 안받는 버전(기본 이미지 사용.. img컬럼에 경로만 저장).. 옷 이미지 없으면 등록 불가능하게 프론트에서 작업
+	@PostMapping("/nofile")
+	public Map addCloth2(OmyclosetDto dto) {
+		boolean flag = true;
+		int closetnum = service.saveint(dto);
+		int memnum = dto.getMemnum().getMemnum();
+		String newpath = path + memnum + "/" + closetnum;
+		File dir1 = new File(path + memnum);
+		dir1.mkdir();
+		File dir2 = new File(newpath);
+		dir2.mkdir();
+		String img = "basicImage";
+		dto.setImg(img);
+		dto.setClosetnum(closetnum);
+		int savenum = service.saveint(dto);
+		Map map = new HashMap<>();
+		map.put("dto", dto);
+		return map;
+	}
 	
 	// 옷장에 등록한 옷 디테일 보여주기(GET(closetnum) / 검색하기)
 	@GetMapping("/{closetnum}")
@@ -179,38 +189,47 @@ public class OmyclosetController {
 	}
 	
 	// 옷장 전체 리스트 뿌리기(GET)
-	@GetMapping("")
-	public Map getAll() {
-		ArrayList<OmyclosetDto> list = service.getAllByOrder();
+//	@GetMapping("")
+//	public Map getAll() {
+//		ArrayList<OmyclosetDto> list = service.getAllByOrder();
+//		Map map = new HashMap<>();
+//		map.put("list", list);
+//		System.out.println(list);
+//		return map;
+//	}
+	
+	// 옷장 전체 리스트 멤버번호
+	@GetMapping("/members/{memnum}")
+	public Map getAllByMemnum(@PathVariable("memnum") int memnum) {
+		ArrayList<OmyclosetDto> list = service.getAllByMemnum(memnum);
 		Map map = new HashMap<>();
 		map.put("list", list);
-		System.out.println(list);
 		return map;
 	}
 	
 	// 옷장 대분류 카테고리 리스트 뿌리기(GET(/maintags/maintag))
-	@GetMapping("/maintags/{maintag}")
-	public Map getByMaintag(@PathVariable("maintag") String maintag) {
-		ArrayList<OmyclosetDto> list = service.getByMaintag(maintag); // maintag 받아서 뿌리기
+	@GetMapping("/maintags/{memnum}/{maintag}")
+	public Map getByMaintag(@PathVariable("memnum") int memnum, @PathVariable("maintag") String maintag) {
+		ArrayList<OmyclosetDto> list = service.getByMaintag(memnum, maintag); // maintag 받아서 뿌리기
 		Map map = new HashMap<>();
 		map.put("list", list);
 		return map;
 	}
 	
 	// 옷장 소분류 리스트 뿌리기(GET(/subtags/subtag))
-	@GetMapping("/subtags/{subtag}")
-	public Map getBySub(@PathVariable("subtag") String subtag) {
+	@GetMapping("/subtags/{memnum}/{subtag}")
+	public Map getBySub(@PathVariable("memnum") int memnum, @PathVariable("subtag") String subtag) {
 		// subtag 눌렀을 때 저장된 subtag 보내기 
-		ArrayList<OmyclosetDto> list = service.getBySubtag(subtag); // 받아온 sub로 불러오기
+		ArrayList<OmyclosetDto> list = service.getBySubtag(memnum, subtag); // 받아온 sub로 불러오기
 		Map map = new HashMap<>();
 		map.put("list", list);
 		return map;
 	}
 	
 	// 옷장 옷이름 검색해서 뿌리기(GET(/clothes/cloth))
-	@GetMapping("/clothes/{cloth}")
-	public Map getByCloth(@PathVariable("cloth") String cloth) {
-		ArrayList<OmyclosetDto> list = service.getByCloth(cloth);
+	@GetMapping("/clothes/{memnum}/{cloth}")
+	public Map getByCloth(@PathVariable("memnum") int memnum, @PathVariable("cloth") String cloth) {
+		ArrayList<OmyclosetDto> list = service.getByCloth(memnum, cloth);
 		Map map = new HashMap<>();
 		map.put("list", list);
 		return map;
@@ -221,12 +240,8 @@ public class OmyclosetController {
 	public ResponseEntity<byte[]> read_addimg(@PathVariable("index") int index){
 		String fname = "";
 		if(index == 0) {
-			fname = "c:/closet/addimg/imageadd.png";
-		} else if(index == 1) {
-			fname = "c:/closet/addimg/emptystar.png";
-		} else if(index == 2) {
-			fname = "c:/closet/addimg/fullstar.png";
-		}
+			fname = "c:/closet/addimg/basic.png";
+		} 
 		File f = new File(fname);
 		HttpHeaders header = new HttpHeaders(); // HttpHeaders 객체 생성
 		ResponseEntity<byte[]> result = null; // 선언
@@ -271,9 +286,14 @@ public class OmyclosetController {
 	public Map delete(@PathVariable("closetnum") int closetnum) {
 		boolean flag = true;
 		
+		OmyclosetDto dto = service.getMyCloth(closetnum);
+//		if(dto.getImg() == "basicImage") {
+//			
+//		}
+		
 		// 삭제하려는 옷 번호로 옷이미지정보 담긴 테이블 리스트 호출하기
 		System.out.println("삭제한 옷번호: " + closetnum);
-		ArrayList<OootwimgsDto> imglist= imgservice.getByClosetnum(closetnum);
+		ArrayList<OootwimgsDto> imglist = imgservice.getByClosetnum(closetnum);
 		// 불러온 리스트의 사이즈만큼 옷이미지정보 담긴 테이블에 정보 담고,
 		// 그 정보에서 삭제하려고 했던 옷의 정보가 담긴 ootw게시글 번호 모두 추출하기
 		Oootw ootw = new Oootw();
@@ -288,7 +308,6 @@ public class OmyclosetController {
 		///////////////////////////////////////////////////////////////
 		
 		try {
-			OmyclosetDto dto = service.getMyCloth(closetnum);
 			int memnum = dto.getMemnum().getMemnum();
 			String filePath = dto.getImg();
 			String folderPath = path + memnum + "/" + closetnum;

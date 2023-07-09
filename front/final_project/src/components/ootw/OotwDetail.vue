@@ -1,15 +1,32 @@
 <template>
     <div class="body-css">
         <h3> 나 뭐 입었더라?</h3>
-        <span v-for="src in clothnum" :key="src">
-            <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + src" alt="sdf">
+        <span v-for="cloth in clothnum" :key="cloth">
+            <span>
+            <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + cloth" alt="" style="border-radius: 15px;">
+            {{ cloth }}
+            </span>
         </span>
         <br /><br />
-        날짜: <input type="text" v-model="odate" readonly><br />
-        날씨: <input type="text" v-model="weather" readonly><br />
-        기온: <input type="text" v-model="temp" readonly><br /><br />
-        이 날의 커멘트<br />
-        <textarea v-model="comments" cols="30" rows="5" style="resize:none" maxlength="100" readonly></textarea><br />
+        <!-- 날짜 입력 -->
+        <input type="text" v-model="odate" id="date" style="font-family: 'PyeongChang-Regular';
+        font-size:13px; width:162px; height: 30px; text-align: center; color:black; font-weight: 500;
+        border-color: lightgray; border-radius: 5px;" readonly><br /><br/>
+        
+        <!-- 날씨 입력 -->
+        <input type="text" v-model="weather" id="weather" style="font-family: 'PyeongChang-Regular'; font-size:13.5px;
+        width:160px; height: 30px; text-align: center; color:black; font-weight: 500; border-color: lightgray; border-radius: 5px;"
+        readonly><br /><br/>
+        
+        <!-- 온도 입력 -->
+        <input type="number" v-model="temp" id="temp" style="font-family: 'PyeongChang-Regular'; font-size:13.5px;
+        width:161px; height: 30px; text-align: center; color:black; font-weight: 500; border-color: lightgray; border-radius: 5px;"
+            readonly><br /><br/>
+        
+        <!-- 커멘트 입력 -->
+        Comment<br />
+        <textarea v-model="comments" cols="30" rows="5" style="resize:none; font-weight: 500; border-color: lightgray; border-radius: 5px;
+        font-family: 'PyeongChang-Regular';" readonly></textarea><br />
         <button v-on:click="deleteOootw(ootwnum)">삭제</button>
     </div>
 </template>

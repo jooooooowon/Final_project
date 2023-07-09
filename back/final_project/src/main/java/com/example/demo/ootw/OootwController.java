@@ -131,10 +131,10 @@ public class OootwController {
 		return map;
 	}
 
-	// 전체 리스트 뿌리기.. 전체 리스트는 이미지 없이 보여줄거임 GET
-	@GetMapping("")
-	public Map getAll() {
-		ArrayList<OootwDto> list = service.getAll();
+	// 전체 리스트 뿌리기..
+	@GetMapping("/members/{memnum}")
+	public Map getAll(@PathVariable("memnum") int memnum) {
+		ArrayList<OootwDto> list = service.getAll(memnum);
 		// 리스트의 사이즈만큼 리스트를 dto에 담아서 Integer 배열에 게시글 번호 담기
 		Integer[] ootwnums = new Integer[list.size()];
 		for (int i = 0; i < list.size(); i++) {
@@ -167,13 +167,13 @@ public class OootwController {
 	}
 
 	// 날짜 검색 리스트 뿌리기.. GET(/dates/odate)
-	@GetMapping("/dates/{date1}/{date2}")
-	public Map getByDate(@PathVariable("date1") String date1, @PathVariable("date2") String date2) {
+	@GetMapping("/dates/{memnum}/{date1}/{date2}")
+	public Map getByDate(@PathVariable("memnum") int memnum, @PathVariable("date1") String date1, @PathVariable("date2") String date2) {
 		String odate1 = date1.substring(2, 4) + "/" + date1.substring(5, 7) + "/" + date1.substring(8, 10);
 		String odate2 = date2.substring(2, 4) + "/" + date2.substring(5, 7) + "/" + date2.substring(8, 10);
 		System.out.println(odate1);
 		System.out.println(odate2);
-		ArrayList<OootwDto> list = service.getByDateBetween(odate1, odate2);
+		ArrayList<OootwDto> list = service.getByDateBetween(memnum, odate1, odate2);
 		// 리스트의 사이즈만큼 리스트를 dto에 담아서 Integer 배열에 게시글 번호 담기
 		Integer[] ootwnums = new Integer[list.size()];
 		for (int i = 0; i < list.size(); i++) {

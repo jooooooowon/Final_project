@@ -6,7 +6,7 @@
                 <ul style="list-style-type: none; width:360px;" class="board-search-ul">
                     <li style="width:360px; height:130px;"><br /><br /><br />
                         <input type="date" v-model="date1" id="date1"
-                            style="font-family: 'PyeongChang-Regular'; ont-size:13px; width:126px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
+                            style="font-family: 'PyeongChang-Regular'; font-size:13px; width:126px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
                             data-placeholder="시작일" aria-required="true" required>
                         &nbsp;<input type="date" v-model="date2" id="date2"
                             style="font-family: 'PyeongChang-Regular'; font-size:13.5px; width:126px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500; border-color: lightgray; border-radius: 5px;"
@@ -37,12 +37,12 @@
 
 
         <div class="ootw-title">
-            <span style="font-size: 30px; font-weight: bold; margin-left: 205px;" class="ootw-title-title">
+            <span style="font-size: 30px; font-weight: bold; margin-left: 220px;" class="ootw-title-title">
                 <a href="/ootwlist" class="ootw-title-link">Outfit Of the Weather</a>
             </span>
             <span style="margin-left:150px;"><a class="ootw-title-add" href="/ootwadd" style="">게시글 작성</a></span>
         </div>
-        <div class="ootw-wrap" v-if="memnum == checkMemnum">
+        <div class="ootw-wrap" v-if="isList == true">
             <div class="ootw-list">
                 <div class="ootw-item" v-for="(ootw, index) in ootwlist" :key="ootw.ootwnum"
                     v-on:click="detail(ootw.ootwnum)">
@@ -51,20 +51,22 @@
                         style="text-align: left; margin-left:10px; margin-top:10px; font-size: 14px; color: rgb(158, 157, 157)">
                         {{ datelist[index] }}&nbsp;&nbsp;&nbsp;{{ ootw.weather }}&nbsp;&nbsp;&nbsp;{{ ootw.temp }}도
                     </div>
-                    <div style="text-align: left; margin-left:10px; margin-top:8px; font-size: 16px; font-weight: bold;">
-                        가나다라마바사 이것은 커멘트입니다.
-                        <!-- {{ ootw.comments }} asdasdsadasdqwdasdawdawd -->
+                    <div style="width:250px; text-align: left; margin-left:10px; margin-top:8px; font-size: 16px; font-weight: bold;
+                    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <!-- 가나다라마바사 이것은 커멘트입니다. -->
+                        {{ ootw.comments }}
                     </div>
                 </div>
             </div>
         </div>
-        <div class="empty-ootw-list" v-if="memnum != checkMemnum">등록된 게시글이 없습니다.</div>
+        <div class="empty-ootw-list" v-if="isList == false">등록된 게시글이 없습니다.</div>
 
 
         <div class="naver-shopping">
             <router-link to="naverShoppingList"><img src="../../assets/navershopping2.png"
                     alt="naver-shopping-icon"></router-link>
         </div>
+        <div style="position: fixed; bottom: 20px; right:140px"><a v-on:click="goUp" style="font-size:40px">∧</a></div>
     </div>
 </template>
 
@@ -90,7 +92,7 @@ export default {
             temp2: '',
             comments: '',
             memnum: sessionStorage.getItem('memnum'),
-            checkMemnum: '',
+            isList: '',
             // 검색창
             isSticky: false
         }
@@ -102,46 +104,57 @@ export default {
     created: function () {
         const self = this;
         self.memnum = sessionStorage.getItem('memnum');
-        self.$axios.get('http://localhost:8081/boards')
-            .then(function (res) {
-                if (res.status == 200) {
-                    self.ootwlist = res.data.list;
-                    self.closetNumList = res.data.closetNumList;
-                    if (self.ootwlist != '') {
-                        self.checkMemnum = self.ootwlist[0].memnum.memnum;
-                        for (let i = 0; i < self.ootwlist.length; i++) {
-                            var year = self.ootwlist[i].odate.substring(0, 4);
-                            var month = self.ootwlist[i].odate.substring(5, 7);
-                            var day = self.ootwlist[i].odate.substring(8, 10);
-                            var date = year + "/" + month + "/" + day;
-                            self.datelist[i] = date;
+        if(self.memnum == null) {
+            alert('로그인 화면으로 이동합니다.')
+            location.href = '/login'
+        } else {
+            self.$axios.get('http://localhost:8081/boards/members/' + self.memnum)
+                .then(function (res) {
+                    if (res.status == 200) {
+                        self.ootwlist = res.data.list;
+                        self.closetNumList = res.data.closetNumList;
+                        if (self.ootwlist != '') {
+                            // self.checkMemnum = self.ootwlist[0].memnum.memnum;
+                            self.isList = true;
+                            for (let i = 0; i < self.ootwlist.length; i++) {
+                                var year = self.ootwlist[i].odate.substring(0, 4);
+                                var month = self.ootwlist[i].odate.substring(5, 7);
+                                var day = self.ootwlist[i].odate.substring(8, 10);
+                                var date = year + "/" + month + "/" + day;
+                                self.datelist[i] = date;
+                            }
+                            // // list사이즈 나누기 한페이지에 보여줄 게시글 수 floor값 = max page
+                            // let left = (self.ootwlist.length % 5);
+                            // let maxPage = '';
+                            // if (left == 0) {
+                            //     maxPage = Math.floor(self.ootwlist.length / 5);
+                            // } else if (left > 0) {
+                            //     maxPage = Math.floor(self.ootwlist.length / 5) + 1;
+                            // }
+                            // // 한페이지에 보여줄 게시글 수보다 리스트에 담긴 수가 적으면 floor값은 0이므로, 강제로 page에 1 넣었음
+                            // if (maxPage == 0) {
+                            //     self.pageIndex[0] = 1;
+                            // } else {
+                            //     // 그 외, page 배열에 사이즈만큼 페이지 수 넣어주기
+                            //     for (let j = 1; j <= maxPage; j++) {
+                            //         self.pageIndex.push(j)
+                            //     }
+                            // }
+                        } else {
+                            self.isList = false;
                         }
-                        // // list사이즈 나누기 한페이지에 보여줄 게시글 수 floor값 = max page
-                        // let left = (self.ootwlist.length % 5);
-                        // let maxPage = '';
-                        // if (left == 0) {
-                        //     maxPage = Math.floor(self.ootwlist.length / 5);
-                        // } else if (left > 0) {
-                        //     maxPage = Math.floor(self.ootwlist.length / 5) + 1;
-                        // }
-                        // // 한페이지에 보여줄 게시글 수보다 리스트에 담긴 수가 적으면 floor값은 0이므로, 강제로 page에 1 넣었음
-                        // if (maxPage == 0) {
-                        //     self.pageIndex[0] = 1;
-                        // } else {
-                        //     // 그 외, page 배열에 사이즈만큼 페이지 수 넣어주기
-                        //     for (let j = 1; j <= maxPage; j++) {
-                        //         self.pageIndex.push(j)
-                        //     }
-                        // }
+                        // self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
+                        // self.displayedDate = self.datelist.slice(0, self.ootwPerPage);
+                    } else {
+                        alert('에러코드: ' + res.status);
                     }
-                    // self.displayedootw = self.ootwlist.slice(0, self.ootwPerPage);
-                    // self.displayedDate = self.datelist.slice(0, self.ootwPerPage);
-                } else {
-                    alert('에러코드: ' + res.status);
-                }
-            })
+                })
+        }
     },
     methods: {
+        goUp(){
+            window.scrollTo({top: 0, behavior: "smooth"})
+        },
         stickyScroll() {
             const stickyPoint = this.$refs.stickyPoint;
             if (!stickyPoint) {
@@ -182,7 +195,7 @@ export default {
             if (self.date2 < self.date1 || self.date1 == '' || self.date2 == '') {
                 alert('날짜 범위를 다시 정해주세요.')
             } else {
-                self.$axios.get('http://localhost:8081/boards/dates/' + self.date1 + "/" + self.date2)
+                self.$axios.get('http://localhost:8081/boards/dates/' + self.memnum + "/" + self.date1 + "/" + self.date2)
                     .then(function (res) {
                         if (res.status == 200) {
                             if (res.data.list != '') {

@@ -81,7 +81,18 @@ public class OmyclosetService {
 //			return (OmyclosetDto)change(entity);
 		}
 	}
-
+	
+	// 내옷 전체리스트 - 멤버번호
+	public ArrayList<OmyclosetDto> getAllByMemnum(int memnum) {
+		ArrayList<Omycloset> list = (ArrayList<Omycloset>) dao.findAllByMemnum(memnum);
+		ArrayList<OmyclosetDto> list2 = new ArrayList<>();
+		for(Omycloset o : list) {
+			list2.add(new OmyclosetDto(o.getClosetnum(), o.getMemnum(), o.getCloth(), o.getImg(), o.getMaintag(),
+					o.getSubtag(), o.getFavorite()));
+		}
+		return list2;
+	}
+	
 	// 내옷 전체 리스트
 	public ArrayList<OmyclosetDto> getAll() {
 		ArrayList<Omycloset> list = (ArrayList<Omycloset>) dao.findAll();
@@ -105,8 +116,8 @@ public class OmyclosetService {
 	}
 
 	// 내옷 대분류 카테고리 검색
-	public ArrayList<OmyclosetDto> getByMaintag(String maintag) {
-		ArrayList<Omycloset> list = (ArrayList<Omycloset>) dao.findByMaintag(maintag);
+	public ArrayList<OmyclosetDto> getByMaintag(int memnum, String maintag) {
+		ArrayList<Omycloset> list = (ArrayList<Omycloset>) dao.findByMaintag(memnum, maintag);
 		ArrayList<OmyclosetDto> list2 = new ArrayList<OmyclosetDto>();
 		for(Omycloset o : list) {
 			list2.add(new OmyclosetDto(o.getClosetnum(), o.getMemnum(), o.getCloth(), o.getImg(), o.getMaintag(),
@@ -116,8 +127,8 @@ public class OmyclosetService {
 	}
 	
 	// 내옷 대분류 소분류 교집합 카테고리 검색
-	public ArrayList<OmyclosetDto> getBySubtag(String subtag)	{
-		ArrayList<Omycloset> list = (ArrayList<Omycloset>) dao.findBySubtag(subtag);
+	public ArrayList<OmyclosetDto> getBySubtag(int memnum, String subtag)	{
+		ArrayList<Omycloset> list = (ArrayList<Omycloset>) dao.findBySubtag(memnum, subtag);
 		ArrayList<OmyclosetDto> list2 = new ArrayList<OmyclosetDto>();
 		for(Omycloset o : list) {
 			list2.add(new OmyclosetDto(o.getClosetnum(), o.getMemnum(), o.getCloth(), o.getImg(), o.getMaintag(),
@@ -127,8 +138,8 @@ public class OmyclosetService {
 	}
 
 	// 내옷 키워드 검색 리스트
-	public ArrayList<OmyclosetDto> getByCloth(String cloth){
-		ArrayList<Omycloset> list = (ArrayList<Omycloset>) dao.findByClothLike("%" + cloth + "%");
+	public ArrayList<OmyclosetDto> getByCloth(int memnum, String cloth){
+		ArrayList<Omycloset> list = (ArrayList<Omycloset>) dao.findByClothLike(memnum, "%" + cloth + "%");
 		ArrayList<OmyclosetDto> list2 = new ArrayList<OmyclosetDto>();
 		for(Omycloset o : list) {
 			list2.add(new OmyclosetDto(o.getClosetnum(), o.getMemnum(), o.getCloth(), o.getImg(), o.getMaintag(),
