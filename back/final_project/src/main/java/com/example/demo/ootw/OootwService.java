@@ -28,8 +28,8 @@ public class OootwService {
 	}
 	
 	// 전체 리스트 뿌리기
-	public ArrayList<OootwDto> getAll(){
-		ArrayList<Oootw> list = (ArrayList<Oootw>) dao.findAllListByOrder();
+	public ArrayList<OootwDto> getAll(int memnum){
+		ArrayList<Oootw> list = (ArrayList<Oootw>) dao.findAllListByOrder(memnum);
 		ArrayList<OootwDto> list2 = new ArrayList<>();
 		for(Oootw o : list) {
 			list2.add(new OootwDto(o.getOotwnum(), o.getMemnum(), o.getOdate(), o.getWeather(), o.getTemp(), o.getComments()));
@@ -38,8 +38,8 @@ public class OootwService {
 	}
 	
 	// 날짜 검색 리스트 뿌리기
-	public ArrayList<OootwDto> getByDateBetween(String odate1, String odate2){
-		ArrayList<Oootw> list = dao.findByOdateBetween(odate1, odate2);
+	public ArrayList<OootwDto> getByDateBetween(int memnum, String odate1, String odate2){
+		ArrayList<Oootw> list = dao.findByOdateBetween(memnum, odate1, odate2);
 		ArrayList<OootwDto> list2 = new ArrayList<>();
 		for(Oootw o : list) {
 			list2.add(new OootwDto(o.getOotwnum(), o.getMemnum(), o.getOdate(), o.getWeather(), o.getTemp(), o.getComments()));

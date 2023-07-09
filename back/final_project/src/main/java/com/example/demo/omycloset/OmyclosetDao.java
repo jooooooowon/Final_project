@@ -13,23 +13,29 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface OmyclosetDao extends JpaRepository<Omycloset, Integer> {
 	
+	// 멤버번호에 해당하는 전체리스트
+	@Transactional
+	@Modifying
+	@Query(value="select * from omycloset where memnum=:memnum order by favorite desc, closetnum desc", nativeQuery = true)
+	ArrayList<Omycloset> findAllByMemnum(@Param("memnum") int memnum);
+	
 	// 대분류 카테고리(1, 2, 3, 4, 5) 리스트 검색하기
 	@Transactional
 	@Modifying
-	@Query(value="select * from omycloset where maintag=:maintag order by favorite desc, closetnum desc", nativeQuery = true)
-	ArrayList<Omycloset> findByMaintag(@Param("maintag") String maintag);
+	@Query(value="select * from omycloset where memnum=:memnum and maintag=:maintag order by favorite desc, closetnum desc", nativeQuery = true)
+	ArrayList<Omycloset> findByMaintag(@Param("memnum") int memnum, @Param("maintag") String maintag);
 	
 	// 소분류 카테고리(11, 12, 13, 14..., 51, 52, 53, 54, 55...)리스트 검색하기
 	@Transactional
 	@Modifying
-	@Query(value="select * from omycloset where subtag=:subtag order by favorite desc, closetnum desc", nativeQuery = true)
-	ArrayList<Omycloset> findBySubtag(@Param("subtag") String subtag);
+	@Query(value="select * from omycloset where memnum=:memnum and subtag=:subtag order by favorite desc, closetnum desc", nativeQuery = true)
+	ArrayList<Omycloset> findBySubtag(@Param("memnum") int memnum, @Param("subtag") String subtag);
 	
 	// 옷 이름 키워드 리스트 검색하기
 	@Transactional
 	@Modifying
-	@Query(value="select * from omycloset where cloth like :cloth order by favorite desc, closetnum desc", nativeQuery = true)
-	ArrayList<Omycloset> findByClothLike(@Param("cloth") String cloth);
+	@Query(value="select * from omycloset where memnum=:memnum and cloth like :cloth order by favorite desc, closetnum desc", nativeQuery = true)
+	ArrayList<Omycloset> findByClothLike(@Param("memnum") int memnum, @Param("cloth") String cloth);
 	
 	// 즐겨찾기 순서 => 최신 등록순
 	@Transactional

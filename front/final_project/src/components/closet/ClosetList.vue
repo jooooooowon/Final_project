@@ -50,6 +50,10 @@
                         <button v-on:click="modalCloseAdd">취소</button>
                     </div>
                 </div>
+                <!-- 기본 이미지 등록 버튼 -->
+                <div class="basic-button-container" v-if="!addThumbnailfile && !isExpanded">
+                    <button class="next-button" @click="addBasicImage">기본 이미지 등록</button>
+                </div>
                 <!-- 다음 버튼 -->
                 <div class="next-button-container" v-if="addThumbnailfile && !isExpanded">
                     <button class="next-button" @click="expandModal">다음</button>
@@ -96,13 +100,19 @@
         </div>
 
         <!-- 옷장에 등록된 옷 리스트 -->
-        <div v-if="memnum == checkMemnum" class="main-list">
+        <div v-if="isList == true" class="main-list">
             <div class="container" v-for="(row, index) in additionalCloset" :key="index"
                 style="display: flex; align-items: center;">
                 <div class="card" v-for="closet in row" :key="closet.closetnum">
+                    <span v-if="closet.img != 'basicImage'">
                     <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closet.closetnum"
                         v-on:click="modalOpenDetail(closet.closetnum)" style="cursor: pointer;" title="수정하려면 클릭하세요.">
-                    <div class="favImg">
+                    </span>
+                    <span v-if="closet.img == 'basicImage'">
+                    <img :src="'http://localhost:8081/closets/img/addimg/' + 0"
+                        v-on:click="modalOpenDetail(closet.closetnum)" style="cursor: pointer;" title="수정하려면 클릭하세요.">
+                    </span>
+                        <div class="favImg">
                         <a v-on:click="favorite(closet.closetnum)">
                             <span v-if="closet.favorite == 1">
                                 <img src="../../assets/FullStar.png" alt="">
@@ -125,17 +135,24 @@
             </div>
             <span class="more-btn"><button v-on:click="moreBtn">더보기</button></span><br />
         </div><br />
-        <div v-if="memnum != checkMemnum">등록된 옷이 없습니다.</div>
+        <div v-if="isList == false">등록된 옷이 없습니다.</div>
 
         <!-- 옷 디테일 모달창 -->
         <div class="modal-wrap-detail" v-show="modalCheckDetail" @click="modalCloseDetail" id="modalWrapDetail">
             <div class="modal-container-detail" @click.stop="" id="containerDetail">
                 <label for="detailEditFile">
-                    <span v-if="detailEditImg == ''">
+                    <span v-if="img != 'basicImage' && detailEditImg == ''">
                         <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + setClosetnum"
                             class="modal-img-detail">
                     </span>
-                    <span v-if="detailEditImg != ''">
+                    <span v-if="img != 'basicImage' && detailEditImg != ''">
+                        <img :src="detailEditImg" class="modal-img-detail">
+                    </span>
+                    <span v-if="img == 'basicImage' && detailEditImg == ''">
+                        <img :src="'http://localhost:8081/closets/img/addimg/' + 0"
+                        class="modal-img-detail">
+                    </span>
+                    <span v-if="img == 'basicImage' && detailEditImg != ''">
                         <img :src="detailEditImg" class="modal-img-detail">
                     </span>
                 </label>
@@ -151,7 +168,7 @@
                     alt="naver-shopping-icon"></router-link>
         </div>
     </div>
-
+    <div style="position: fixed; bottom: 20px; right:140px"><a v-on:click="goUp" style="font-size:40px">∧</a></div>
     <br />
 </template>
 
@@ -168,8 +185,7 @@ export default {
             subtags: [],
             cloth: '',
             memnum: sessionStorage.getItem('memnum'),
-            checkMemnum: '',
-            isHovered: false,
+            isList: '',
             // 메뉴바
             isSticky: false,
             // add 모달
@@ -187,6 +203,7 @@ export default {
             modalCloth: '',
             maintag: '',
             sub: '',
+            img: null, // 기본이미지 유무 체크용
             modalCheckDetail: false,
             detailEditImg: '', // 디테일 이미지 수정 썸네일 이미지
             uploadimg: '', // 디테일 -> 이미지수정 -> 바뀐 이미지 주소 담는 변수
@@ -196,39 +213,48 @@ export default {
                 { title: "아우터", isOpen: false, subItems: ['아우터(전체)', '가디건', '자켓', '야상', '트렌치코트', '코트', '패딩', '아우터(기타)'] },
                 { title: "상의", isOpen: false, subItems: ['상의(전체)', '민소매', '반팔', '긴팔티', '셔츠', '니트', '맨투맨', '상의(기타)'] },
                 { title: "하의", isOpen: false, subItems: ['하의(전체)', '반바지', '치마', '면바지', '청바지', '레깅스', '하의(기타)'] },
-                { title: "기타", isOpen: false, subItems: ['기타(전체)', '스타킹', '히트텍', '기모제품', '방한용품', '기타'] },
-                { title: "신발", isOpen: false, subItems: ['신발(전체)', '샌들', '슬리퍼', '운동화', '등산화', '구두', 'etc'] }
+                { title: "기타", isOpen: false, subItems: ['기타(전체)', '스타킹', '히트텍', '기모제품', '방한용품', 'etc'] },
+                { title: "신발", isOpen: false, subItems: ['신발(전체)', '샌들', '슬리퍼', '운동화', '등산화', '구두', '신발(기타)'] }
             ]
         }
     },
     mounted() {
-        window.addEventListener('scroll', this.stickyScroll);
         this.stickyScroll(); // 컴포넌트 마운트될 때 메서드 초기 호출하여 초기상태 설정
+        window.addEventListener('scroll', this.stickyScroll);
     },
     created: function () { // 해당 컴포넌트가 처음 실행될 때만 적용... 그 다음부터는 변경된 컴포넌트(같은 컴포넌트로 이동할 때 적용이 안됨)
         const self = this;
         self.memnum = sessionStorage.getItem('memnum')
-        self.$axios.get('http://localhost:8081/closets')
-            .then(function (res) {
-                if (res.status == 200) {
-                    // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default 걸러서 리스트에 넣기
-                    self.closetlist = res.data.list;
-                    if (self.closetlist != '') {
-                        self.checkMemnum = self.closetlist[0].memnum.memnum;
-                        const addtionalRow1 = self.closetlist.slice(0, self.closetPerPage);
-                        const addtionalRow2 = self.closetlist.slice(self.closetPerPage, self.closetPerPage * 2);
-                        const addtionalRow3 = self.closetlist.slice(self.closetPerPage * 2, self.closetPerPage * 3);
-                        self.additionalCloset.push(addtionalRow1, addtionalRow2, addtionalRow3);
-                        // self.additionalCloset.push(addtionalRow1);
+        if(self.memnum == null) {
+            alert("로그인 화면으로 이동합니다.")
+            location.href = '/login'
+        } else {
+            self.$axios.get('http://localhost:8081/closets/members/' + self.memnum)
+                .then(function (res) {
+                    if (res.status == 200) {
+                        // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default 걸러서 리스트에 넣기
+                        self.closetlist = res.data.list;
+                        if (self.closetlist != '') {
+                            // self.checkMemnum = self.closetlist[0].memnum.memnum;
+                            self.isList = true;
+                            const addtionalRow1 = self.closetlist.slice(0, self.closetPerPage);
+                            const addtionalRow2 = self.closetlist.slice(self.closetPerPage, self.closetPerPage * 2);
+                            const addtionalRow3 = self.closetlist.slice(self.closetPerPage * 2, self.closetPerPage * 3);
+                            self.additionalCloset.push(addtionalRow1, addtionalRow2, addtionalRow3);
+                            // self.additionalCloset.push(addtionalRow1);
+                        } else {
+                            self.isList = false;
+                        }
                     } else {
-                        alert('등록된 옷이 없습니다.')
+                        alert('에러코드: ' + res.status)
                     }
-                } else {
-                    alert('에러코드: ' + res.status)
-                }
-            })
+                })
+        }
     },
     methods: {
+        goUp(){
+            window.scrollTo({ top: 0, behavior: "smooth"})
+        },
         stickyScroll() {
             const stickyPoint = this.$refs.stickyPoint;
             if (!stickyPoint) {
@@ -276,7 +302,7 @@ export default {
             // 0~6 + 6~9 = 0~9 .. 0, 1, 2, 3, 4, 5, 6, 7, 8.. 9개가 보여짐
             // const startIndex = (self.currentPage) * self.closetPerPage * 2;
             const startIndex = (self.currentPage) * self.closetPerPage * 3;
-            const endIndex = startIndex + self.closetPerPage; ``
+            const endIndex = startIndex + self.closetPerPage;
             if (startIndex > self.closetlist.length) {
                 // 더 이상 표시할 아이템이 없으면 더보기 버튼을 비활성화
                 return;
@@ -472,16 +498,20 @@ export default {
         updatesub() {
             this.selectedsub = '';
             if (this.selectedmain == '아우터') {
-                this.addsubtags = ['가디건', '자켓', '야상', '트렌치코트', '코트', '패딩', 'etc']
+                this.addsubtags = ['가디건', '자켓', '야상', '트렌치코트', '코트', '패딩', '아우터(기타)']
             } else if (this.selectedmain == '상의') {
-                this.addsubtags = ['민소매', '반팔', '긴팔티', '셔츠', '니트', '맨투맨', 'etc']
+                this.addsubtags = ['민소매', '반팔', '긴팔티', '셔츠', '니트', '맨투맨', '상의(기타)']
             } else if (this.selectedmain == '하의') {
-                this.addsubtags = ['반바지', '치마', '면바지', '청바지', '레깅스', 'etc']
+                this.addsubtags = ['반바지', '치마', '면바지', '청바지', '레깅스', '하의(기타)']
             } else if (this.selectedmain == '기타') {
                 this.addsubtags = ['스타킹', '히트텍', '기모제품', '목도리', 'etc']
             } else if (this.selectedmain == '신발') {
-                this.addsubtags = ['샌들', '슬리퍼', '운동화', '등산화', '구두', 'etc']
+                this.addsubtags = ['샌들', '슬리퍼', '운동화', '등산화', '구두', '신발(기타)']
             }
+        },
+        addBasicImage() {
+            const self = this;
+            self.addThumbnailfile = 'http://localhost:8081/closets/img/addimg/' + 0;
         },
         addcloset() {
             const self = this;
@@ -491,15 +521,26 @@ export default {
             } else if (self.selectedmain == '' || self.selectedsub == '' || self.clothname == '') {
                 alert("등록하시는 옷의 태그 또는 이름을 정해주세요.")
             } else {
-                formdata.append('f', self.addfile)
-                formdata.append('memnum', self.memnum)
-                formdata.append('cloth', self.clothname)
-                formdata.append('maintag', self.selectedmain)
-                formdata.append('subtag', self.selectedsub)
-                self.$axios.post('http://localhost:8081/closets', formdata)
-                    .then(function () {
-                        location.reload();
-                    })
+                if(self.addfile == ''){
+                    formdata.append('memnum', self.memnum)
+                    formdata.append('cloth', self.clothname)
+                    formdata.append('maintag', self.selectedmain)
+                    formdata.append('subtag', self.selectedsub)
+                    self.$axios.post('http://localhost:8081/closets/nofile', formdata)
+                        .then(function () {
+                            location.reload();
+                        })                    
+                } else {
+                    formdata.append('f', self.addfile)
+                    formdata.append('memnum', self.memnum)
+                    formdata.append('cloth', self.clothname)
+                    formdata.append('maintag', self.selectedmain)
+                    formdata.append('subtag', self.selectedsub)
+                    self.$axios.post('http://localhost:8081/closets', formdata)
+                        .then(function () {
+                            location.reload();
+                        })
+                }
             }
         },
         // detail 모달창 열기
@@ -515,6 +556,7 @@ export default {
                             self.modalCloth = dto.cloth
                             self.maintag = dto.maintag
                             self.sub = dto.subtag
+                            self.img = dto.img
                         } else {
                             alert("정보가 없습니다.")
                         }
@@ -533,7 +575,7 @@ export default {
             const self = this;
             let formdata = new FormData();
             if (self.uploadimg == null) {
-                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.cloth)
+                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.modalCloth)
                     .then(function (res) {
                         if (res.status == 200) {
                             let newdto = res.data.dto
@@ -545,7 +587,7 @@ export default {
                     })
             } else {
                 formdata.append('newf', self.uploadimg)
-                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.cloth, formdata)
+                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.modalCloth, formdata)
                     .then(function (res) {
                         if (res.status == 200) {
                             let newdto = res.data.dto
@@ -811,6 +853,11 @@ button:hover {
     height: 35px;
 }
 
+.basic-button-container {
+    position: absolute;
+    top: 275px;
+    right: 140px;
+}
 .next-button-container {
     position: absolute;
     top: 11px;
