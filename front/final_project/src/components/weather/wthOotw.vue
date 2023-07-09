@@ -61,8 +61,8 @@ export default {
             nowTmp: sessionStorage.getItem("nowTmp"),
             memnum: sessionStorage.getItem("memnum"),
             message: '', // 로그인하면 옷장에서 옷 추천해드림~
-            t1: 0, // 최고기온
-            t2: 0, // 최저기온
+            t1: 23, // 최저기온
+            t2: 27, // 최고기온
             showRecom: false, // 로그인 여부 체크
             allOotwList: [], // 기온 검색 ootw 전체 리스트
             displayedOotw: [], // ootw dto 5개 (수정될 수 있음)만 띄울거임~
@@ -114,33 +114,34 @@ export default {
                 t1 = 28;
                 t2 = 100;
 
-            } else if (23 <= tmp && tmp <= 27) { // 23~27도
-                t1 = 23;
-                t2 = 27;
-
             } else if (20 <= tmp && tmp <= 22) { // 20~22도
                 t1 = 20;
                 t2 = 22;
-
+                
             } else if (17 <= tmp && tmp <= 19) { // 17~19도
                 t1 = 17;
                 t2 = 19;
-
+                
             } else if (12 <= tmp && tmp <= 16) { // 12~16도
                 t1 = 12;
                 t2 = 16;
-
+                
             } else if (9 <= tmp && tmp <= 11) { // 9~11도
                 t1 = 9;
                 t2 = 11;
-
+                
             } else if (5 <= tmp && tmp <= 8) { // 5~8도
                 t1 = 5;
                 t2 = 8;
-
-            } else { // 4도 이하
+                
+                
+            } else if (tmp <= 4) { // 4도 이하
                 t1 = -100;
                 t2 = 4;
+
+            } else if (23 <= tmp && tmp <= 27) { // 23~27도
+                t1 = 23;
+                t2 = 27;
             }
             this.t1 = t1;
             this.t2 = t2;

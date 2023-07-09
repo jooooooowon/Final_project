@@ -54,7 +54,7 @@
                     <div class="closet"
                         style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center;">
                         <div class="cloth" v-for="(dto, i) in naverList" :key="i"
-                            :style="{ maxWidth: '160px', flex: '0 0 250px' }" @click="shoppingLink(currentSubtag, i)"
+                            :style="{ maxWidth: '160px', flex: '0 0 250px' }" @click="shoppingLink(i)"
                             @mouseover="cursorChange" @mouseout="resetCursor">
                             <img :src="dto.img">
                             {{ dto.price }}원
@@ -179,33 +179,34 @@ export default {
                 recommend = '반팔, 민소매, 반바지, 치마'
                 subtags = ['반팔', '민소매', '반바지', '치마']
 
-            } else if (23 <= tmp && tmp <= 27) { // 23~27도
-                recommend = '반팔, 얇은셔츠, 반바지, 면바지'
-                subtags = ['반팔', '셔츠', '반바지', '면바지']
-
+                
             } else if (20 <= tmp && tmp <= 22) { // 20~22도
                 recommend = '얇은가디건, 긴팔티, 면바지, 청바지'
                 subtags = ['가디건', '긴팔티', '면바지', '청바지']
-
+                
             } else if (17 <= tmp && tmp <= 19) { // 17~19도
                 recommend = '얇은니트, 가디건, 맨투맨, 얇은재킷, 면바지, 청바지'
                 subtags = ['니트', '가디건', '맨투맨', '자켓', '면바지', '청바지']
-
+                
             } else if (12 <= tmp && tmp <= 16) { // 12~16도
                 recommend = '자켓, 가디건, 야상, 맨투맨, 니트, 스타킹, 청바지, 면바지'
                 subtags = ['자켓', '가디건', '야상', '맨투맨', '니트', '스타킹', '청바지', '면바지']
-
+                
             } else if (9 <= tmp && tmp <= 11) { // 9~11도
                 recommend = '자켓, 트렌치코트, 야상, 니트, 스타킹, 청바지, 면바지'
                 subtags = ['자켓', '트렌치코트', '야상', '니트', '스타킹', '청바지', '면바지']
-
+                
             } else if (5 <= tmp && tmp <= 8) { // 5~8도
                 recommend = '코트, 히트텍, 니트, 청바지, 레깅스'
                 subtags = ['코트', '히트텍', '니트', '청바지', '레깅스']
-
-            } else { // 4도 이하
+                
+            } else if (tmp <= 4) { // 4도 이하
                 recommend = '패딩, 두꺼운코트, 방한용품, 기모제품'
                 subtags = ['패딩', '코트', '방한용품', '기모제품']
+
+            } else if (23 <= tmp && tmp <= 27) { // 23~27도
+                recommend = '반팔, 얇은셔츠, 반바지, 면바지'
+                subtags = ['반팔', '셔츠', '반바지', '면바지']
             }
             this.recommend = recommend;
             this.subtags = subtags;
@@ -252,7 +253,7 @@ export default {
             try {
                 // await -> 비동기 작업인 self.$axios.get(...)의 결과를 기다립니다.
                 // 메서드 내에서 옷장 데이터를 비동기적으로 요청
-                const res = await this.$axios.get('http://localhost:8081/closets/subtags/' + subtag);
+                const res = await this.$axios.get('http://localhost:8081/closets/subtags/' + this.memnum + '/' + subtag);
                 if (res.status === 200) {
                     // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default(기본이미지) 걸러서 리스트에 넣기
                     this.closetlist = res.data.list.filter(closet => closet.closetnum !== 999999999);
@@ -404,8 +405,8 @@ export default {
         },
 
         // 네이버 쇼핑 카드 누르면 해당 옷 네이버 검색창으로 이동
-        shoppingLink(subtag, i) {
-            const link = this.naverList[subtag][i].link;
+        shoppingLink(i) {
+            const link = this.naverList[i].link;
             window.open(link, "_blank");
         },
 
