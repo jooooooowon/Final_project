@@ -1,12 +1,5 @@
 <template>
-  <img src="http://kmbiz.com/dowoo/inc_img/coming-soon.jpg" alt="공사중">
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <span>더 나은 서비스를 위해 노력 중입니다. 조금만 기다려 주세요.</span>
+  <img src="../../assets/notyet.png" alt="" style="margin-left:450px; margin-top:100px; width:600px; height:300px">
 </template>
 
 <style scoped>
