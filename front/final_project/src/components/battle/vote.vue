@@ -1,28 +1,43 @@
 <template>
+  <div class="body-css">
   <div v-if="prepared" style="display: flex;">
     
     <canvas id="canvas" style="position:absolute"></canvas>
     
     <div class="your-choice">
-      Your choice?
+       <div style="font-size:35px">이번 주 배틀 테마는 [{{ firstCandidate.theme }}] 입니다!</div><br/>
+       <div style="font-size:30px">{{ firstCandidate.theme }}을 더 잘 표현한 후보를 선택해 주세요.</div><br/>
+       <div style="font-size:20px">※ 형평성을 위해 투표는 비밀투표로 진행됩니다.</div><br/>
     </div>
     <div class="main">
-
       <div class="first-candidate">
-        <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" @click="voteCandidate(firstCandidate.batnum)" alt="첫번째 후보">
+        <!-- {{ firstCandidate.batnum }} -->
+        <span v-if="firstCandidate.batnum != selectedbatNum">
+          <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" @click="voteCandidate(firstCandidate.batnum)" alt="첫번째 후보">
+        </span>
+        <span v-if="firstCandidate.batnum == selectedbatNum">
+          <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" style="position: relative; z-index: 0;" alt="첫번째 후보">
+          <img src="../../assets/selected.png" style="position:absolute; left:0; z-index: 1; opacity: 0.5;" alt="첫번째 후보">
+        </span>
       </div>
       <div class="vs">
         VS
       </div>
       <div class="second-candidate">
+        <span v-if="secondCandidate.batnum != selectedbatNum">
         <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" @click="voteCandidate(secondCandidate.batnum)" alt="두번째 후보">
+        </span>
+        <span v-if="secondCandidate.batnum == selectedbatNum">
+          <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" alt="두번째 후보">
+          <img src="../../assets/selected.png" style="position:absolute; left:0; z-index: 1; opacity: 0.5;" alt="두번째 후보">
+        </span>
       </div>
     </div>
   </div>
   <div v-else>
     <notYet></notYet>
   </div>
-
+</div>
 </template>
 
 <script>
@@ -37,7 +52,9 @@ export default{
       firstCandidate:{},
       secondCandidate:{},
       prepared : true,
-      chk : true
+      chk : true,
+      selectedBatnumList: [],
+      selectedbatNum: ''
     }
   },
   components:{
@@ -80,6 +97,11 @@ export default{
       .then(res =>{
         if(res.status == 200){
           self.chk = res.data.chk;
+          if(res.data.list == 0) {
+            self.selectedbatNum = res.data.list;
+          } else {
+            self.selectedbatNum = res.data.list[0].batnum.batnum;
+          }
         }else{
           alert("오류 발생으로 인한 투표 유무 확인 불가")
         }
@@ -268,17 +290,16 @@ export default{
       let self = this;
       if(!self.chk){
         alert('이미 투표 하였습니다.')
-        location.href="/"
+        location.href="/vote"
       }else{
-
-        alert(num);
+        // alert(num);
         let form = new FormData();
         form.append("memnum",self.memnum);
         form.append("batnum",num);
         self.$axios.post('http://localhost:8081/votes',form)
         .then(res => {
           if(res.status == 200){
-            alert(res.data.batnum);
+            // alert(res.data.batnum);
             location.reload();
             if(num == 1){
               this.firstCandidate = res.data.dto;
@@ -298,8 +319,18 @@ export default{
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
-
-
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+.body-css {
+    font-family: 'PyeongChang-Regular';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
 html{
   height: 100%;
 }
@@ -320,9 +351,11 @@ body{
   display:flex;
   position:absolute;
   width: 1000px;
+  height: 1000px;
+  margin: 200px auto auto 260px;
   left:0;
   right:0;
-  margin: 300px auto;
+  /* margin: 300px auto; */
 }
 .main img{
   width: 300px;
@@ -331,9 +364,9 @@ body{
 }
 
 .your-choice{
-  font-family: "Pacifico", cursive;
-  font-size: 5rem;
-  margin-top:50px;
+  font-family: 'PyeongChang-Regular';
+  /* font-size: 3rem; */
+  /* margin-top:50px; */
   z-index:1; 
   position:absolute;
   left:0; 
@@ -348,6 +381,16 @@ body{
   animation-duration: 3s;
   left:10%;
   
+}
+
+.first-candidate img {
+    width: 300px;
+    /* 가로 사이즈 200px로 고정 */
+    height: 450px;
+    /* 세로 사이즈 200px로 고정 */
+    object-fit: cover;
+    /* 이미지가 카드 영역에 꽉 차도록 설정 */
+    border-radius: 10px;
 }
 
 .first-candidate:hover{
@@ -372,6 +415,16 @@ body{
   animation-duration: 3s;
   right:10%;
 }
+
+.second-candidate img {
+    width: 300px;
+    /* 가로 사이즈 200px로 고정 */
+    height: 450px;
+    /* 세로 사이즈 200px로 고정 */
+    object-fit: cover;
+    /* 이미지가 카드 영역에 꽉 차도록 설정 */
+    border-radius: 10px;
+}
 .second-candidate:hover{
   cursor:pointer;
 }
@@ -390,12 +443,12 @@ body{
 
 .vs{
   display :absolute;
-  font-family: "Pacifico", cursive;
+  font-family: 'PyeongChang-Regular';
   font-size: 1.8em;
   font-weight: bold;
   left:0;
   right:0;
-  margin:10% auto;
+  margin: 200px auto auto 480px;
   animation:vs-animate ease-in;
   animation-duration: 3s;
   z-index:1;
