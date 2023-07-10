@@ -18,7 +18,7 @@
       <div class = "title">명예의 전당</div>
       <div class="winner-list">
         <ul v-for="(winner,i) in list" :key="i">
-          <li class="list-winner">
+          <li class="list-winner" v-if="winner.theme != '이번주 테마는?'">
           <div class="card">
             <div class="round-cnt">
               ROUNDNUM <span style = "font-weight: bold; font-size: 16px; color:#ebebeb">#{{ winner.roundcnt }}</span> 
