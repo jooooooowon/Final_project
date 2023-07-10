@@ -77,5 +77,14 @@ public class OmemberService {
 			return null;
 		}
 		return (OmemberDto)change(m);
-	}	
+	}
+	
+	// 닉네임 조회
+		public OmemberDto getByNick(String nickname) {
+			Omember m = dao.findByNickname(nickname);
+			if(m==null) {
+				return null;
+			}
+			return (OmemberDto)change(m);
+		}
 }

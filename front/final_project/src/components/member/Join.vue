@@ -40,17 +40,10 @@
         <p class="input_error" v-if="hasEmailError">이메일 주소를 정확히 입력해주세요.</p>
 
         <!-- 이메일 인증 버튼 -->
-            <button v-on:click="authEmail" id="authEmail" class="authEmail">인증하기</button><br/>
+            <button v-on:click="authEmail" id="authEmail" class="authEmail_error" v-if="emailId === ''" disabled>인증하기</button> 
+            <button v-on:click="authEmail" id="authEmail" class="authEmail_error" v-else-if="hasEmailError" disabled>인증하기</button>
+            <button v-on:click="authEmail" id="authEmail" class="authEmail" v-else>인증하기</button>
         </div>
-
-        <!-- email: <input type="text" v-model="emailId">
-        @
-        <select v-model="emailDomain">
-            <option>naver.com</option>
-            <option>gmail.com</option>
-            <option>daum.net</option>
-        </select> -->
-
         
         <!-- 인증확인 -->
         <div class="form_group">
@@ -59,9 +52,9 @@
             <input type="text" v-model="compKey" style="display: none;"> <!-- 서버사이드에서 받은 인증키 비교 위해 저장해놓을 더미용 -->
 
             <!-- 인증번호 받기 누르면 시작되는 타이머 -->
-            <div id="timer" style="display: flex; justify-content: spcae-between; align-items: center;">
+            <div id="timer" style="display: flex;">
                 <span id="displayedTime" style="text-align: center;  color:lightgray">3분0초</span>
-                <div style="display: inline-block; flex-direction: row; justify-content: flex-end;">
+                <div class="checkKey_btn">
                     <button v-on:click="checkKey" id="checkKey" class="checkKey_disabled" v-if="compKey==''" disabled>인증번호 확인</button>
                     <button v-on:click="checkKey" id="checkKey" class="checkKey" v-else>인증번호 확인</button>
                 </div>
@@ -80,30 +73,47 @@
         <!-- 닉네임 입력폼 -->
         <div class="form_group">
             <label for="nickname" :class="{'input_label': !hasNicknameError, 'input_label_error': hasNicknameError}">닉네임*</label>
-            <input type="text" id="nickname" v-model="nickname" placeholder="닉네임" :class="{'input_field': !hasNicknameError, 'input_field_error': hasNicknameError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateNickname($event)">
+            <input type="text" id="nickname" v-model="nickname" placeholder="닉네임" :class="{'input_field': !hasNicknameError, 'input_field_error': hasNicknameError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="nickcheck(); validateNickname($event)">
 
             <p class="input_error" v-if="hasNicknameError">3~8자로 입력해주세요.</p>
+            <p class="input_nickcheck" v-else>{{ nickmsg }}</p>
         </div>
 
         <!-- 이미지 선택 -->
         <div class="form_group">
             <label for="f1" :class="{'input_label': f1}">프로필사진</label>
 
-            <!-- 프로필 기본 이미지 -->
-            <span v-if="!f1">
-                <img style="width:150px; height:150px; border-radius:50%;" src="../../assets/imageadd.png">
-            </span>
-            <!-- 선택한 프로필 이미지 -->
-            <span v-else>
-                <img style="width:150px; height:150px; border-radius:50%;" :src="f1">    
-            </span>
-            <input type="file" id="f1" class="input_field" @change="profileImg">
+            <div class="Img">
+                <!-- 프로필 기본 이미지 -->
+                <span v-if="!f1">
+                    <img style="width:150px; height:150px; border-radius:50%;" src="../../assets/imageadd.png">
+                </span>
+                <!-- 선택한 프로필 이미지 -->
+                <span v-else>
+                    <img style="width:150px; height:150px; border-radius:50%;" :src="f1">
+                </span>
+
+                
+                <div class="button_group">
+                    <input type="file" accept="image/*" id="f1" style="display: none" ref="fileInput" @change="profileImg">
+                    <button class="s small Btn" @click="editImg">이미지 선택</button>
+
+                    <button class="c small Btn" @click="cancelProfileImg" style="margin-left:8px;">취소</button> 
+                </div>
+            </div>
+            <!-- <input type="file" id="f1" style="display:none;" @change="profileImg">  -->
+            <!-- <div class="selectImg">
+                <input type="file" accept="image/*" id="f1" style="display: none" ref="fileInput" @change="profileImg">
+                <button class="s small Btn" @click="editImg">이미지 선택</button>
+
+                <button class="c small Btn" @click="cancelProfileImg">취소</button> 
+            </div> -->
         </div>
 
         <!-- 가입버튼 -->
         <div class="join_btn_box"> 
         
-        <button v-on:click="join" >가입</button>
+        <button v-on:click="join" class="joinBtn" >가입</button>
         <!-- <button v-on:click="join" :disabled="!isJoinable">가입</button> -->
         <!-- <button v-else v-on:click="join" :disabled="isJoinable" class="joinBtn">가입</button> -->
         </div>
@@ -127,12 +137,13 @@ export default{
             gender:'',
             nickname:'',
             msg:'',
+            nickmsg:'',
             hasIdError:false,
             hasPwdError:false,
             hasEmailError:false,
             hasNicknameError:false,
             f1:'',
-            file:[]
+            file:[],
         }
     },
 
@@ -156,6 +167,16 @@ export default{
                 this.f1 = URL.createObjectURL(file);
                 console.log('f1:'+this.f1);
             }
+        },
+
+        //이미지변경
+        editImg(){
+            this.$refs.fileInput.click();
+        },
+        //이미지삭제
+        cancelProfileImg(){
+            this.f1 = ''; //이미지 데이터 초기화
+            this.$refs.fileInput.value = ''; //파일 선택 초기화
         },
 
         //회원가입
@@ -223,6 +244,28 @@ export default{
             });
         },
 
+        //닉네임 중복체크
+        nickcheck(){
+            const self = this;
+            if(self.nickname.trim() === ''){
+                return;
+            }
+            self.$axios.get('http://localhost:8081/members/nickname/'+self.nickname)
+            .then(function(res){
+                if(res.status === 200){
+                    if(res.data.tf === true){
+                        self.nickmsg = '사용가능한 닉네임';
+                    }else{
+                        self.nickmsg = '중복된 닉네임';
+                    }
+                    console.log(res.data.tf)
+                    console.log("닉네임:"+self.nickname)
+                }else{
+                    alert('에러코드:' + res.status)
+                }
+            });
+        },
+
         //아이디 정규식(8~12자리 이상 영문+숫자, 영문, 숫자X)
         validateId(event){
             const id = event.target.value
@@ -254,7 +297,7 @@ export default{
         validateNickname(event){
             //3~8자리, 공백X, 특수문자X 외 다 가능
             const nickname = event.target.value
-            const pattern = /^(?!\s)(?!.*\s$)(?!.*[!@#$%^&*(),.?":{}|<>])[^\s]{3,8}$/
+            const pattern = /^(?!\s)(?!.*\s$)(?!.*[!@#$%^&*(),.?":{}|<>])(?!.*[ㄱ-ㅎㅏ-ㅣ])[^\s]{3,8}$/;
             this.hasNicknameError = !pattern.test(nickname);
             this.enabledState();
         },
@@ -382,6 +425,16 @@ export default{
     color:#000;
     margin-top: 5px;
     font-size: 13px;
+    text-align: center;
+}
+
+/* 사용가능한 닉네임입니다 */
+.input_nickcheck{
+    display: block;
+    color:#000;
+    margin-top: 5px;
+    font-size: 13px;
+    text-align: center;
 }
 /* 회원가입 */
 .join_title{
@@ -446,9 +499,28 @@ label{
     font-size: 13px;
     text-align: right;
     margin-left: auto;
+    justify-content: flex-end;
+}
+
+.authEmail_error{
+    display: flex;
+    border: none;
+    background: none;
+    text-decoration: underline;
+    color: #ebebeb;
+    font-weight: bolder;
+    font-size: 13px;
+    text-align: right;
+    margin-left: auto;
+    justify-content: flex-end;
 }
 
 /* 이메일인증 확인버튼 */
+.checkKey_btn{
+    display: flex;
+    justify-content: flex-end;
+}
+
 .checkKey{
     display: flex;
     justify-content: flex-end;
@@ -481,20 +553,61 @@ label{
     text-align: left;
     font-size: 11px;
 }
+.Btn{
+    display: inline-flex;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    text-align: center;
+    color: rgba(34,34,34,.8);
+    background-color: #fff;
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
+}
+
+.small{
+    font-size: 12px;
+    padding: 0 14px;
+    height: 34px;
+    border-radius: 10px;
+    border: 1px solid #d3d3d3;
+}
+
+.small:hover{
+    background-color: #85b380;
+    color:#fff;
+    transition: .5s;
+}
 
 /* 가입버튼*/
 .joinBtn{
-  display: block;
-  width: 100%;
-  padding: 10px;
-  border: none;
-  border-radius: 12px;
-  background-color: #000000;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: #000000;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
+}
+.join_btn_box{
+    width: 100%;
 }
 
+.button_group{
+    margin-left: auto;
+    margin-top: auto;
+}
+
+.Img{
+    display: flex;
+    justify-content: flex-end;
+}
 
 
   

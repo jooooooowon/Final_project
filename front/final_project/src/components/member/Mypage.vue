@@ -393,6 +393,7 @@ export default{
 
 .small:hover{
     background-color: #85b380;
+    color:#fff;
     transition: .5s;
 }
 
@@ -407,6 +408,7 @@ export default{
 
 .medium:hover{
     background: #85b380;
+    color:#fff;
     transition: .5s;
 }
 

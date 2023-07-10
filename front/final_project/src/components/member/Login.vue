@@ -17,8 +17,11 @@
         <!-- 패스워드 입력 폼 -->
         <div class="form_group">
             <label for="pwd" :class="{'input_label': !hasPwdError, 'input_label_error': hasPwdError}">패스워드</label>
-            <input type="password" id="pwd" v-model="pwd" placeholder="패스워드" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)"><br/>
-
+            <div class="password-input-container">
+                <input type="password" id="pwd" v-model="pwd" placeholder="패스워드" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)">
+                <span class="material-symbols-outlined" @click="visibility" v-show="hidePwd">visibility</span>
+                <span class="material-symbols-outlined" @click="visibility" v-show="!hidePwd">visibility_off</span>
+            </div>
             <!-- 패스워드 유효성 검사 -->
             <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
         </div>
@@ -59,7 +62,8 @@ export default{
             id:'',
             pwd:'',
             hasIdError:false,
-            hasPwdError:false
+            hasPwdError:false,
+            hidePwd:false
         }
     },
 
@@ -106,20 +110,47 @@ export default{
         
         //로그인, 패스워드 포커스시 초기화, 복구
         cPlaceholder(event){
-            event.target.previousElementSibling.classList.add('active');
-            event.target.placeholder= '';
+            const inputField = event.target;
+            if(inputField){
+                const label = inputField.previousElementSibling;
+                if(label){
+                    label && label.classList.add('active');
+                }
+                inputField.placeholder='';
+            }
+
+            // const inpuField = event.target;
+            // event.target.previousElementSibling.classList.add('active');
+            // event.target.placeholder= '';
         },
         rPlaceholder(event){
             const inputField = event.target;
-            const label = inputField.previousElementSibling;
-            if(!inputField.value){
-                label.classList.remove('active');
-                if(inputField.id ==='id'){
-                    inputField.placeholder = '아이디';
-                }else if(inputField.id === 'pwd'){
-                    inputField.placeholder = '패스워드';
+            if(inputField){
+                const label = inputField.previousElementSibling;
+                if(label){
+                    label.classList.remove('active');
+                }
+                if(!inputField.value){
+                    if(!inputField.id === 'id'){
+                        inputField.placeholder = '아이디';
+                    } else if(inputField.id === 'pwd'){
+                        inputField.placeholder = '패스워드';
+                    }
                 }
             }
+            
+            
+            // const inputField = event.target;
+            // const label = inputField.previousElementSibling;
+            
+            // if(!inputField.value){
+            //     label.classList.remove('active');
+            //     if(inputField.id ==='id'){
+            //         inputField.placeholder = '아이디';
+            //     }else if(inputField.id === 'pwd'){
+            //         inputField.placeholder = '패스워드';
+            //     }
+            // }
         },
 
         //아이디 정규식(8~12자리 이상 영문+숫자, 영문, 숫자X)
@@ -146,6 +177,10 @@ export default{
             }else{
                 this.isEnabled = true;
             }
+        },
+
+        visibility(){
+            this.hidePwd = !this.hidePwd;
         }
     }
 }
@@ -339,6 +374,19 @@ button {
     text-decoration: none;
     color: #222;
     letter-spacing: -.07px;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.password-input-container .material-symbols-outlined {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 20px;
 }
 
 </style>

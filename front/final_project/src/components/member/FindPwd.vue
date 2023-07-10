@@ -1,4 +1,5 @@
 <template>
+    <div id="container">
     <div class="content">
         <div class="help_area">
             <div class="title">
@@ -32,6 +33,7 @@
                 <button v-on:click="find" :class="btn" :disabled="btn_disabled">인증번호 발송하기</button>
             </div>
         </div>
+    </div>
     </div>
 </template>
 
@@ -145,6 +147,17 @@ export default{
 </script>
 
 <style scoped>
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+#container{
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
+}
+
 .content{
     color:#222;
     margin-left: auto;
@@ -239,6 +252,8 @@ export default{
     height: 52px;
     border-radius: 12px;
     cursor: pointer;
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
 }
 .btn_disabled{
     border: none;
@@ -249,5 +264,7 @@ export default{
     font-weight: bold;
     height: 52px;
     border-radius: 12px;
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
 }
 </style>

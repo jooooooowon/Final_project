@@ -1,6 +1,6 @@
 <template>
   <div class="search-wrapper">
-    <input type="text" v-model="query" placeholder="검색어를 입력해주세요." @keyup.enter="search">
+    <input type="text" v-model="query" placeholder="검색어를 입력해주세요." @keyup.enter="search" onfocus="this.placeholder=''" onblur="this.placeholder='검색어를 입력해주세요.'">
     <img src="../../assets/Search-icon.png" alt="click" @click="search" class="search" @mouseover="cursorChange" >
     <span v-if="list.length != 0" class="price-buttons">
       <input type="button" value="낮은 가격 순" @click="asc">
@@ -28,7 +28,19 @@
   <span v-else>
     <br>
     <div class="main">
-      <ul v-for="(dto,i) in list" :key="i">
+      <ul class="product-list">
+        <li v-for="(dto,i) in list" :key="i" class="product-item">
+          <div class="card" @click="shoppingLink(i)" @mouseover="cursorChange">
+            <div class="imgPosition">
+              <img :src="dto.img">
+            </div>
+            <span style="font-weight: bold;" class="mall-name">{{ dto.mallName }}</span>
+            <div class="item-content" :id="i"></div>
+            <span class="price">{{ formatPrice(dto.price) }}원</span>
+          </div>
+        </li> 
+      </ul>
+      <!-- <ul v-for="(dto,i) in list" :key="i">
         <li class="list-item">
           <div class="card" @click="shoppingLink(i)" @mouseover="cursorChange">
             <div class="imgPosition">
@@ -42,7 +54,7 @@
             {{ dto.price }}원
           </div>
         </li>
-      </ul>
+      </ul> -->
     </div>
     </span>
   </template>
@@ -187,6 +199,10 @@ export default{
     },
     cursorChange(e){
       e.target.style.cursor = "pointer";
+    },
+    //dto.price에 콤마 추가하는 함수
+    formatPrice(price){
+      return price.toLocaleString(); //toLocaleString()함수(숫자를 문자열로 변환) 사용하여 콤마 추가
     }
   }
 }
@@ -194,6 +210,19 @@ export default{
 
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
+
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+  font-family: "Flood Std"; 
+  src: url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.eot"); 
+  src: url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.woff") format("woff"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.svg#Flood Std") format("svg"); 
+}
 
 .search-wrapper{
   display:flex;
@@ -207,9 +236,18 @@ export default{
 input[type=text]{
   width: 100%;
   height: 30px; 
-  border-radius: 18px;
+  border-color: #ebebeb;
+  border-radius: 5px;
   padding-left: 45px;
-  font-size: 18px;
+  font-size: 13px;
+  font-family: 'PyeongChang-Regular';
+  font-weight: normal;
+  /* outline-color: #68a162; */
+}
+
+.price{
+  font-size:14px;
+  font-weight: bold;
 }
 
 .price-buttons{
@@ -220,10 +258,13 @@ input[type=text]{
 input[type=button]{
   width: 100px;
   height: 40px;
-  border-radius: 30px;
-  background-color: #C4D7B2;
+  border-radius: 5px;
+  background-color: #fff;
   transition : .5s;
   margin : 0 5px;
+  border: 1px solid #ebebeb;
+  font-family: 'PyeongChang-Regular';
+  font-weight: normal;
 }
 
 
@@ -248,47 +289,74 @@ input[type=button]:hover{
   left:0;
   right:0;
   margin:auto;
-  padding-left:100px;
-  width:1000px;
+  /* padding-left:100px; */
+  width:1200px;
+}
+
+.product-list{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.product-item{
+  width: 24%;
+  padding: 0 5px;
+  margin-bottom: 30px;
+  margin-right: 2px;
+  font-size:13px;
 }
 
 ul{
   float:left;
 }
 .card{
-  width: 125px;
-  height: 360px;
-  padding: 20px 50px;
-  margin-left:50px;
+  width: 290px;
+  height: 100%;
+  /* padding: 20px 50px; */
+  /* margin-left:50px; */
+  font-family: 'PyeongChang-Regular';
+  font-weight: normal;
+  border-radius: 8px;
+  /* margin-top: 20px; */
 }
 
 .card:hover{
   background-color: rgb(246, 245, 239);
+  transform: scale(1.05); /* 확대 효과 */
+  transition: transform 0.3s ease-in-out; /* 부드러운 전환 효과를 위한 transition 속성 */
 }
 
 img{
-  width: 100%;
-  height: 100%;
+  width: 290px;
+  height: 290px;
+  border-radius: 8px;
 }
 
 .imgPosition{
-  width: 100%;
-  height: 160px;
+  width: 290px;
+  height: 290px;
+  border-radius: 8px;
 }
 
-.moll-name{
-  display:block;
+.mall-name{
+  display:inline-block;
   width:100%;
   white-space: nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  font-size:13px;
+  margin-top:9px;
 }
 .item-content{
   width:100%;
-  height:14vh;
+  height:9vh;
+  padding-top: 6px;
   display:-webkit-box;
   overflow:hidden;
-  -webkit-line-clamp: 5;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
@@ -328,10 +396,11 @@ img{
 }
 
 p {
-  font-family: "Pacifico", cursive;
+  font-family: "Flood Std", cursive;
   display: flex;
   padding: 3rem 0;
   font-size: 5rem;
+  /* font-weight: bold; */
 }
 
 </style>
