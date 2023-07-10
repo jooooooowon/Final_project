@@ -1,5 +1,6 @@
 package com.example.demo.vote;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,9 +26,17 @@ public class OvoteController {
 	public Map chkVote(@PathVariable("num") int memnum) {
 		Map map = new HashMap<>();
 		boolean flag = true;
+		ArrayList<OvoteDto> list = new ArrayList<>();
 		try {
 			boolean chk = service.chkVote(memnum);
 			map.put("chk", chk);
+			list = service.getBatnum(memnum);
+			if(list != null) {
+				map.put("list", list);
+				System.out.println("AAAAAAAAAAAA" + list);
+			} else {
+				map.put("list", 0); 
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			flag = false;

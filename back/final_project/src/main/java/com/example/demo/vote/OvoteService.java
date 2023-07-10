@@ -70,6 +70,16 @@ public class OvoteService {
 		return list.isEmpty();
 	}
 	
+	// 투표 유무 확인 배틀신청 번호 얻기
+	public ArrayList<OvoteDto> getBatnum(int memnum) {
+		ArrayList<Ovote> list = (ArrayList<Ovote>) dao.chkVote(memnum);
+		ArrayList<OvoteDto> listDto = new ArrayList<>();
+		for(Ovote o : list) {
+			listDto.add(new OvoteDto(o.getVotenum(), o.getMemnum(), o.getBatnum()));
+		}
+		return listDto;
+	}
+	
 	// winner 찾기.
 	public Integer findWinner() {
 		return dao.findWinner();

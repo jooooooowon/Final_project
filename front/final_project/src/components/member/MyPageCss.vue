@@ -27,7 +27,7 @@
           </span>
         </li>
         <li>
-          <span class="material-symbols-outlined" @click="[currentTab = 'myPage',clickedMehotd(2)]" :style=" {color : clicked[2] ? '#68a162' : '#2c3e50'}">
+          <span class="material-symbols-outlined" @click="[currentTab = 'reportList',clickedMehotd(2)]" :style=" {color : clicked[2] ? '#68a162' : '#2c3e50'}">
           warning
           </span>
         </li>
@@ -81,6 +81,7 @@
   <script>
   // 우선 이용할 컴포넌트들 import하고
   import changeTheme from '../battle/manager/changeTheme.vue'
+  import reportList from '../community/ReportList.vue'
   import myPage from './Mypage.vue'
   import myWinList from './myWinList.vue'
   import randomCandidates from '../battle/manager/randomCandidates.vue'
@@ -109,6 +110,7 @@
     components:{
       // import한 components들 이용하겠다고 선언하고
       changeTheme : changeTheme,
+      reportList : reportList,
       myPage : myPage,
       myWinList : myWinList,
       randomCandidates : randomCandidates,
