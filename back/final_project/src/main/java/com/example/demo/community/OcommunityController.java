@@ -46,7 +46,8 @@ public class OcommunityController {
 
 	@Value("${spring.servlet.multipart.location}")
 	private String path; // C:/comm/
-
+//	String myPath = path + "comm/"; .. 공용으로 설정된 path는 c:/final/.. 여기에 각자 쓰던 path 뒤에 추가해서 그대로 사용하기
+	
 	// 로그인 시와 로그아웃 시일 때 모두 일단은 전체 list를 뿌려주는 것이 필요하기 때문에
 	// 전체 list를 뿌려주는 메서드를 작성한다.
 	// 반복 사용될 예정 (그래봤자 두번 밖에 없지만 ㅇㅅㅇ)
@@ -313,7 +314,13 @@ public class OcommunityController {
 					delFile.delete();
 				}
 			}
-			
+			// 게시물 이미지가 담겨있는 경로를 저장한다.
+			String folderPath = path + commnum;
+			// File 객체에 경로 담기
+			File delFolder = new File(folderPath);
+			// 폴더 삭제하기
+			delFolder.delete();
+			// 게시물 최종 삭제
 			service.delOcommunity(commnum);
 		} catch (Exception e) {
 			e.printStackTrace();
