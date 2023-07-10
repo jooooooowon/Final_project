@@ -42,9 +42,6 @@
           <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + reportedCommnum + '/' + 3">
         </span>
 
-        <!-- <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + reportedCommnum + '/' + 1">
-        <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + reportedCommnum + '/' + 2">
-        <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + reportedCommnum + '/' + 3"> -->
       </div>
       <div class="content2">
         <div>{{ commDto.tag }}</div>
@@ -170,8 +167,8 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 50%;
-  height: 70%;
+  width:750px;
+  height: 480px;
   background: #fff;
   border-radius: 10px;
   padding: 20px;
@@ -215,12 +212,6 @@ export default {
   text-align: center;
   font-size: 1em;
   margin-top: 15px;
-  /* text-align: center;
-  margin-left: 28%;
-  display: grid;
-  grid-template-columns: 100px 200px 100px 100px;
-  grid-column-gap: 5%;
-  font-size: 20px; */
 }
 
 .checkBtn {
@@ -241,7 +232,7 @@ export default {
 .imgBox {
   position: absolute;
   top: 15%;
-  left: 12%;
+  left: 6%;
 }
 
 .img1 {
@@ -252,29 +243,29 @@ export default {
 .icon2 {
   position: absolute;
   top: 8%;
-  left: 12%;
+  left: 6%;
 }
 
 .content1 {
   position: absolute;
-  top: 8%;
-  left: 16%;
+  top: 8.5%;
+  left: 10%;
   font-size: 1em;
   font-weight: bold;
 }
 
 .content2 {
   position: absolute;
-  bottom: 20%;
-  left: 13%;
+  bottom: 9%;
+  left: 6%;
   font-size: 1em;
   font-weight: bold;
 }
 
 .repBtn {
   position: absolute;
-  bottom: 12%;
-  right: 10%;
+  bottom: 9%;
+  right: 5%;
 }
 
 .repBtn-item1 {
