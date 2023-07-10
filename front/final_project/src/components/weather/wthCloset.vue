@@ -140,6 +140,7 @@ export default {
         if (this.memnum == null) {
             this.message = "로그인 후 옷장에서 옷 추천을 받아보세요!";
             this.showRecom = false;
+            this.recommendation();
         } else {
             this.$axios.get(`http://localhost:8081/members/${this.memnum}`,
                 { headers: { 'token': token } })
@@ -153,6 +154,8 @@ export default {
                             } else {
                                 this.gender = '여성'
                             }
+                            this.recommendation();
+                            this.search(this.subtags[0]);
                         } else {
                             console.log('없는 아이디거나 만료된 토큰')
                         }
@@ -161,7 +164,6 @@ export default {
                     }
                 })
         }
-        this.recommendation();
     },
     methods: {
         // 서브태그 아이콘 불러오기
@@ -210,7 +212,7 @@ export default {
             }
             this.recommend = recommend;
             this.subtags = subtags;
-            this.search(subtags[0]);
+            
 
             // .classList.add('clicked')를 호출하는 코드가 element에 적용되기 전에 실행되므로 element가 undefined일 수 있습니다.
             // const elements = document.querySelectorAll('.iconBG');
