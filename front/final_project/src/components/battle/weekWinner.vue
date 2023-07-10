@@ -1,4 +1,5 @@
 <template>
+  <div id="container">
   <div v-if="chk" style="display : flex">
     
     <div class="main">
@@ -12,47 +13,53 @@
 
     <div class="content-list">
       <div id="congratulation">
-        Congratulations!!!
+        <!-- 이번주 우승자입니다. -->
+        이번주 {{ theme }} 우승자.
       </div>
-      <img :src="'http://localhost:8081/battles/imgs/'+batnum" alt="">
+      <!-- <img :src="'http://localhost:8081/battles/imgs/'+batnum" alt=""> -->
       <hr>
-      <div >
+      <div class="win-info">
+        <img :src="'http://localhost:8081/battles/imgs/'+batnum" alt="">
+        <div class="main-content">
         <div class = "content-main">
+          <!-- <img :src="'http://localhost:8081/battles/imgs/'+num" alt=""> -->
+          <!-- {{ img }} -->
           <div class="content-title">
-            nickname
+            닉네임:
           </div>
-          <div class="bar" style="margin-left:30px;"></div>
+          <!-- <div class="bar" style="margin-left:30px;"></div> -->
           <div class="content">
             {{ nickname }}
           </div> 
         </div>
         <div class = "content-main">
           <div class="content-title">
-            gender
+            성별:
           </div>
-          <div class="bar" style="margin-left:91px;"></div>
+          <!-- <div class="bar" style="margin-left:91px;"></div> -->
           <div class="content">
             {{ gender }}
           </div> 
         </div>
         <div class = "content-main">
           <div class="content-title">
-            theme
+            주제:
           </div>
-          <div class="bar" style="margin-left:110px;"></div>
+          <!-- <div class="bar" style="margin-left:110px;"></div> -->
           <div class="content">
             {{ theme }}
           </div> 
         </div>
         <div class = "content-main">
           <div class="content-title">
-            roundcnt
+            우승:
           </div>
-          <div class="bar" style="margin-left:43px;"></div>
+          <!-- <div class="bar" style="margin-left:43px;"></div> -->
           <div class="content">
             {{ roundcnt }}
           </div> 
         </div>
+      </div>
       </div>
       <div class="left-time">
         <hr>
@@ -66,6 +73,7 @@
   <div v-else>
     <notYet></notYet>
   </div>
+</div>
 </template>
 
 <script>
@@ -88,6 +96,8 @@ export default {
       batnum : 0,
       colors:["#eb6383", "#fa9191", "#ffe9c5", "#b4f2e1"],
       particles:[],
+      img:'',
+      memnum:''
     }
   },
   created:function(){
@@ -105,7 +115,7 @@ export default {
   },
   methods:{
     pop() {
-      for (let i = 0; i < 250; i++) {
+      for (let i = 0; i < 1; i++) {
         const particle = {
           id: i,
           x: window.innerWidth * 0.5,
@@ -152,11 +162,31 @@ export default {
           self.roundcnt = res.data.dto.roundcnt;
           self.theme = res.data.dto.theme;
           self.batnum = res.data.dto.batnum;
+          self.img = res.data.dto.memnum.img;
+          console.log(self.nickname);
+          console.log(self.img);
         }else{
           self.chk = false;
         }
       })
     },
+
+    // findProfileImg(){
+    //   const self = this;
+    //   self.$axios.get('http://localhost:8081/battles/imgs/'+self.batnum)
+    //     .then(function(res){
+    //         if(res.status==200){
+    //             let dto = res.data.dto
+    //             if(dto!=null){
+    //                 self.img=dto.img
+    //             }else{
+    //                 alert("사진 못 불러온다")
+    //             }
+    //         }else{
+    //             alert('에러코드:'+self.status)
+    //         }
+    //     });
+    // },
     chkLeftTime(){
       let now = new Date();
       let end = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
@@ -183,6 +213,34 @@ export default {
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 
+@font-face {
+  font-family: "Flood Std"; 
+  src: url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.eot"); 
+  src: url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.woff") format("woff"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/bfbdc6a04609bff0d5ccdfcf6b766d95.svg#Flood Std") format("svg"); 
+}
+
+@font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+#container{
+  font-family: 'PyeongChang-Regular';
+  font-weight: normal;
+}
+.main-content{
+  display: flex;
+  flex-direction: column;
+  margin-left: 50px;
+  margin-top:auto;
+  margin-bottom:auto;
+}
+
+.win-info{
+  display:flex;
+}
 .main {
   place-items: center;
   width: 100%;
@@ -207,23 +265,28 @@ export default {
   right : 0;
   margin:auto;
   width: 800px;
-  padding-top:100px;
 }
 
 #congratulation{
-  font-family: "Pacifico", cursive;
-  font-size: 5rem;
+  font-family: "PyeongChang-Regular", cursive;
+  font-size: 4rem;
+  text-align: center;
+  font-weight: bold;
+  padding-top: 20px;
 }
 
 .content-list img{
-  width: 100%;
-  height: 100%;
-  transform: translateX(-50px);
+  width: 294px;
+  height: 350px;
+  display: flex;
+  border-radius: 8px;
+  /* transform: translateX(-50px); */
 }
 
 hr{
   border : 1.5px solid;
   margin-bottom : 40px;
+  margin-top: 40px;
 }
 
 .content-main{
@@ -235,24 +298,32 @@ hr{
 }
 
 .content-title{
-  color:#85b380;
-  -webkit-text-stroke: 1px #000;
+  color: #222;;
+  /* -webkit-text-stroke: 1px #000; */
 }
 
-.bar{
+/* .bar{
   width: 4px;
   height: 35px;
   margin-top:6px;
   border : 1px solid #85b380;
-}
+} */
 .content{
-  margin-left:50px;
-  -webkit-text-stroke: 1px #C4D7B2;
+  /* margin-left:50px; */
+  /* -webkit-text-stroke: 1px #C4D7B2; */
+}
+.timer{
+  margin-top: 20px;
 }
 
 .left-time{
   font-size: 3em;
-  margin:100px auto;
+  text-align: center;
+  margin:0 auto;
+}
+
+h2{
+  font-size: 20px;
 }
 
 </style>
