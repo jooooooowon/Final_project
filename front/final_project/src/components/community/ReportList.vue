@@ -215,6 +215,7 @@ export default {
 }
 
 .checkBtn {
+  font-family: 'PyeongChang-Regular';
   background-color: transparent;
   border: none;
   font-size: 1em;
@@ -269,23 +270,25 @@ export default {
 }
 
 .repBtn-item1 {
+  font-family: 'PyeongChang-Regular';
   background-color: transparent;
   border: none;
   font-weight: bold;
   color: rgb(9, 9, 137);
   border-right: solid black 2px;
-  font-size: 1.2em;
+  font-size: 1em;
   cursor: pointer;
 }
 .repBtn-item1:hover {
   color: rgb(41, 108, 28);
 }
 .repBtn-item2 {
+  font-family: 'PyeongChang-Regular';
   background-color: transparent;
   border: none;
   font-weight: bold;
   color: rgb(9, 9, 137);
-  font-size: 1.2em;
+  font-size: 1em;
   cursor: pointer;
 }
 .repBtn-item2:hover {

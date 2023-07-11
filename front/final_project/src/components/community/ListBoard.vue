@@ -156,6 +156,7 @@ export default {
 			reportCommnum: '',
 			modalCheck: false,
 			searchTag: '',
+			isList: ''
 		}
 	},
 
@@ -203,12 +204,12 @@ export default {
 			self.$axios.get(url)
 				.then((response) => {
 					if (response.status === 200) {
-						self.commlist = response.data.list
-						console.log(self.commlist)
-						for (let i = 0; i < self.reportedCommnums.length; i++) {
-							//신고 받은 게시글 안보이게 필터링하는거
-							self.commlist = self.commlist.filter(comm => comm.commnum != self.reportedCommnums[i])
-						}
+							self.commlist = response.data.list;
+							console.log(self.commlist)
+							for (let i = 0; i < self.reportedCommnums.length; i++) {
+								//신고 받은 게시글 안보이게 필터링하는거
+								self.commlist = self.commlist.filter(comm => comm.commnum != self.reportedCommnums[i])
+							}
 					} else {
 						alert('에러코드: ' + response.status);
 					}

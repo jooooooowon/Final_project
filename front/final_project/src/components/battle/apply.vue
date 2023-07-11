@@ -16,11 +16,11 @@
         <div class="profile-item"> 《 신청자 프로필 》 </div>
         <div class="b-form">
           <img class="memberimg" :src="'http://localhost:8081/members/imgs/' + memnum" alt="왜 안나옴 ㅋㅋ">
-          <hr style="width: 200px; border: solid gray 2px;"/>
+          <hr style="width: 200px; border: solid gray 2px; margin-left: 15%; margin-top: -4px"/>
           <div class="form-p">
             <div class="item">☞ 아이디 : {{ id }}</div>
             <div class="item">☞ 닉네임 : {{ nickname }}</div>
-            <div class="item">☞ 성별 : {{ gender }}</div>
+            <div class="item" style="margin-bottom: 10%;">☞ 성별 : {{ gender }}</div>
           </div>
         </div>
       </div>
@@ -191,7 +191,7 @@ export default {
 hr {
   background-color: lightgray;
   height: 5px;
-  border: 0;
+  border: none;
 }
 
 .formBox {
@@ -200,33 +200,35 @@ hr {
 .profile {
   width:800px; 
   margin-top: 6%;
-  margin-left: 15%;
+  /* margin-left: 15%; */
 }
 .profile-item {
   font-size: 1.3em; 
   font-weight: bold; 
-  margin-top: 12%; margin-left: 9%;
+  margin-top: 2%;
+  /* margin-left: 9%; */
 }
 
 .memberimg {
   width: 150px;
   height: 150px;
-  border-radius: 50%;
-  margin-top: 15%;
-  margin-left: 20%;
+  border-radius: 42%;
+  margin-top: 5%;
+  z-index: 1;
+  /* margin-left: 10%; */
 }
 
 .b-form {
   display: flex;
   flex-direction: column;
-  width: 200px;
+  width: 500px;
   height: 100px;
 }
 
 .form-p {
   font-size: 1.3em;
   /* margin-top: 20%; */
-  margin-left: 15%;
+  /* margin-left: 5%; */
 }
 
 .title {
@@ -235,14 +237,6 @@ hr {
 }
 .item {
   margin-top: 5%;
-}
-.v-line {
-  border-left: solid rgb(3, 129, 3, 0.3);
-  /* height: 190px; */
-  width: 190px;
-  left: 26%;
-  top: 45%;
-  position: absolute;
 }
 
 .label-class {
@@ -274,9 +268,10 @@ hr {
   cursor: pointer;
 }
 .else {
-  margin-right: 20%; 
+  width: 100%;
+  /* margin-right: 20%;  */
   font-weight: bold; 
   font-size: 1.3em; 
-  margin-top: 120px;
+  margin-top: 22%;
 }
 </style>
