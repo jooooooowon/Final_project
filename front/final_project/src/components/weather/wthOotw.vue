@@ -1,6 +1,6 @@
 <template>
     <div class="back">
-        <p style="margin-top: 100px; margin-bottom: 100px;">{{ message }}</p>
+        <p style="margin-top: 100px; padding-bottom: 100px;">{{ message }}</p>
 
         <div v-if="showRecom" style="padding-bottom: 100px;">
             <div style="padding-bottom: 60px;">
@@ -43,8 +43,6 @@
                 title="OOTW 쓰러가기">
 
         </div>
-
-
         <!-- ootw 디테일 (모달) -->
         <!-- 사진 전부, 날짜, 기온, 날씨, 코멘트 -->
         <div class="modal-wrap" v-show="modalCheck" @click="modalClose" id="modalWrap">
@@ -65,6 +63,8 @@
                 </div>
             </div>
         </div>
+
+
 
     </div>
 </template>

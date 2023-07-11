@@ -1,7 +1,7 @@
 <template>
 
   <div class="center">
-    <section class="section1">
+    <section class="section1" @click="$router.push('/weather')" style="cursor: pointer;">
       <div class="container">
         <div class="title">WEATHER</div> 
         <div class="content">
@@ -17,7 +17,7 @@
         </div>
       </div>
     </section>
-    <section class="section2">
+    <section class="section2" @click="$router.push('/weekWinner')" style="cursor: pointer;">
       <div class="container">
         <div class="title">BATTLE</div>
         <div class="content">
