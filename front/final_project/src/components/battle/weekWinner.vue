@@ -14,56 +14,59 @@
     <div class="content-list">
       <div id="congratulation">
         <!-- 이번주 우승자입니다. -->
-        이번주 {{ theme }} 우승자.
+        이번주  [{{ theme }}] 우승자
       </div>
       <!-- <img :src="'http://localhost:8081/battles/imgs/'+batnum" alt=""> -->
       <hr>
       <div class="win-info">
-        <img :src="'http://localhost:8081/battles/imgs/'+batnum" alt="">
+        <!-- <div class="batnum-img"> -->
+          <img style="margin-left: 90px;" :src="'http://localhost:8081/battles/imgs/'+batnum" alt="">
+        <!-- </div> -->
+          
         <div class="main-content">
+          <img class="winner-img" style="width:170px; height:170px;" :src="require('@/assets/winner.png')" alt="">
         <div class = "content-main">
           <!-- <img :src="'http://localhost:8081/battles/imgs/'+num" alt=""> -->
-          <!-- {{ img }} -->
           <div class="content-title">
             닉네임:
           </div>
           <!-- <div class="bar" style="margin-left:30px;"></div> -->
           <div class="content">
-            {{ nickname }}
+            &nbsp; {{ nickname }}
           </div> 
         </div>
-        <div class = "content-main">
+        <!-- <div class = "content-main">
           <div class="content-title">
             성별:
-          </div>
+          </div> -->
           <!-- <div class="bar" style="margin-left:91px;"></div> -->
-          <div class="content">
+          <!-- <div class="content">
             {{ gender }}
           </div> 
-        </div>
-        <div class = "content-main">
+        </div> -->
+        <!-- <div class = "content-main">
           <div class="content-title">
             주제:
-          </div>
+          </div> -->
           <!-- <div class="bar" style="margin-left:110px;"></div> -->
-          <div class="content">
+          <!-- <div class="content">
             {{ theme }}
           </div> 
-        </div>
+        </div> -->
         <div class = "content-main">
           <div class="content-title">
             우승:
           </div>
           <!-- <div class="bar" style="margin-left:43px;"></div> -->
           <div class="content">
-            {{ roundcnt }}
+            &nbsp; {{ roundcnt }}
           </div> 
         </div>
       </div>
       </div>
       <div class="left-time">
         <hr>
-        다음 배틀 신청까지 남은 시간.
+        다음 배틀 신청까지 남은 시간
         <div class="timer">
           {{ hour }} : {{ min }} : {{ sec }}
         </div>
@@ -115,7 +118,7 @@ export default {
   },
   methods:{
     pop() {
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < 250; i++) {
         const particle = {
           id: i,
           x: window.innerWidth * 0.5,
@@ -163,30 +166,34 @@ export default {
           self.theme = res.data.dto.theme;
           self.batnum = res.data.dto.batnum;
           self.img = res.data.dto.memnum.img;
-          console.log(self.nickname);
+          self.num = res.data.dto.memnum;
+          console.log(self.batnum);
           console.log(self.img);
+          console.log(self.num);
+
+          self.img = decodeURIComponent(self.img);
         }else{
           self.chk = false;
         }
       })
     },
 
-    // findProfileImg(){
-    //   const self = this;
-    //   self.$axios.get('http://localhost:8081/battles/imgs/'+self.batnum)
-    //     .then(function(res){
-    //         if(res.status==200){
-    //             let dto = res.data.dto
-    //             if(dto!=null){
-    //                 self.img=dto.img
-    //             }else{
-    //                 alert("사진 못 불러온다")
-    //             }
-    //         }else{
-    //             alert('에러코드:'+self.status)
-    //         }
-    //     });
-    // },
+    findProfileImg(){
+      const self = this;
+      self.$axios.get('http://localhost:8081/members/' + this.batnum)
+        .then(function(res){
+            if(res.status==200){
+                let dto = res.data.dto
+                if(dto!=null){
+                    self.img=dto.img
+                }else{
+                    alert("사진 못 불러온다")
+                }
+            }else{
+                alert('에러코드:'+self.status)
+            }
+        });
+    },
     chkLeftTime(){
       let now = new Date();
       let end = new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
@@ -233,7 +240,7 @@ export default {
 .main-content{
   display: flex;
   flex-direction: column;
-  margin-left: 50px;
+  margin-left: 100px;
   margin-top:auto;
   margin-bottom:auto;
 }
@@ -269,7 +276,8 @@ export default {
 
 #congratulation{
   font-family: "PyeongChang-Regular", cursive;
-  font-size: 4rem;
+  font-size: 35px;
+  color: #222;
   text-align: center;
   font-weight: bold;
   padding-top: 20px;
@@ -277,30 +285,48 @@ export default {
 
 .content-list img{
   width: 294px;
-  height: 350px;
+  height: 294px;
   display: flex;
   border-radius: 8px;
   /* transform: translateX(-50px); */
 }
 
 hr{
-  border : 1.5px solid;
-  margin-bottom : 40px;
-  margin-top: 40px;
+  border : 2px solid #ebebeb;
+  margin-bottom : 20px;
+  margin-top: 20px;
 }
 
 .content-main{
   text-align : center;
   font-weight: bold;
-  font-size: 3em;
+  font-size: 30px;
   display: flex;
   width: 800px;
+  padding-top:10px;
 }
 
 .content-title{
-  color: #222;;
+  color: #222;
+  text-align: center;
   /* -webkit-text-stroke: 1px #000; */
 }
+
+.batnum-img,
+/* .winner-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.batnum-img {
+  z-index: 1;
+}
+
+.winner-img {
+  z-index: 2;
+} */
+
 
 /* .bar{
   width: 4px;
@@ -309,15 +335,16 @@ hr{
   border : 1px solid #85b380;
 } */
 .content{
-  /* margin-left:50px; */
-  /* -webkit-text-stroke: 1px #C4D7B2; */
+ text-align: center;
 }
 .timer{
   margin-top: 20px;
+  color:#222;
 }
 
 .left-time{
-  font-size: 3em;
+  font-size: 25px;
+  color:#222;
   text-align: center;
   margin:0 auto;
 }
