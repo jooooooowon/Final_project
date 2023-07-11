@@ -89,7 +89,7 @@
                             <div class="sub-items-container">
                                 <div v-for="(subtag, subIndex) in item.subItems" :key="subIndex" class="sub-item"
                                     v-on:click="listbytag(subtag, subIndex)"
-                                    style="font-size: 13px;font-weight: bold; color:rgb(142, 140, 140)">
+                                    style="font-size: 12px;font-weight: bold; color:rgb(142, 140, 140)">
                                     {{ subtag }}
                                 </div>
                             </div>
@@ -109,7 +109,7 @@
                         v-on:click="modalOpenDetail(closet.closetnum)" style="cursor: pointer;" title="수정하려면 클릭하세요.">
                     </span>
                     <span v-if="closet.img == 'basicImage'">
-                    <img :src="'http://localhost:8081/closets/img/addimg/' + 0"
+                        <img src="../../assets/basic.png"
                         v-on:click="modalOpenDetail(closet.closetnum)" style="cursor: pointer;" title="수정하려면 클릭하세요.">
                     </span>
                     <div class="favImg">
@@ -149,7 +149,7 @@
                         <img :src="detailEditImg" class="modal-img-detail">
                     </span>
                     <span v-if="img == 'basicImage' && detailEditImg == ''">
-                        <img :src="'http://localhost:8081/closets/img/addimg/' + 0"
+                        <img src="../../assets/basic.png"
                         class="modal-img-detail">
                     </span>
                     <span v-if="img == 'basicImage' && detailEditImg != ''">
@@ -158,9 +158,9 @@
                 </label>
                 <input type="file" id="detailEditFile" style="font-family: 'PyeongChang-Regular'; display: none" accept="image/*" @change="thumbnailChange">
                 <div class="modal-tags-detail">{{ maintag }} | {{ sub }}</div>
-                <div class="modal-search-detail"><input type="search" v-model="modalCloth" size="15"
+                <div class="modal-search-detail"><input type="text" v-model="modalCloth" size="15"
                         style="height: 38px; text-align: center;"></div>
-                <div class="modal-btn-detail"><button v-on:click="change(setClosetnum)">수정</button></div>
+                        <div class="modal-btn-detail"><button v-on:click="change(setClosetnum)" style="font-family: 'PyeongChang-Regular'; width:65px; height:38px;">수정</button></div>
             </div>
         </div>
         <div class="naver-shopping">
@@ -184,7 +184,7 @@ export default {
             closetlist: [],
             additionalCloset: [],
             closetPerPage: 5,
-            currentPage: 1,
+            currentPage: 3,
             subtags: [],
             cloth: '',
             memnum: sessionStorage.getItem('memnum'),
@@ -300,7 +300,7 @@ export default {
             // ex) more = 현재페이지(2) * 보여주는 리스트 개수(3) = 2 * 3 = 6
             // end = more(6) + 보여주는 리스트 개수(3) = 9
             // 0~6 + 6~9 = 0~9 .. 0, 1, 2, 3, 4, 5, 6, 7, 8.. 9개가 보여짐
-            const startIndex = (self.currentPage) * self.closetPerPage * 3;
+            const startIndex = self.currentPage * self.closetPerPage;
             const endIndex = startIndex + self.closetPerPage;
             if (startIndex > self.closetlist.length) {
                 // 더 이상 표시할 아이템이 없으면 더보기 버튼을 비활성화
@@ -510,7 +510,7 @@ export default {
         },
         addBasicImage() {
             const self = this;
-            self.addThumbnailfile = 'http://localhost:8081/closets/img/addimg/' + 0;
+            self.addThumbnailfile = require('../../assets/basic.png');
         },
         addcloset() {
             const self = this;
@@ -959,7 +959,7 @@ button:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 310px;
+    width: 290px;
     height: 58%;
     background: #fff;
     box-shadow: 0 20px 10px rgba(0, 0, 0, 0.1);
@@ -978,10 +978,6 @@ button:hover {
 
 .modal-btn-detail {
     margin-bottom: -110px;
-}
-
-.modal-btn-detail button {
-    background-color: transparent;
 }
 
 .modal-search-detail {

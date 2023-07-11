@@ -1,5 +1,5 @@
 <template>
-
+  <div class="body-css">
   <div class="main">
     <div class="member">
     <div class="member-img">
@@ -7,10 +7,10 @@
     </div>
     <div class="member-content">
       <div class="nickname">
-        nickname : {{ memdto.nickname }}
+        닉네임 : {{ memdto.nickname }}
       </div>
       <div class="winner-count">
-        winner count : {{ winCount }}
+        우승횟수 : {{ winCount }}
       </div>
     </div>
     </div>
@@ -75,7 +75,7 @@
     <!-- 여러 방면으로 이용할 수 있겠다. -->
     <component :is="currentTab" :memnum = "memnum"></component>
   </div> 
-  
+</div>
   </template>
   
   <script>
@@ -122,6 +122,7 @@
       let token = sessionStorage.getItem('token')
           
       const self = this;
+
       // 멤버 뽑기
       self.$axios.get(`http://localhost:8081/members/${self.memnum}`,
       {headers:{'token':token}})
@@ -131,6 +132,11 @@
               if(dto!=null){
                 self.memdto = dto;
                 console.log(self.memdto)
+                if(self.memdto.id == 'manager') {
+                  self.currentTab = 'changeTheme'
+                } else {
+                  self.currentTab = 'myList'
+                }
               }else{
                   alert('없는 아이디거나 만료된 토큰');
                   location.href = "/";
@@ -172,7 +178,18 @@
   </script>
   
   <style scoped>
-  
+  @font-face {
+    font-family: 'PyeongChang-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+.body-css {
+    font-family: 'PyeongChang-Regular';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* text-align: center; */
+}
   .material-symbols-outlined {
     /* font-variation-settings:
     'FILL' 1
@@ -195,12 +212,16 @@
     justify-content: space-evenly;
   }
   
-  .member-img{
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    overflow : hidden;
-  }
+  .member-img img {
+  position: relative;
+   width: 150px;
+  /* 가로 사이즈 200px로 고정 */
+   height: 150px;
+   /* 세로 사이즈 200px로 고정 */
+   object-fit: cover;
+   /* 이미지가 카드 영역에 꽉 차도록 설정 */
+   border-radius: 50%;
+}
   
   .member-content{
     margin : 30px;

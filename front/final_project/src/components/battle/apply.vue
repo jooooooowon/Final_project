@@ -200,7 +200,7 @@ hr {
 .profile {
   width:800px; 
   margin-top: 6%;
-  /* margin-left: 15%; */
+  margin-left: 3%;
 }
 .profile-item {
   font-size: 1.3em; 
@@ -240,22 +240,24 @@ hr {
 }
 
 .label-class {
-  margin-top: 60px;
-  margin-right: 10%;
+  margin-top: -30px;
+  margin-right: 1%;
 }
 
 .label-class img {
-  width: 300px;
-  height: 340px;
+  width: 280px;
+  height: 400px;
   margin-top: 3%;
   border-radius: 10%;
+  object-fit: cover;
 }
 
 .label-class button {
+  font-family: 'PyeongChang-Regular';
   width: 100px;
   height: 55px;
-  margin-bottom: 20%;
-  margin-left: 70%;
+  margin-bottom: 25%;
+  margin-left: 63%;
 	background-color:transparent;
 	border: none;
   font-size: 1.1em;

@@ -351,16 +351,15 @@ body{
   display:flex;
   position:absolute;
   width: 1000px;
-  height: 1000px;
-  margin: 200px auto auto 260px;
+  height: 500px;
+  margin: 220px auto auto 270px;
   left:0;
   right:0;
-  /* margin: 300px auto; */
 }
 .main img{
   width: 300px;
   height: 300px;
-  margin-bottom:150px;
+  /* margin-bottom:150px; */
 }
 
 .your-choice{

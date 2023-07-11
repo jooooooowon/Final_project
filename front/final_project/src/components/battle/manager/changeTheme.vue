@@ -1,11 +1,12 @@
 <template>
+  <div class="body-css">
   <div>
-    이번주의<br>
-     주제는 {{ theme }}
+    이번주의 주제는
+    <br/>{{ theme }}
   </div>
-  <input type="text" v-model="theme">
-  <input type="button" value="변경 하기" @click="changeTheme">
-
+  <input type="text" v-model="theme" style="font-family: 'PyeongChang-Regular';">
+  <input type="button" value="변경 하기" @click="changeTheme" style="font-family: 'PyeongChang-Regular';">
+</div>
 </template>
 
 <script>
@@ -40,10 +41,21 @@ export default{
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Diphylleia&display=swap');
-
+@font-face {
+  font-family: 'PyeongChang-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+.body-css {
+    font-family: 'PyeongChang-Regular';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
 div{
-  font-family: 'Black Han Sans', sans-serif;
-  font-size: 5rem;
+  font-family: 'PyeongChang-Regular';
+  font-size: 2rem;
   margin: 70px;
 }
 

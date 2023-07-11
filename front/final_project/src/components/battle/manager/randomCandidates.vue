@@ -1,15 +1,16 @@
 <template>
+  <div class="body-css">
   <div class="battle-info">
-    <div class="theme">
+    <div class="roundcnt" style="font-family: 'PyeongChang-Regular';">
+      {{ roundcnt }}회차
+    </div><br/>
+    <div class="theme" style="font-family: 'PyeongChang-Regular';">
       테마 : {{ theme }}
+    </div><br/>
+    <div class="buttons">
+      <input type="button" value="랜덤 두명 뽑기" @click="find" style="font-family: 'PyeongChang-Regular';">
+      <input type="button" value="후보 확정 하기" @click="firm" style="font-family: 'PyeongChang-Regular';">
     </div>
-    <div class="roundcnt">
-      회차 : {{ roundcnt }}
-    </div>
-  </div>
-  <div class="buttons">
-    <input type="button" value="랜덤 두명 뽑기" @click="find">
-    <input type="button" value="후보 확정 하기" @click="firm">
   </div>
   <div v-show="show" class="show">
     <div class="first-candidate">
@@ -23,8 +24,10 @@
         {{ secondMember }}
       </div>
       <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" alt="두 번째">
+      <br/><br/><br/>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -90,14 +93,10 @@ export default{
         form.append("num1",self.firstCandidate.batnum);
         form.append("num2",self.secondCandidate.batnum);
         
-        alert(self.firstCandidate.batnum)
-        alert(self.secondCandidate.batnum)
-        
-        alert(`http://localhost:8081/battles/manager/random/${self.firstCandidate.batnum}/${self.secondCandidate.batnum}`);
         self.$axios.delete(`http://localhost:8081/battles/manager/random/${self.firstCandidate.batnum}/${self.secondCandidate.batnum}`)
         .then(res => {
           if(res.status == 200){
-            alert('후보 확정');
+            alert('후보가 확정되었습니다.');
             location.href = "/";  
           }else{
             alert('오류로 인해 후보자 확정 불가.')
@@ -111,27 +110,44 @@ export default{
 </script>
 
 <style scoped>
+@font-face {
+  font-family: 'PyeongChang-Regular';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+.body-css {
+    font-family: 'PyeongChang-Regular';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+}
 .battle-info{
   width: 500px;
   position:absolute;
   left:0;
   right:0;
-  margin:50px auto;
+  margin: 50px auto;
   text-overflow: ellipsis;
-}
-.battle-info .theme{
-  font-size: 2.9em;
 }
 
 .battle-info .roundcnt{
-  font-size: 1.8em;
+  font-size: 1.4em;
+  font-weight: bold;
+}
+.battle-info .theme{
+  font-size: 1.2em;
+  font-weight: bold;
+
 }
 
 .buttons{
-  margin-top:170px;
+  margin: 0 auto;
 }
 
 input[type="button"]{
+  font-family: 'PyeongChang-Regular';
+  font-weight: 550;
   width: 100px;
   height: 40px;
   border-radius: 30px;
@@ -150,22 +166,26 @@ input[type="button"]:hover{
 .show{
   display:flex;
   justify-content: space-between;
-  width: 850px;
+  width: 650px;
   position:absolute;
   left:0;
   right:0;
-  margin:auto;
+  margin: 160px auto;
 }
 
 .nickname{
-  font-size: 1.9em;
+  font-family: 'PyeongChang-Regular';
+  font-size: 1.2em;
+  font-weight: bold;
   text-overflow: ellipsis;
-  margin:50px;
+  margin:5px;
 }
 
 .show div img{
   width: 300px;
-  height: 300px;
+  height: 420px;
+  border-radius: 5%;
+  object-fit: cover;
 }
 
 </style>

@@ -42,31 +42,29 @@
             </span>
             <span style="margin-left:150px;"><a class="ootw-title-add" href="/ootwadd" style="">게시글 작성</a></span>
         </div>
+        <div class="empty-ootw-list" v-if="isList == false">등록된 게시글이 없습니다.</div>
         <div class="ootw-wrap" v-if="isList == true">
             <div class="ootw-list">
                 <div class="ootw-item" v-for="(ootw, index) in ootwlist" :key="ootw.ootwnum"
                     v-on:click="detail(ootw.ootwnum)">
                     <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closetNumList[index]"><br />
-                    <div class="ootw-contents"
-                        style="text-align: left; margin-left:10px; margin-top:10px; font-size: 14px; color: rgb(158, 157, 157)">
+                    <div class="ootw-contents">
                         {{ datelist[index] }}&nbsp;&nbsp;&nbsp;{{ ootw.weather }}&nbsp;&nbsp;&nbsp;{{ ootw.temp }}도
                     </div>
-                    <div style="width:250px; text-align: left; margin-left:10px; margin-top:8px; font-size: 16px; font-weight: bold;
+                    <div style="width:250px; text-align: left; margin-left:14px; margin-top:8px; font-size: 16px; font-weight: bold;
                     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                        <!-- 가나다라마바사 이것은 커멘트입니다. -->
                         {{ ootw.comments }}
                     </div>
                 </div>
             </div>
         </div>
-        <div class="empty-ootw-list" v-if="isList == false">등록된 게시글이 없습니다.</div>
 
 
         <div class="naver-shopping">
             <router-link to="naverShoppingList"><img src="../../assets/navershopping2.png"
                     alt="naver-shopping-icon"></router-link>
         </div>
-        <div style="position: fixed; bottom: 20px; right:140px"><a v-on:click="goUp" style="font-size:40px">∧</a></div>
+        <!-- <div style="position: fixed; bottom: 20px; right:140px"><a v-on:click="goUp" style="font-size:40px">∧</a></div> -->
     </div>
 </template>
 
@@ -386,7 +384,11 @@ button:hover {
 }
 
 .ootw-contents {
-    margin-left: 10px;
+    text-align: left;
+    margin-left:14px;
+    margin-top:10px;
+    font-size: 14px;
+    color: rgb(158, 157, 157)
 }
 
 .ootw-item img {
@@ -402,7 +404,7 @@ button:hover {
 }
 
 .empty-ootw-list {
-    margin-top: 100px;
+    margin-top: 30px;
     margin-bottom: 10px;
 }
 

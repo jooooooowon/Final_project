@@ -418,7 +418,8 @@ hr {
 .img1 {
 	width: 200px;
 	height: 300px;
-	transition: transform 0.3s
+	transition: transform 0.3s;
+	object-fit: cover;
 }
 
 .img1:hover {

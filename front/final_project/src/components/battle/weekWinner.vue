@@ -156,7 +156,7 @@ export default {
       self.$axios.get("http://localhost:8081/battles/winner")
       .then(res =>{
         if(res.status == 200 || res.data.flag){
-          if(res.data.dto == undefined){
+          if(res.data.dto == undefined || res.data.dto.theme == '이번주 테마는?'){
             self.chk = false;
           }
           console.log(res.data)

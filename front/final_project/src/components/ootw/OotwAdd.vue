@@ -74,7 +74,7 @@
                                 <img :src="'http://localhost:8081/closets/img/' + closet.memnum.memnum + '/' + closet.closetnum">
                                 </span>
                                 <span v-if="closet.img == 'basicImage'">
-                                <img :src="'http://localhost:8081/closets/img/addimg/' + 0">
+                                    <img src="../../assets/basic.png">
                                 </span>
                                 <br />
                                 {{ closet.cloth }}<br/>{{ closet.maintag }}<br />

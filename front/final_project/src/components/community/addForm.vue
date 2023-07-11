@@ -162,6 +162,10 @@ export default {
   inset: 12%;
 }
 
+.Boxin img {
+  object-fit: cover;
+}
+
 .input-img {
   display: flex;
   justify-content: center;
