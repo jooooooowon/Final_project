@@ -70,11 +70,13 @@
                     <label for="imgtag"><img :src="'http://localhost:8081/closets/img/' + memnum + '/' + setClosetnum"
                             id="thumbimg" style="width:200px; height:auto;"></label>
                     <input type="file" id="imgtag" style="display: none" accept="image/*" v-on:change="thumbnail($event)">
-                    <br />
-                    {{ maintag }} | {{ sub }} <br />
-                    <input type="text" v-model="cloth"> <br />
-                    <button v-on:click="change(setClosetnum)">수정</button>
-                    <button v-on:click="deletecloth(setClosetnum)">삭제</button>
+                    <div class="modal-tags">{{ maintag }} | {{ sub }}</div>
+                    <div class="modal-name"><input type="text" v-model="cloth" size="15"
+                            style="height: 38px; text-align: center;"></div>
+                    <div class="modal-btn">
+                        <button v-on:click="change(setClosetnum)">수정</button>
+                        <button v-on:click="deletecloth(setClosetnum)">삭제</button>
+                    </div>
                 </div>
             </div>
 
@@ -181,27 +183,27 @@ export default {
                 recommend = '반팔, 민소매, 반바지, 치마'
                 subtags = ['반팔', '민소매', '반바지', '치마']
 
-                
+
             } else if (20 <= tmp && tmp <= 22) { // 20~22도
                 recommend = '얇은가디건, 긴팔티, 면바지, 청바지'
                 subtags = ['가디건', '긴팔티', '면바지', '청바지']
-                
+
             } else if (17 <= tmp && tmp <= 19) { // 17~19도
                 recommend = '얇은니트, 가디건, 맨투맨, 얇은재킷, 면바지, 청바지'
                 subtags = ['니트', '가디건', '맨투맨', '자켓', '면바지', '청바지']
-                
+
             } else if (12 <= tmp && tmp <= 16) { // 12~16도
                 recommend = '자켓, 가디건, 야상, 맨투맨, 니트, 스타킹, 청바지, 면바지'
                 subtags = ['자켓', '가디건', '야상', '맨투맨', '니트', '스타킹', '청바지', '면바지']
-                
+
             } else if (9 <= tmp && tmp <= 11) { // 9~11도
                 recommend = '자켓, 트렌치코트, 야상, 니트, 스타킹, 청바지, 면바지'
                 subtags = ['자켓', '트렌치코트', '야상', '니트', '스타킹', '청바지', '면바지']
-                
+
             } else if (5 <= tmp && tmp <= 8) { // 5~8도
                 recommend = '코트, 히트텍, 니트, 청바지, 레깅스'
                 subtags = ['코트', '히트텍', '니트', '청바지', '레깅스']
-                
+
             } else if (tmp <= 4) { // 4도 이하
                 recommend = '패딩, 두꺼운코트, 방한용품, 기모제품'
                 subtags = ['패딩', '코트', '방한용품', '기모제품']
@@ -212,14 +214,16 @@ export default {
             }
             this.recommend = recommend;
             this.subtags = subtags;
-            
+
 
             // .classList.add('clicked')를 호출하는 코드가 element에 적용되기 전에 실행되므로 element가 undefined일 수 있습니다.
-            // const elements = document.querySelectorAll('.iconBG');
-            // if (elements.length > 0) {
-            //     const element = elements[0];
-            //     element.classList.add('clicked');
-            // }
+            this.$nextTick(() => {
+                const elements = document.querySelectorAll('.iconBG');
+                if (elements.length > 0) {
+                    const element = elements[0];
+                    element.classList.add('clicked');
+                }
+            });
         },
 
         // 아이콘 클릭하면 튕기다가 멈춤 + subtag로 옷 검색
@@ -348,31 +352,13 @@ export default {
                     })
             }
         },
-        // 옷 디테일 창의 옷 썸네일 띄우기
-        // thumbnail() { 
-        //   const file = document.getElementById('imgtag');
-        //   if (file.files && file.files[0]) {
-        //     //const self = this;
-        //     const reader = new FileReader();
-        //     // reader.onload 콜백 함수 내에서 this는 reader 객체를 가리키게 되어
-        //     // 이를 해결하기 위해서는 thumbnail 메서드 내에서 화살표 함수(arrow function)를 사용하여 콜백 함수를 정의해야 합니다
-        //     // 화살표 함수는 자신의 this를 갖지 않고, 상위 스코프의 this를 유지하므로 Vue 인스턴스의 데이터와 바인딩됩니다.
-        //     reader.onload = () => {
-        //       document.getElementById('thumbimg').src = reader.result;
-        //       //this.thumb = reader.result;
-        //       this.uploadimg = file.files[0];
-        //     }; // bind 메서드를 사용하여 콜백 함수의 this를 Vue 인스턴스로 설정
-        //     reader.readAsDataURL(file.files[0]);
-        //   }
-        // },
-
         thumbnail(event) {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
                 reader.onload = () => {
-                    alert(document.querySelector('#thumbimg'));
+                    // alert(document.querySelector('#thumbimg'));
                     //console.log(reader.result);
                     document.querySelector('#thumbimg').src = reader.result;
                     //console.log(document.querySelector('#thumbimg'));
@@ -602,7 +588,7 @@ font-style: normal;
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.4);
 }
 
 
@@ -615,9 +601,10 @@ font-style: normal;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 500px;
-    height: 60%;
+    width: 310px;
+    height: 58%;
     background: #fff;
+    color: #2c3e50;
     border-radius: 10px;
     padding: 20px;
     box-sizing: border-box;
@@ -629,6 +616,60 @@ font-style: normal;
     /* 수직방향 가운데 정렬 */
     align-items: center;
     /* 수평방향 가운데 정렬 */
+
+    box-shadow: 0 20px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-container img {
+    position: relative;
+    width: 250px;
+    /* 가로 사이즈 200px로 고정 */
+    height: 250px;
+    /* 세로 사이즈 200px로 고정 */
+    object-fit: cover;
+    /* 이미지가 카드 영역에 꽉 차도록 설정 */
+    border-radius: 10px;
+    margin-top: -110px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.modal-tags {
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.modal-name {
+    margin-bottom: 10px;
+}
+
+.modal-btn {
+    margin-bottom: -110px;
+}
+
+.modal-btn button {
+    background-color: transparent;
+}
+
+button {
+    border: 1px solid rgb(177, 177, 177);
+    background-color: white;
+    /* background-color: rgb(196, 215, 178, 0.6); */
+    /* border: none; */
+    border-radius: 5px;
+    transition: .5s;
+    font-size: 15px;
+    font-weight: normal;
+    font-family: 'PyeongChang-Regular';
+    margin-left: 5px;
+}
+
+button:hover {
+    background-color: #85b380;
+    color: #ffffff;
+    /* color: #85b380; */
+    cursor: pointer;
+    /* font-weight: bold; */
 }
 
 /*

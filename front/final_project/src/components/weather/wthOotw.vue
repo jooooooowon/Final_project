@@ -2,12 +2,12 @@
     <div class="back">
         <p style="margin-top: 100px; margin-bottom: 100px;">{{ message }}</p>
 
-        <div v-if="showRecom">
-            <p v-if="t1 === 28">{{ t1 }}℃ 이상일 때 입었던 옷 기록들</p>
-            <p v-if="t1 !== 28 && t2 !== 4">{{ t1 }}℃ ~ {{ t2 }}℃일 때 입었던 옷 기록들</p>
-            <p v-if="t2 === 4">{{ t2 }}℃ 이하일 때 입었던 옷 기록들</p>
-            <br /><br /><br /><br />
-
+        <div v-if="showRecom" style="padding-bottom: 100px;">
+            <div style="padding-bottom: 60px;">
+                <p v-if="t1 === 28">{{ t1 }}℃ 이상일 때 입었던 옷 기록들</p>
+                <p v-if="t1 !== 28 && t2 !== 4">{{ t1 }}℃ ~ {{ t2 }}℃일 때 입었던 옷 기록들</p>
+                <p v-if="t2 === 4">{{ t2 }}℃ 이하일 때 입었던 옷 기록들</p>
+            </div>
             <!-- ootw 리스트 -->
             <div class="FlipCardcontainer">
                 <div class="slider-container">
@@ -24,43 +24,47 @@
                             :style="{ width: '240px', flex: '0 0 250px' }" @click="modalOpen(ootw.ootwnum)"
                             @mouseover="cursorChange" @mouseout="resetCursor">
                             <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + allImageList[i]"> <br />
-                            <div class="ootw-contents"
-                                style="text-align: left; margin-left:10px; margin-top:10px; font-size: 14px; color: rgb(158, 157, 157)">
-                                {{ datelist[i] }}&nbsp;&nbsp;&nbsp;{{ ootw.weather }}&nbsp;&nbsp;&nbsp;{{ ootw.temp }}℃
-                            </div>
-                            <div style="width:250px; text-align: left; margin-left:10px; margin-top:8px; font-size: 16px; font-weight: bold;
-                            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                {{ ootw.comments }}
+                            <div style="text-align: left; margin-left:10px;">
+                                <div class="ootw-contents">
+                                    {{ datelist[i] }}&nbsp;&nbsp;&nbsp;{{ ootw.weather }}&nbsp;&nbsp;&nbsp;{{ ootw.temp }}℃
+                                </div>
+                                <div class="ootw-comments">
+                                    {{ ootw.comments }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <!-- 더보기 버튼 뜨기 -->
-                    <!-- <div v-if="gap > 0">
-                    <img class="plus" src="@/assets/weatherPlus.svg" @click="moreBtn" @mouseover="cursorChange"
-                        @mouseout="resetCursor">
-                    </div> -->
                     <span class="slider-rightBtn sliderBtn" @click="scrollRight" ref="rightBtn"></span>
                 </div>
             </div>
 
-            <!-- ootw 디테일 (모달) -->
-            <!-- 사진 전부, 날짜, 기온, 날씨, 코멘트 -->
-            <div class="modal-wrap" v-show="modalCheck" @click="modalClose" id="modalWrap">
-                <div class="modal-container" @click.stop="" id="container">
+            <img class="plus" style="height:65px" src="@/assets/pencil.svg"
+                @click="$router.push('/ootwadd')" @mouseover="cursorChange" @mouseout="resetCursor"
+                title="OOTW 쓰러가기">
+
+        </div>
+
+
+        <!-- ootw 디테일 (모달) -->
+        <!-- 사진 전부, 날짜, 기온, 날씨, 코멘트 -->
+        <div class="modal-wrap" v-show="modalCheck" @click="modalClose" id="modalWrap">
+            <div class="modal-container" @click.stop="" id="container">
+                <h6>{{ odate }}의 기록</h6>
+                <div class="modal-imgs">
                     <span v-for="num in clothnum" :key="num">
                         <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + num" alt="sdf">
                     </span>
-                    <br /><br />
-                    <h6>{{ odate }}의 OOTW</h6>
-                    날씨: {{ weather }}<br />
-                    기온: {{ temp }}℃<br /><br />
-                    {{ comments }}<br />
+                </div>
+                <div class="modal-info">
+                    <p>날씨&nbsp;&nbsp;|&nbsp;&nbsp;{{ weather }}</p>
+                    <p>기온&nbsp;&nbsp;|&nbsp;&nbsp;{{ temp }}℃</p>
+                </div>
+                <div class="modal-comments">{{ comments }}</div>
+                <div class="modal-btn">
                     <button v-on:click="deleteOootw(ootwnum)">삭제</button>
                 </div>
             </div>
         </div>
-
-        <br /><br /><br /><br /><br /><br /><br />
 
     </div>
 </template>
@@ -140,9 +144,9 @@ export default {
                 const leftBtnElement = this.$refs.leftBtn;
                 const rightBtnElement = this.$refs.rightBtn;
 
-                console.log('Slider Element:', this.$refs.slider);
-                console.log('Left Button Element:', this.$refs.leftBtn);
-                console.log('Right Button Element:', this.$refs.rightBtn);
+                // console.log('Slider Element:', this.$refs.slider);
+                // console.log('Left Button Element:', this.$refs.leftBtn);
+                // console.log('Right Button Element:', this.$refs.rightBtn);
 
                 if (sliderElement) {
                     const containerDimension = sliderElement.getBoundingClientRect().width;
@@ -245,19 +249,23 @@ export default {
                 if (res.status === 200) {
                     // 게시글의 첫번째 이미지 번호만 담긴 전체 리스트 (dto 순으로 들어와있음)
                     this.allImageList = res.data.closetNumList;
-
                     this.allOotwList = res.data.list;
-                    // const fiveOotw = this.allOotwList.slice(0, 5);
-                    // this.displayedOotw = allOotwList;
-                    // 더보기 조건으로 쓰임
-                    // this.gap = this.allOotwList.length - this.displayedOotw.length;
-                    if (this.allOotwList != '') { // 데이터가 있으면 
+                    if (this.allOotwList != '' && this.allImageList != '') { // 데이터가 있으면 
                         for (let i = 0; i < this.allOotwList.length; i++) {
                             const year = this.allOotwList[i].odate.substring(0, 4);
                             const month = this.allOotwList[i].odate.substring(5, 7);
                             const day = this.allOotwList[i].odate.substring(8, 10);
                             const date = year + "/" + month + "/" + day;
                             this.datelist[i] = date;
+                        }
+
+                        if (this.allOotwList.length < 4) {
+                            const element = document.querySelector('.ootw-list');
+                            // 가운데 정렬 해버리면 맨 앞 카드가 잘린 채 보이더라고
+                            // 그래서 검색된 ootw 가 적으면 가운데 정렬해서 깔끔하게 보여주고
+                            // 그 이상이면 그냥 띄워야 안잘려보임
+                            // 그러나.. 가운데정렬하면 화면을 줄일때 첫 카드 잘림 ㅎ 몰라 키워서 보라지
+                            element.classList.add("center");
                         }
                     } else {
                         this.message = 'OOTW 가 비었습니다.';
@@ -275,13 +283,13 @@ export default {
             const sliderElement = this.$refs.slider;
             const containerDimension = sliderElement.getBoundingClientRect().width;
             sliderElement.scrollLeft -= containerDimension;
-            console.log('왼쪽버튼 누름: ' + sliderElement.scrollLeft)
+            // console.log('왼쪽버튼 누름: ' + sliderElement.scrollLeft)
         },
         scrollRight() {
             const sliderElement = this.$refs.slider;
             const containerDimension = sliderElement.getBoundingClientRect().width;
             sliderElement.scrollLeft += containerDimension;
-            console.log('오른쪽버튼 누름: ' + sliderElement.scrollLeft)
+            // console.log('오른쪽버튼 누름: ' + sliderElement.scrollLeft)
         },
 
         // 더보기 버튼 누르면 5개씩 추가 
@@ -366,16 +374,17 @@ export default {
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Pacifico&display=swap");
 
-/* @font-face {
-    font-family: 'Cafe24Ohsquareair';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2202@1.0/Cafe24Ohsquareair.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-} */
 @font-face {
     font-family: 'PyeongChang-Regular';
     src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Regular.woff2') format('woff2');
     font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'PyeongChang-Bold';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2206-02@1.0/PyeongChang-Bold.woff2') format('woff2');
+    font-weight: 700;
     font-style: normal;
 }
 
@@ -386,74 +395,60 @@ export default {
 }
 
 .FlipCardcontainer {
-    display: flex; 
-    justify-content: center; 
+    /* margin-top: 5%; */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
     align-items: center;
 }
 
 .slider-container {
-    margin: 0 auto; 
-    position: relative; 
-    padding: 10px; 
-    overflow: hidden; 
-    max-width: 1100px;
+    width: 80vw;
+    height: 400px;
+    margin: 0 auto;
+    position: relative;
+    padding: 10px;
+    overflow: hidden;
 }
 
 .ootw-list {
-    /* width: 80%; */
-    /* grid-template-columns: repeat(auto-fill, minmax(25%, auto)); */
-    row-gap: 50px;
-    /* max-width: 1000px; */
-    height: 300px;
-    
-    display: grid;
     gap: 30px;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    margin: 0 auto;
+    /* justify-content: center; */
 
-    /* margin-top: 5px; */
-    /* margin: 0 auto; */
-    /* 좌우 여백 추가 */
-    padding-left: 830px;
-    /* padding-right: 1000px; */
-    /* 가로 스크롤바 감춤 */
-    /* overflow: hidden; */
-    margin-left: 50px;
-    margin-right: 50px;
-
-
+    /*scroll속성모음*/
+    overflow-x: auto;
+    display: grid;
     grid-auto-flow: column;
     overscroll-behavior-inline: contain;
     scroll-behavior: smooth;
+    height: 300px;
     scroll-snap-type: inline mandatory;
     scroll-padding-inline: 1rem;
-    /* scroll-padding: 0 20px; */
-    
     align-items: center;
+}
+
+.center {
     justify-content: center;
-    
-    /* display: flex; */
-    overflow-x: auto;
-    /* white-space: nowrap; */
 }
 
 .ootw-item {
     width: 100%;
     height: 230px;
+    flex: 0 0 280px;
+    /* 항목 너비 설정 */
+
+    background: transparent;
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 20px;
 
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content: center; */
-    /* scroll-snap-align: start; */
+    justify-content: center;
+    scroll-snap-align: start;
     transition: all 0.5s;
-
-    background: transparent;
-    background-color: rgba(255, 255, 255, 0.6);
-    /* border-radius: 8px; */
-    padding: 20px;
-    /* 버튼과의 간격을 위한 하단 마진 추가 */
-    /* margin-bottom: 20px;  */
-    text-align: left;
 }
 
 /*scrollbar숨기기 */
@@ -462,32 +457,36 @@ export default {
 }
 
 .ootw-item:hover {
-    /* background-color: rgb(242, 242, 242); */
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     transform: scale(1.05);
 }
-
-/* .ootw-contents {
-    margin-left: 10px;
-} */
 
 .ootw-item img {
     display: block;
     position: relative;
-    margin-top: -20px;
+    margin-top: -27px;
     width: 280px;
     height: 180px;
     /* 이미지가 카드 영역에 꽉 차도록 설정 */
     object-fit: cover;
 
+}
 
-    /* margin: 0 auto; */
-    /* position: relative; */
-    /* width: 160px; */
-    /* height: 160px; */
-    /* object-fit: cover; */
-    /* border-radius: 3px; */
-    /* margin-bottom: 10px; */
+.ootw-contents {
+    margin-top: 10px;
+    font-size: 14px;
+    color: rgb(108, 106, 106)
+}
 
+.ootw-comments {
+    width: 250px;
+    margin-top: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* 화살표 속성 */
@@ -496,9 +495,11 @@ export default {
     height: 40px;
     border-top: 10px solid white;
     border-left: 10px solid white;
+    opacity: 0.5;
     position: absolute;
     cursor: pointer;
     top: 30%;
+    z-index: 1;
 }
 
 /* border모양을 돌려서 화살표모양만들기 */
@@ -515,8 +516,8 @@ export default {
 .plus {
     transition: transform 0.3s ease;
     /* 변화가 일어날 때 0.3초 동안 부드럽게 전환 */
-    margin-top: 50px;
-    margin-bottom: 30px;
+    margin-top: 20px;
+    margin-bottom: 100px;
 }
 
 .plus:hover {
@@ -533,7 +534,7 @@ export default {
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(0, 0, 0, 0.3);
 }
 
 
@@ -546,24 +547,94 @@ export default {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 500px;
-    height: 60%;
+    max-width: 750px;
+    height: auto;
     background: #fff;
+    color: #2c3e50;
+    box-shadow: 0 20px 10px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    padding: 20px;
+    /* padding: 20px; */
     box-sizing: border-box;
     /* 가운데정렬 */
     display: flex;
     flex-direction: column;
     /* 내용 수직으로 배치 */
-    justify-content: center;
+    /* justify-content: center; */
     /* 수직방향 가운데 정렬 */
     align-items: center;
     /* 수평방향 가운데 정렬 */
 }
 
-.modal-container img {
+.modal-container h6 {
+    font-family: 'PyeongChang-Bold';
+    margin-top: 50px;
+    margin-bottom: 30px;
+    /* font-weight: bold; */
+    font-size: 16px;
+}
+
+.modal-imgs {
+    display: flex;
+    /* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
+    grid-gap: 5px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.modal-imgs img {
+    border-radius: 8px;
+    /* padding: 20px; */
+    text-align: center;
+    align-items: center;
+    justify-content: center;
     width: 200px;
     height: 200px;
+}
+
+.modal-info {
+    margin-top: 15px;
+    text-align: left;
+}
+.modal-info p{
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.modal-comments {
+    width: 430px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    /* font-weight: bold; */
+}
+
+.modal-btn {
+    margin-top: 15px;
+    margin-bottom: 50px;
+}
+
+button {
+    border: 1px solid rgb(177, 177, 177);
+    background-color: white;
+    /* background-color: rgb(196, 215, 178, 0.6); */
+    /* border: none; */
+    border-radius: 5px;
+    transition: .5s;
+    font-size: 15px;
+    font-weight: normal;
+    font-family: 'PyeongChang-Regular';
+    margin-left: 5px;
+}
+
+button:hover {
+    background-color: #85b380;
+    color: #ffffff;
+    /* color: #85b380; */
+    cursor: pointer;
+    /* font-weight: bold; */
 }
 </style>
