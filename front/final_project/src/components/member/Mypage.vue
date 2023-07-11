@@ -1,4 +1,5 @@
 <template>
+    <br><br>
     <div id="container">
     <!-- <div class="layout_base"> -->
         <!-- <div class="container"> -->
@@ -44,7 +45,7 @@
                                 <div class="unit" v-show="!showModifyPwd">
                                     <h5 class="title">비밀번호</h5> 
                                     <div class="unit_content">
-                                        <input type="text" v-model="pwd" class="info pwd_content" readonly>
+                                        <input type="password" v-model="pwd" class="info pwd_content" readonly>
                                     
                                     <button class="btn btn_modify small" @click="modifyPwd">변경</button>
                                     </div>
@@ -53,11 +54,16 @@
                                     <div class="input_box">
                                         <h6 class="input_title">비밀번호</h6>
                                         <div class= "input_item">
-                                            <input type="text" v-model="modifiedPwd" class="info input_text">
+                                            <input type="text" v-model="modifiedPwd" :class="{'info input_text': !hasPwdError, 'info input_text_error': hasPwdError}" @input="validatePwd($event)">
                                         </div>
-                                        <p class="input_error"></p>
+                                        <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (8-12자)</p>
+                                        
                                         <div class="modify_btn_box">
-                                            <button class="btn medium cancel" @click="cancelModifyPwd">취소</button> <button class="btn medium save" @click="saveModifyPwd">저장</button>
+                                            <button class="btn medium cancel" @click="cancelModifyPwd">취소</button> 
+                                            <!-- <button class="btn medium save" @click="saveModifyPwd">저장</button> -->
+
+                                            <button :class="[spbutton.spbtn ? 'btn medium save' : 'medium spbtn_disabled', 'spbutton']" @click="saveModifyPwd" :disabled="spbutton.spbtn_disabled">저장</button>
+                                            <!-- <button v-on:click ="login" :class="loginBtnClass" :disabled="loginBtnDisalbed">로그인</button> -->
                                         </div>
                                     </div>
                                 </div>
@@ -82,11 +88,25 @@
                                     <div class="input_box">
                                         <h6 class="input_title">닉네임</h6>
                                         <div class= "input_item">
-                                            <input type="text" v-model="modifiedNickname" class="info input_text">
+                                            <input type="text" v-model="modifiedNickname" :class="{'info input_text': !hasNicknameError, 'info input_text_error': hasNicknameError}" @input="nickcheck(); validateNickname($event)">
+
+                                            <p class="input_error" v-if="hasNicknameError">3~8자로 입력해주세요.</p>
+                                            <p class="input_nickcheck" v-else>{{ nickmsg }}</p>
                                         </div>
-                                        <p class="input_error"></p>
+                                        
+
+
                                         <div class="modify_btn_box">
-                                            <button class="btn medium cancel" @click="cancelModifyNickname">취소</button> <button class="btn medium save" @click="saveModifyNickname">저장</button>
+                                            <button class="btn medium cancel" @click="cancelModifyNickname">취소</button> 
+                                            <!-- <button class="btn medium save" @click="saveModifyNickname">저장</button> -->
+
+
+
+                                            <!-- <button :class="[sbutton.sbtn ? 'btn medium save' : 'btn medium save_disabled', 'sbutton']" @click="saveModifyNickname" :disabled="sbutton.sbtn_disabled">저장</button> -->
+                                            <button :class="[sbutton.sbtn ? 'btn medium save' : 'medium sbtn_disabled', 'sbutton']" @click="saveModifyNickname" :disabled="sbutton.sbtn_disabled">저장</button>
+
+                                            <!-- <button v-on:click ="login" :class="loginBtnClass" :disabled="loginBtnDisalbed">로그인</button> -->
+
                                         </div>
                                     </div>
                                 </div>
@@ -135,8 +155,13 @@ export default{
             uploadImg:'null',
             defaultImg: require('@/assets/default.jpg'),
             previewImg:'',
+            nickmsg:'',
+            modifiedNickname:'',
             showModifyPwd: false,
-            showModifyNickname: false
+            showModifyNickname: false,
+            hasNicknameError: false,
+            hasPwdError: false,
+            nickdp:'',
         }
     },
 
@@ -170,6 +195,27 @@ export default{
         });
     },
     
+    computed:{
+        sbutton(){
+            return{
+                'sbtn': !this.hasNicknameError && !this.nickdp && this.nickname,
+                'sbtn_disabled': this.hasNicknameError || this.nickdp || !this.nickname
+            }
+        },
+        sbuttonDisalbed(){
+            return this.hasNicknameError || this.nickdp || !this.nickname;
+        },
+        spbutton(){
+            return{
+                'spbtn': !this.hasPwdError && this.nickname,
+                'spbtn_disabled': this.hasPwdError || !this.nickname
+            }
+        },
+        spbuttonDisalbed(){
+            return this.hasPwdError || !this.nickname;
+        }
+    },
+
     methods:{
 
         //변경버튼 클릭시 변경창 보여주기
@@ -261,7 +307,7 @@ export default{
                         self.pwd = dto.pwd
                         self.nickname = dto.nickname
                         self.img = dto.img
-                        location.reload()
+                        // location.reload()
                     }else{
                         alert("false가 넘어옴")
                     }
@@ -283,7 +329,7 @@ export default{
         out(){
             const self = this;
             let token = sessionStorage.getItem('token')
-            let answer = confirm('탈퇴하시겠습니까? 진짜 큰일납니다.')
+            let answer = confirm('탈퇴하시겠습니까?')
             if(answer){
             self.$axios.delete('http://localhost:8081/members/'+self.num,
             {headers:{'token':token}})
@@ -293,6 +339,8 @@ export default{
                         self.delImg()
                         alert('탈퇴완료')
                         self.logout()
+                    }else{
+                        alert('배틀투표에 선정되어 탈퇴가 불가능합니다.')
                     }
                 }else{
                     alert('에러코드:'+res.status)
@@ -317,7 +365,94 @@ export default{
                     alert('에러코드:' + res.status)
                 }
             });
-        }
+        },
+
+        //닉네임 중복체크
+        nickcheck(){
+            const self = this;
+            if(self.modifiedNickname.trim() === ''){
+                return;
+            }
+            self.$axios.get('http://localhost:8081/members/nickname/'+self.modifiedNickname)
+            .then(function(res){
+                if(res.status === 200){
+                    if(res.data.tf === true){
+                        self.nickmsg = '사용가능한 닉네임';
+                        self.nickdp = false;
+                    }else{
+                        self.nickmsg = '중복된 닉네임';
+                        self.nickdp = true;
+                    }
+                    console.log(res.data.tf)
+                    console.log("닉네임:"+self.modifiedNickname)
+                }else{
+                    alert('에러코드:' + res.status)
+                }
+            });
+        },
+
+        //닉네임 중복체크
+        // nickcheck(){
+        //     const self = this;
+        //     if(self.nickname.trim() === ''){
+        //         return;
+        //     }
+        //     self.$axios.get('http://localhost:8081/members/nickname/'+self.nickname)
+        //     .then(function(res){
+        //         if(res.status === 200){
+        //             if(res.data.tf === true){
+        //                 self.nickmsg = '사용가능한 닉네임';
+        //             }else{
+        //                 self.nickmsg = '중복된 닉네임';
+        //             }
+        //             console.log(res.data.tf)
+        //             console.log("닉네임:"+self.nickname)
+        //         }else{
+        //             alert('에러코드:' + res.status)
+        //         }
+        //     });
+        // },
+
+
+        //로그인, 패스워드 폼 포커스시
+        cPlaceholder(event){
+            event.target.previousElementSibling.classList.add('actvie');
+            event.target.placeholder='';
+        },
+        rPlaceholder(event){
+            const inputField = event.target;
+            const label = inputField.previousElementSibling;
+            if(!inputField.value){
+                label.classList.remove('active');
+                if(inputField.id === 'id'){
+                    inputField.placeholder = '아이디';
+                }else if(inputField.id === 'pwd'){
+                    inputField.placeholder = '패스워드';
+                }else if(inputField.id === 'email'){
+                    inputField.placeholder = '예) intheham@tistory.com';
+                }else if(inputField.id === 'nickname'){
+                    inputField.placeholder = '닉네임';
+                }
+            }
+        },
+
+        //비밀번호 정규식
+        validatePwd(event){
+            const pwd = event.target.value;
+            const pattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,12}$/;
+            this.hasPwdError = !pattern.test(pwd);
+            console.log("pwd : " +this.hasPwdError)
+            // this.enabledState();
+        },
+
+        //닉네임 정규식
+        validateNickname(event){
+            //3~8자리, 공백X, 특수문자X 외 다 가능
+            const modifiedNickname = event.target.value
+            const pattern = /^(?!\s)(?!.*\s$)(?!.*[!@#$%^&*(),.?":{}|<>])(?!.*[ㄱ-ㅎㅏ-ㅣ])[^\s]{3,8}$/;
+            this.hasNicknameError = !pattern.test(modifiedNickname);
+            // this.enabledState();
+        },
     }
 }
 </script>
@@ -350,6 +485,43 @@ export default{
     margin:0 auto;
     background-color:#ffffff;
 } */
+
+/* 유효성미통과시검사버튼 */
+.sbtn_disabled{
+    display: inline-flex;
+    padding: 0 38px;
+    height: 42px;
+    border-radius: 12px;
+    border: none;
+    background-color: #ebebeb;
+    color: rgba(34,34,34,.8);
+    font-weight: bold;
+    font-family: 'PyeongChang-Regular';
+    justify-content: center;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    margin-left: 8px;
+    pointer-events: none;
+}
+
+.spbtn_disabled{
+    display: inline-flex;
+    padding: 0 38px;
+    height: 42px;
+    border-radius: 12px;
+    border: none;
+    background-color: #ebebeb;
+    color: rgba(34,34,34,.8);
+    font-weight: bold;
+    font-family: 'PyeongChang-Regular';
+    justify-content: center;
+    vertical-align: middle;
+    text-align: center;
+    align-items: center;
+    margin-left: 8px;
+    pointer-events: none;
+}
 
 .content_title.border{
     padding:10px 0 16px;
@@ -501,7 +673,21 @@ export default{
 .delImgBtn{
     margin-left: 8px;
 } */
+.input_nickcheck{
+    display: block;
+    color:#000;
+    margin-top: 5px;
+    font-size: 13px;
+    text-align: center;
+}
 
+.input_error{
+    display: block;
+    color:#f15746;
+    margin-top: 5px;
+    text-align: left;
+    font-size: 11px;
+}
 h3{
     display: block;
     font-size: 24px;

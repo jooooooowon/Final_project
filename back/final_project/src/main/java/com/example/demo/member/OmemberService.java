@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.battle.Obattle;
+import com.example.demo.battle.ObattleDao;
+import com.example.demo.battle.ObattleDto;
+
 @Service
 public class OmemberService {
 	@Autowired
@@ -87,4 +91,13 @@ public class OmemberService {
 			}
 			return (OmemberDto)change(m);
 		}
+		
+	//배틀 num으로 조회
+//	public ObattleDto getBybatMemnum(int memnum) {
+//		Obattle b = batdao.findByMemnum(memnum);
+//		if(b==null) {
+//			return null;
+//		}
+//		return (ObattleDto)change(b);
+//	}
 }

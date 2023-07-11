@@ -2,11 +2,14 @@ package com.example.demo.member;
 
 import org.hibernate.annotations.DynamicInsert;
 
+import com.example.demo.battle.Obattle;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,6 +39,9 @@ public class Omember {
 	private String nickname;
 	@Column(nullable=true)
 	private String img;
+	
+//	@OneToMany(mappedBy = "omember")
+//	private Obattle battle;
 	
 	
 //	@ColumnDefault("0") //default값 설정
