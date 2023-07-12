@@ -222,10 +222,14 @@ export default {
 			if (self.searchTag == '' || self.searchTag == undefined) {
 				this.getCommunityList();
 			} else {
-				self.$axios.get(`http://localhost:8081/ocommunity/tags/${self.searchTag}`)
+				self.$axios.get('http://localhost:8081/ocommunity/tags/' + self.searchTag + "/" + self.memnum)
 					.then(res => {
 						if (res.status == 200) {
 							self.commlist = res.data.tags;
+							for (let i = 0; i < self.reportedCommnums.length; i++) {
+								//신고 받은 게시글 안보이게 필터링하는거
+								self.commlist = self.commlist.filter(comm => comm.commnum != self.reportedCommnums[i])
+							}
 						} else {
 							alert("오류 띠")
 						}
@@ -234,11 +238,17 @@ export default {
 		},
 		//멤버로 검색
 		searchMember(memnum) {
+			// const self = this;
+            // self.$router.push({ name: 'ListBoard2', query: { memnum: memnum } });
 			let self = this;
-			self.$axios.get('http://localhost:8081/ocommunity/members/' + memnum)
+			self.$axios.get('http://localhost:8081/ocommunity/members/' + memnum + "/" + self.memnum)
 				.then(res => {
 					if (res.status == 200) {
 						self.commlist = res.data.list;
+						for (let i = 0; i < self.reportedCommnums.length; i++) {
+								//신고 받은 게시글 안보이게 필터링하는거
+								self.commlist = self.commlist.filter(comm => comm.commnum != self.reportedCommnums[i])
+							}
 					} else {
 						alert("오류 띠")
 					}
