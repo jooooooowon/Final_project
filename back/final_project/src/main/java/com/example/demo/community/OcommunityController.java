@@ -183,20 +183,34 @@ public class OcommunityController {
 		return map;
 	}
 
-	// 멤버로 검색
-	@GetMapping("/members/{memnum}")
-	public Map getByMemnum(@PathVariable("memnum") int memnum) {
+	// 작성자의 멤버 번호로 검색 => 로그인한 유저의 좋아요 및 북마크를 검색해서 리스트에 업데이트 
+	// 태그 검색도 똑같은 로직
+	@GetMapping("/members/{memnum}/{loginmemnum}")
+	public Map getByMemnum(@PathVariable("memnum") int memnum, @PathVariable("loginmemnum") int loginmemnum) {
 		Map map = new HashMap<>();
 		boolean flag = true;
 		try {
 			ArrayList<OcommunityDto> list = service.getByMemnum(memnum);
+			// 기존에는 로그인 멤버로 게시글 검색 후, 해당 멤버의 좋아요 및 북마크를 검색했었음
+			// 하지만 이 멤버 검색은 게시글을 작성한 멤버의 게시글을 검색해서 뿌려주는 것임
+			// memnum은 작성자의 memnum이므로 기존대로 아래에서 작성자의 memnum으로 조회하면
+			// 작성자의 좋아요 게시글을 조회하는 것이므로 null로 뜸
+			// 따라서 위에서는 작성자의 멤버번호로 리스트를 뽑은 후,
+			ArrayList<ObookmarkDto> bookmarkList = bookmarkservice.getByMemnum(loginmemnum);
+			// 북마크 리스트도 마찬가지로 로그인한 멤버(웹페이지 사용 중인 멤버)의 번호로 조회해야 함
 			for(OcommunityDto dto : list) {
 				dto.setBtnlike(likeservice.likeCount(dto.getCommnum()));
-				// 로그인 되어 있는 멤버가 현재 dto (list를 for문으로 돌리고 있다는 것을 잊지말자.)
-				// 에 좋아요를 눌렀는 지 확인한다.
-				// 좋아요를 눌렀었다면 chklike를 true로 바꾼다.
-				if(likeservice.getByMemnumAndCommnum(memnum, dto.getCommnum()) != null) {
+				
+				// 여기서는 로그인한 멤버, 즉 현재 웹페이지를 이용 중인 멤버의 번호로 좋아요를 눌렀는 지 안눌렀는 지 확인해야 함
+				// 따라서 파람값으로 loginmemnum을 추가로 받아서 아래에서 조회해야 함
+				if(likeservice.getByMemnumAndCommnum(loginmemnum, dto.getCommnum()) != null) {
 					dto.setChklike(true);
+				}
+				
+				for(ObookmarkDto bookmarkDto : bookmarkList) {
+					if(bookmarkDto.getCommnum().getCommnum() == dto.getCommnum()) {
+						dto.setChkbookmark(true);
+					}
 				}
 			}
 			map.put("list", list);
@@ -209,12 +223,13 @@ public class OcommunityController {
 	}
 	
 	// 게시글 태그 검색
-	@GetMapping("/tags/{tag}")
-	public Map getByTag(@PathVariable("tag") String tag) {
+	@GetMapping("/tags/{tag}/{loginmemnum}")
+	public Map getByTag(@PathVariable("tag") String tag, @PathVariable("loginmemnum") int loginmemnum) {
 		Map map = new HashMap<>();
 		boolean flag = true;
 		try {
 			ArrayList<OcommunityDto> tags = service.getByTag(tag);
+			ArrayList<ObookmarkDto> bookmarkList = bookmarkservice.getByMemnum(loginmemnum);
 			Collections.sort(tags, new Comparator<OcommunityDto>() {
 				@Override
 				public int compare(OcommunityDto dto1, OcommunityDto dto2) {
@@ -224,6 +239,16 @@ public class OcommunityController {
 			
 			for(OcommunityDto dto : tags) {
 				dto.setBtnlike(likeservice.likeCount(dto.getCommnum()));
+				
+				if(likeservice.getByMemnumAndCommnum(loginmemnum, dto.getCommnum()) != null) {
+					dto.setChklike(true);
+				}
+				
+				for(ObookmarkDto bookmarkDto : bookmarkList) {
+					if(bookmarkDto.getCommnum().getCommnum() == dto.getCommnum()) {
+						dto.setChkbookmark(true);
+					}
+				}
 			}
 			map.put("tags", tags);
 		} catch (Exception e) {
