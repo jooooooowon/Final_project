@@ -38,14 +38,14 @@
                                 <div class="unit">
                                     <h5 class="title">아이디</h5> 
                                     <div class="unit_content">
-                                          <input type="text" v-model="id" class="info id_content" readonly>
+                                          <input type="text" v-model="id" class="info id_content" style="cursor: auto;" readonly>
                                     </div>
                                 </div>
 
                                 <div class="unit" v-show="!showModifyPwd">
                                     <h5 class="title">비밀번호</h5> 
                                     <div class="unit_content">
-                                        <input type="password" v-model="pwd" class="info pwd_content" readonly>
+                                        <input type="password" v-model="pwd" class="info pwd_content" style="cursor: auto;" readonly>
                                     
                                     <button class="btn btn_modify small" @click="modifyPwd">변경</button>
                                     </div>
@@ -71,14 +71,14 @@
                                 <div class="unit">
                                     <h5 class="title">이메일</h5> 
                                     <div class="unit_content">
-                                        <input type="text" v-model="email" class="info email_content" readonly>
+                                        <input type="text" v-model="email" class="info email_content" style="cursor: auto;" readonly>
                                     </div>
 
                                 </div>
                                 <div class="unit" v-show="!showModifyNickname">
                                     <h5 class="title">닉네임</h5> 
                                     <div class="unit_content">
-                                        <input type="text" v-model="nickname" class="info nickname_content" readonly>
+                                        <input type="text" v-model="nickname" class="info nickname_content" style="cursor: auto;" readonly>
                                     
                                     <button class="btn btn_modify small" @click="modifyNickname">변경</button>
 
@@ -114,7 +114,7 @@
                                 <div class="unit">
                                     <h5 class="title">성별</h5> 
                                     <div class="unit_content">
-                                        <input type="text" v-model="gender" class="info gender_content" readonly>
+                                        <input type="text" v-model="gender" class="info gender_content" style="cursor: auto;" readonly>
                                     </div>
                                 </div>
                                 <div class="out">
@@ -153,7 +153,7 @@ export default{
             num : sessionStorage.getItem('memnum'),
             img:'',
             uploadImg:'null',
-            defaultImg: require('@/assets/default.jpg'),
+            defaultImg: require('@/assets/userImg.png'),
             previewImg:'',
             nickmsg:'',
             modifiedNickname:'',
@@ -281,7 +281,7 @@ export default{
             if(this.img != null){
                 return 'http://localhost:8081/members/imgs/'+ this.num;
             } else{
-                return require('@/assets/default.jpg')
+                return require('@/assets/userImg.png')
             }
         },
 
@@ -307,7 +307,7 @@ export default{
                         self.pwd = dto.pwd
                         self.nickname = dto.nickname
                         self.img = dto.img
-                        // location.reload()
+                        location.reload()
                     }else{
                         alert("false가 넘어옴")
                     }
@@ -360,6 +360,7 @@ export default{
                     if(res.data.flag){
                         self.img = null; //이미지경로 null로 설정하여 기본 이미지로 변경
                         self.uploadImg = null; //업로드된 이미지 초기화
+                        location.reload();
                     }
                 }else{
                     alert('에러코드:' + res.status)
