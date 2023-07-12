@@ -208,7 +208,7 @@ export default {
                 recommend = '패딩, 두꺼운코트, 방한용품, 기모제품'
                 subtags = ['패딩', '코트', '방한용품', '기모제품']
 
-            } else if (23 <= tmp && tmp <= 27) { // 23~27도
+            } else { // 23~27도
                 recommend = '반팔, 얇은셔츠, 반바지, 면바지'
                 subtags = ['반팔', '셔츠', '반바지', '면바지']
             }
@@ -373,17 +373,19 @@ export default {
         // 옷 디테일 창에서 옷 삭제하기
         deletecloth(closetnum) {
             const self = this;
-            self.$axios.delete('http://localhost:8081/closets/' + closetnum)
-                .then(function (res) {
-                    if (res.status == 200) {
-                        if (res.data.flag) {
-                            // this.modalClose()
-                            location.reload();
+            if (confirm('정말 삭제하시겠습니까?\n삭제 시 옷장에서도 삭제됩니다.')) {
+                self.$axios.delete('http://localhost:8081/closets/' + closetnum)
+                    .then(function (res) {
+                        if (res.status == 200) {
+                            if (res.data.flag) {
+                                // this.modalClose()
+                                location.reload();
+                            }
+                        } else {
+                            alert('에러코드: ' + res.status)
                         }
-                    } else {
-                        alert('에러코드: ' + res.status)
-                    }
-                })
+                    })
+            }
         },
 
         // {{subtag}} 쇼핑하러 가기 버튼 -- 카테고리 네이버 검색
