@@ -7,11 +7,13 @@
         
         <!-- 아이디 입력 폼 -->
         <div class="form_group">
-            <label for ="id"  :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">아이디</label>
-            <input type="text" id="id" v-model="id" placeholder="아이디" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
+            <!-- <label for ="id"  :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">아이디</label> -->
+            <!-- <input type="text" id="id" v-model="id" placeholder="아이디" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)"> -->
+            <label for ="id"  :class="{'input_label': !hasIdError}">아이디</label>
+            <input type="text" id="id" v-model="id"  :placeholder="idPlaceholder" class="input_field" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
 
             <!-- 아이디 유효성 검사 -->
-            <p class="input_error" v-if="hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p>
+            <!-- <p class="input_error" v-if="hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p> -->
         </div>
 
         <!-- 패스워드 입력 폼 -->
@@ -70,19 +72,23 @@ export default{
             pwd:'',
             hasIdError:false,
             hasPwdError:false,
-            hidePwd:true
+            hidePwd:true,
+            placehoder:'',
         }
     },
 
     computed:{
         loginBtnClass(){
             return{
-                'loginBtn': !this.hasIdError && !this.hasPwdError && (this.id && this.pwd),
-                'loginBtn_disabled': this.hasIdError || this.hasPwdError || !(this.id && this.pwd)
+                'loginBtn': !this.hasPwdError && (this.id && this.pwd),
+                'loginBtn_disabled': this.hasPwdError || !(this.id && this.pwd)
             }
         },
         loginBtnDisalbed(){
-            return this.hasIdError || this.hasPwdError || !(this.id && this.pwd);
+            return this.hasPwdError || !(this.id && this.pwd);
+        },
+        idPlaceholder(){
+            return this.id ? '' : '아이디';
         }
     },
 
@@ -102,7 +108,7 @@ export default{
                         // alert('로그인 성공')
                         location.href='/'
                     }else{
-                        alert('이메일 또는 비밀번호를 확인해주세요')
+                        alert('아이디 또는 비밀번호를 확인해주세요')
                         self.id=''
                         self.pwd=''
                         document.getElementById('id').placeholder='ID';
@@ -137,8 +143,8 @@ export default{
                 if(label){
                     label.classList.remove('active');
                 }
-                if(!inputField.value){
-                    if(!inputField.id === 'id'){
+                if(!inputField.value && !inputField.classList.contains('input_field_error')){
+                    if(inputField.id === 'id'){
                         inputField.placeholder = '아이디';
                     } else if(inputField.id === 'pwd'){
                         inputField.placeholder = '패스워드';
