@@ -99,10 +99,10 @@ export default{
                     if(res.data.flag){
                         sessionStorage.setItem('token', res.data.token)
                         sessionStorage.setItem('memnum', res.data.memnum)
-                        alert('로그인 성공')
+                        // alert('로그인 성공')
                         location.href='/'
                     }else{
-                        alert('로그인 실패')
+                        alert('이메일 또는 비밀번호를 확인해주세요')
                         self.id=''
                         self.pwd=''
                         document.getElementById('id').placeholder='ID';
