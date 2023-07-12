@@ -21,10 +21,10 @@
                 <input :type="hidePwd ? 'password' : 'text'" id="pwd" v-model="pwd" placeholder="패스워드" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)">
                 
             </div>
-            <div class="eye-icon" @click="toggleVisibility">
+            <!-- <div class="eye-icon" @click="toggleVisibility">
                 <span class="material-symbols-outlined" style="font-size: 20px;" v-show="!hidePwd">visibility</span>
                 <span class="material-symbols-outlined" style="font-size: 20px;" v-show="hidePwd">visibility_off</span>
-            </div>
+            </div> -->
             <!-- 패스워드 유효성 검사 -->
             <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (8-12자)</p>
         </div>
@@ -34,10 +34,10 @@
         </div>
 
         <!-- 로그인 버튼 -->
-        <!-- <button v-on:click ="login" :class="loginBtnClass" :disabled="loginBtnDisalbed">로그인</button> -->
+        <button v-on:click ="login" :class="loginBtnClass" :disabled="loginBtnDisalbed">로그인</button>
 
         <!-- 유효성검사 없는 로그인버튼 -->
-        <button v-on:click ="login"  :class="{'loginBtn': isEnabled}" >로그인</button>
+        <!-- <button v-on:click ="login"  :class="{'loginBtn': isEnabled}" >로그인</button> -->
 
         <!-- 회원가입, 아이디찾기, 비밀번호찾기 -->
         <ul class="look_box">

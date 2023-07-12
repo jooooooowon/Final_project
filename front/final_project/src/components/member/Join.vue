@@ -202,7 +202,7 @@ export default{
                 .then(function(res){
                     if(res.status == 200){
                         let dto = res.data.dto
-                        alert(dto.id)
+                        console.log(dto.id);
                         location.href='/'
                     }else{
                         alert('에러코드:'+res.status)
@@ -214,7 +214,7 @@ export default{
                 .then(function(res){
                     if(res.status == 200){
                         let d = res.data.d
-                        alert(d.id)
+                        console.log(d);
                         location.href='/'
                     }else{
                         alert('에러코드:'+res.status)
