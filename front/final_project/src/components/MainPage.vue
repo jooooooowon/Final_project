@@ -11,8 +11,8 @@
             <img src="@/assets/closet1.png" style="width:350px;height:auto;">
             
             <br/><br/>
-            오늘의 날씨를 확인하고<br>
-            기온에 맞는 옷장 속 아이템을 추천받고<br>
+            오늘의 날씨를 확인하세요!<br>
+            현재 기온별 추천 아이템을 추천받고<br>
             비슷한 날씨에 입었던 옷차림을 확인하세요!
         </div>
       </div>
@@ -27,9 +27,9 @@
           </span> -->
           <img src="@/assets/battle.png" style="width:350px;height:auto;">
           <br><br>
-          테마에 맞는 코디를 올리면<br>
-          랜덤으로 두 명의 코디를 뽑아서<br>
-          테마와 가장 알맞는 코디를 투표하세요!
+          테마별 코디로 배틀에 도전하세요!<br>
+          랜덤으로 선정된 두 도전자의 코디 중 <br>
+          테마와 가장 알맞는 코디에 투표하세요!
   
         </div>
       </div>
