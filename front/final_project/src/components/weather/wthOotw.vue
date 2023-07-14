@@ -1,46 +1,51 @@
 <template>
     <div class="back">
-        <p style="margin-top: 100px; padding-bottom: 100px;">{{ message }}</p>
+        <p style="padding-bottom: 80px;">{{ message }}</p>
 
         <div v-if="showRecom" style="padding-bottom: 100px;">
-            <div style="padding-bottom: 60px;">
+            <div style="padding-bottom: 100px;">
                 <p v-if="t1 === 28">{{ t1 }}℃ 이상일 때 입었던 옷 기록들</p>
                 <p v-if="t1 !== 28 && t2 !== 4">{{ t1 }}℃ ~ {{ t2 }}℃일 때 입었던 옷 기록들</p>
                 <p v-if="t2 === 4">{{ t2 }}℃ 이하일 때 입었던 옷 기록들</p>
             </div>
-            <!-- ootw 리스트 -->
-            <div class="FlipCardcontainer">
-                <div class="slider-container">
-                    <span class="slider-leftBtn sliderBtn" @click="scrollLeft" ref="leftBtn"></span>
+            <div v-if="showList === false">
+                <p style="padding-bottom: 70px; padding-top: 40px;">{{ message2 }}</p>
+            </div>
+            <div v-if="showList === true">
+                <!-- ootw 리스트 -->
+                <div class="FlipCardcontainer">
+                    <div class="slider-container">
+                        <span class="slider-leftBtn sliderBtn" @click="scrollLeft" ref="leftBtn"></span>
 
-                    <!-- ref는 Vue에서 사용되는 특별한 속성으로, 
+                        <!-- ref는 Vue에서 사용되는 특별한 속성으로, 
                         Vue 컴포넌트 내에서 DOM 요소나 자식 컴포넌트에 접근할 수 있도록 도와줍니다.  
                         ref를 사용하면 DOM 요소나 컴포넌트에 고유한 참조(reference)를 설정할 수 있습니다. 
                         이 참조를 사용하여 해당 요소나 컴포넌트에 직접 접근하고 조작할 수 있습니다. 
                         ref 속성을 통해 지정된 요소나 컴포넌트는 Vue 인스턴스의 $refs 객체에 저장되며, 이를 통해 참조를 얻을 수 있습니다.-->
-                    <div class="ootw-list" ref="slider">
+                        <div class="ootw-list" ref="slider">
 
-                        <div class="ootw-item" v-for="(ootw, i) in allOotwList" :key="ootw.ootwnum"
-                            :style="{ width: '240px', flex: '0 0 250px' }" @click="modalOpen(ootw.ootwnum)"
-                            @mouseover="cursorChange" @mouseout="resetCursor">
-                            <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + allImageList[i]"> <br />
-                            <div style="text-align: left; margin-left:10px;">
-                                <div class="ootw-contents">
-                                    {{ datelist[i] }}&nbsp;&nbsp;&nbsp;{{ ootw.weather }}&nbsp;&nbsp;&nbsp;{{ ootw.temp }}℃
-                                </div>
-                                <div class="ootw-comments">
-                                    {{ ootw.comments }}
+                            <div class="ootw-item" v-for="(ootw, i) in allOotwList" :key="ootw.ootwnum"
+                                :style="{ width: '240px', flex: '0 0 250px' }" @click="modalOpen(ootw.ootwnum)"
+                                @mouseover="cursorChange" @mouseout="resetCursor">
+                                <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + allImageList[i]"> <br />
+                                <div style="text-align: left; margin-left:10px;">
+                                    <div class="ootw-contents">
+                                        {{ datelist[i] }}&nbsp;&nbsp;&nbsp;{{ ootw.weather }}&nbsp;&nbsp;&nbsp;{{ ootw.temp
+                                        }}℃
+                                    </div>
+                                    <div class="ootw-comments">
+                                        {{ ootw.comments }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <span class="slider-rightBtn sliderBtn" @click="scrollRight" ref="rightBtn"></span>
                     </div>
-                    <span class="slider-rightBtn sliderBtn" @click="scrollRight" ref="rightBtn"></span>
                 </div>
             </div>
 
-            <img class="plus" style="height:65px" src="@/assets/pencil.svg"
-                @click="$router.push('/ootwadd')" @mouseover="cursorChange" @mouseout="resetCursor"
-                title="OOTW 쓰러가기">
+            <img class="plus" style="height:65px" src="@/assets/pencil.svg" @click="$router.push('/ootwadd')"
+                @mouseover="cursorChange" @mouseout="resetCursor" title="OOTW 쓰러가기">
 
         </div>
         <!-- ootw 디테일 (모달) -->
@@ -77,9 +82,11 @@ export default {
             nowTmp: sessionStorage.getItem("nowTmp"),
             memnum: sessionStorage.getItem("memnum"),
             message: '', // 로그인하면 옷장에서 옷 추천해드림~
+            message2: '', // ootw 비었음~
             t1: 23, // 최저기온
             t2: 27, // 최고기온
             showRecom: false, // 로그인 여부 체크
+            showList: false, // 리스트 있는지 여부 체크
             allOotwList: [], // 기온 검색 ootw 전체 리스트
             // displayedOotw: [], // ootw dto 5개 (수정될 수 있음)만 띄울거임~
             allImageList: [], // 기온 검색 ootw 첫번째 이미지만 모여있는 리스트
@@ -236,7 +243,7 @@ export default {
                 t1 = -100;
                 t2 = 4;
 
-            } else if (23 <= tmp && tmp <= 27) { // 23~27도
+            } else { // 23~27도
                 t1 = 23;
                 t2 = 27;
             }
@@ -251,6 +258,7 @@ export default {
                     this.allImageList = res.data.closetNumList;
                     this.allOotwList = res.data.list;
                     if (this.allOotwList != '' && this.allImageList != '') { // 데이터가 있으면 
+                        this.showList = !this.showList;
                         for (let i = 0; i < this.allOotwList.length; i++) {
                             const year = this.allOotwList[i].odate.substring(0, 4);
                             const month = this.allOotwList[i].odate.substring(5, 7);
@@ -260,15 +268,19 @@ export default {
                         }
 
                         if (this.allOotwList.length < 4) {
-                            const element = document.querySelector('.ootw-list');
+                            this.$nextTick(() => {
+                                const element = document.querySelector('.ootw-list');
+                                if (element != '') {
+                                    element.classList.add('center');
+                                }
+                            })
                             // 가운데 정렬 해버리면 맨 앞 카드가 잘린 채 보이더라고
                             // 그래서 검색된 ootw 가 적으면 가운데 정렬해서 깔끔하게 보여주고
                             // 그 이상이면 그냥 띄워야 안잘려보임
                             // 그러나.. 가운데정렬하면 화면을 줄일때 첫 카드 잘림 ㅎ 몰라 키워서 보라지
-                            element.classList.add("center");
                         }
                     } else {
-                        this.message = 'OOTW 가 비었습니다.';
+                        this.message2 = 'OOTW 가 비었습니다. OOTW를 추가하세요!';
                     }
                 } else {
                     alert('에러 코드: ' + res.status)
@@ -291,20 +303,6 @@ export default {
             sliderElement.scrollLeft += containerDimension;
             // console.log('오른쪽버튼 누름: ' + sliderElement.scrollLeft)
         },
-
-        // 더보기 버튼 누르면 5개씩 추가 
-        // moreBtn() {
-        //     const n = this.currentPage;
-        //     // n=1이면 5개, n=2이면 10개 떠있음
-        //     // (0, 5) -> (5, 10) -> (10, 15)
-        //     const start = n * 5; // n=1 -> 5
-        //     const end = start + 5; // start=5 -> 10
-        //     let additionalRow = this.allOotwList.slice(start, end)
-        //     this.displayedOotw = this.displayedOotw.concat(additionalRow);
-        //     this.currentPage++;
-        //     this.gap = this.allOotwList.length - this.displayedOotw.length;
-        // },
-
         // 카드 누르면 OOTW 디테일 페이지로 넘어감
         modalOpen(ootwnum) {
             const self = this;
@@ -357,14 +355,16 @@ export default {
         // 모달창에서 OOTW 삭제
         deleteOootw(ootwnum) {
             const self = this;
-            self.$axios.delete('http://localhost:8081/boards/' + ootwnum)
-                .then(function (res) {
-                    if (res.status == 200) {
-                        location.reload();
-                    } else {
-                        alert('에러 코드: ' + res.status)
-                    }
-                })
+            if (confirm('정말 삭제하시겠습니까?\n삭제 시 OOTW에서도 삭제됩니다.')) {
+                self.$axios.delete('http://localhost:8081/boards/' + ootwnum)
+                    .then(function (res) {
+                        if (res.status == 200) {
+                            location.reload();
+                        } else {
+                            alert('에러 코드: ' + res.status)
+                        }
+                    })
+            }
         }
 
     }
@@ -599,7 +599,8 @@ export default {
     margin-top: 15px;
     text-align: left;
 }
-.modal-info p{
+
+.modal-info p {
     margin-top: 5px;
     font-size: 14px;
 }

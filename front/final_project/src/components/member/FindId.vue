@@ -17,11 +17,18 @@
                 <input type="text" id="email" v-model="email" placeholder="가입하신 이메일" class="input_field" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)"><br/>
             </div>
 
-            {{ idMasked }}<br/>
-            <a href="../FindPwd" v-if="idMasked">비밀번호찾기</a>
-
+            <div class="find-id">
+                <div class="id-content">
+                    <p v-if="idMasked">아이디: &nbsp;</p> {{ idMasked }} <br/>
+                </div>
+                <div class="find_btn">
+                    <router-link to="../FindPwd" class="btn medium pbtn" style="display: flex; align-items: center; text-decoration: none;" v-if="idMasked">비밀번호찾기</router-link>
+                    <router-link to="../Login" class="btn medium lbtn" style="display: flex; align-items: center; text-decoration: none;" v-if="idMasked">로그인</router-link> 
+                </div>
+                <!-- <a href="../FindPwd" v-if="idMasked">비밀번호찾기</a> -->
+            </div>
             <div class="btn_box">
-                <button v-on:click="find" class="btn">아이디 찾기</button>
+                <button v-on:click="find" class="big btn">아이디 찾기</button>
                 <!-- <button v-on:click="find" class="btn_disabled">아이디 찾기</button> -->
             </div>
             
@@ -53,7 +60,7 @@ export default{
                         let idPre = str.substring(0, 3); //찾은 아이디 앞에 3자리 뽑기
                         self.idMasked = idPre+ '*'.repeat(str.length -3); //나머지는 *로 대체(repeat:문자열이 있는만큼 반복, length -3: 앞에서 세 자리 뺀 길이)
                     }else{
-                        alert('없는 이메일입니다.')
+                        alert('일치하는 사용자 정보를 찾을 수 없습니다.')
                     }
                 }else{
                     alert('에러코드:'+self.status)
@@ -106,6 +113,12 @@ export default{
     max-width: 1280px;
 }
 
+.id-content{
+    display: flex;
+    justify-content: center;
+    font-size: 25px;
+    margin-bottom: 10px;
+}
 .help_area{
     margin: 0 auto;
     padding: 60px 0 160px;
@@ -155,12 +168,12 @@ export default{
 }
 
 .btn_box{
-    padding-top: 40px;
+    padding-top: 30px;
 }
 .btn{
     border: none;
     background: #000;
-    width: 100%;
+    /* width: 100%; */
     color: #fff;
     font-size: 16px;
     font-weight: bold;
@@ -181,5 +194,53 @@ export default{
     border-radius: 12px;
     font-family: 'PyeongChang-Regular';
     font-weight: normal;
+}
+.big{
+    padding:0px 40%;
+}
+.big:hover{
+    background: #85b380;
+    color:#fff;
+    transition: .5s;
+    cursor: pointer;
+}
+
+.medium{
+    /* padding: 0 55px; */
+    height: 42px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #d3d3d3;
+}
+
+.pbtn{
+    background-color: #fff;
+    color: #222;
+}
+.lbtn{
+    margin-left: 10px;
+    padding: 0 25.5px;
+}
+.find_btn{
+    display: flex;
+    justify-content: center;
+}
+
+.medium:hover{
+    background: #85b380;
+    color:#fff;
+    transition: .5s;
+    cursor: pointer;
+}
+
+.find-id{
+    margin-top: 10px;
+}
+
+p{
+    display: inline-block;
+    font-weight: bold;
+
 }
 </style>

@@ -7,30 +7,39 @@
         
         <!-- 아이디 입력 폼 -->
         <div class="form_group">
-            <label for ="id"  :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">아이디</label>
-            <input type="text" id="id" v-model="id" placeholder="아이디" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
+            <!-- <label for ="id"  :class="{'input_label': !hasIdError, 'input_label_error': hasIdError}">아이디</label> -->
+            <!-- <input type="text" id="id" v-model="id" placeholder="아이디" :class="{'input_field': !hasIdError, 'input_field_error': hasIdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)"> -->
+            <label for ="id"  :class="{'input_label': !hasIdError}">아이디</label>
+            <input type="text" id="id" v-model="id"  :placeholder="idPlaceholder" class="input_field" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validateId($event)">
 
             <!-- 아이디 유효성 검사 -->
-            <p class="input_error" v-if="hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p>
+            <!-- <p class="input_error" v-if="hasIdError">영문과 숫자 8자 이상 16자 이하로 입력해주세요.</p> -->
         </div>
 
         <!-- 패스워드 입력 폼 -->
         <div class="form_group">
             <label for="pwd" :class="{'input_label': !hasPwdError, 'input_label_error': hasPwdError}">패스워드</label>
             <div class="password-input-container">
-                <input type="password" id="pwd" v-model="pwd" placeholder="패스워드" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)">
-                <span class="material-symbols-outlined" @click="visibility" v-show="hidePwd">visibility</span>
-                <span class="material-symbols-outlined" @click="visibility" v-show="!hidePwd">visibility_off</span>
+                <input :type="hidePwd ? 'password' : 'text'" id="pwd" v-model="pwd" placeholder="패스워드" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError }" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)">
+                
             </div>
+            <!-- <div class="eye-icon" @click="toggleVisibility">
+                <span class="material-symbols-outlined" style="font-size: 20px;" v-show="!hidePwd">visibility</span>
+                <span class="material-symbols-outlined" style="font-size: 20px;" v-show="hidePwd">visibility_off</span>
+            </div> -->
             <!-- 패스워드 유효성 검사 -->
-            <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
+            <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (8-12자)</p>
         </div>
         
+        <div class="view-pwd">
+            <input type="checkbox" style="cursor: pointer;" @click="toggleVisibility" class="pwdbox"> <p style="font-size: 14px; display:flex; align-items: center;">비밀번호 표시</p>
+        </div>
+
         <!-- 로그인 버튼 -->
-        <!-- <button v-on:click ="login" :class="loginBtnClass" :disabled="loginBtnDisalbed">로그인</button> -->
+        <button v-on:click ="login" :class="loginBtnClass" :disabled="loginBtnDisalbed">로그인</button>
 
         <!-- 유효성검사 없는 로그인버튼 -->
-        <button v-on:click ="login"  :class="{'loginBtn': isEnabled}" >로그인</button>
+        <!-- <button v-on:click ="login"  :class="{'loginBtn': isEnabled}" >로그인</button> -->
 
         <!-- 회원가입, 아이디찾기, 비밀번호찾기 -->
         <ul class="look_box">
@@ -63,19 +72,23 @@ export default{
             pwd:'',
             hasIdError:false,
             hasPwdError:false,
-            hidePwd:false
+            hidePwd:true,
+            placehoder:'',
         }
     },
 
     computed:{
         loginBtnClass(){
             return{
-                'loginBtn': !this.hasIdError && !this.hasPwdError && (this.id && this.pwd),
-                'loginBtn_disabled': this.hasIdError || this.hasPwdError || !(this.id && this.pwd)
+                'loginBtn': !this.hasPwdError && (this.id && this.pwd),
+                'loginBtn_disabled': this.hasPwdError || !(this.id && this.pwd)
             }
         },
         loginBtnDisalbed(){
-            return this.hasIdError || this.hasPwdError || !(this.id && this.pwd);
+            return this.hasPwdError || !(this.id && this.pwd);
+        },
+        idPlaceholder(){
+            return this.id ? '' : '아이디';
         }
     },
 
@@ -92,10 +105,10 @@ export default{
                     if(res.data.flag){
                         sessionStorage.setItem('token', res.data.token)
                         sessionStorage.setItem('memnum', res.data.memnum)
-                        alert('로그인 성공')
+                        // alert('로그인 성공')
                         location.href='/'
                     }else{
-                        alert('로그인 실패')
+                        alert('아이디 또는 비밀번호를 확인해주세요')
                         self.id=''
                         self.pwd=''
                         document.getElementById('id').placeholder='ID';
@@ -130,8 +143,8 @@ export default{
                 if(label){
                     label.classList.remove('active');
                 }
-                if(!inputField.value){
-                    if(!inputField.id === 'id'){
+                if(!inputField.value && !inputField.classList.contains('input_field_error')){
+                    if(inputField.id === 'id'){
                         inputField.placeholder = '아이디';
                     } else if(inputField.id === 'pwd'){
                         inputField.placeholder = '패스워드';
@@ -179,9 +192,17 @@ export default{
             }
         },
 
-        visibility(){
-            this.hidePwd = !this.hidePwd;
-        }
+        toggleVisibility() {
+      this.hidePwd = !this.hidePwd;
+
+      // 패스워드 필드에 포커스를 다시 줌
+    //   this.$nextTick(() => {
+    //     const pwdField = document.getElementById('pwd');
+    //     if (pwdField) {
+    //       pwdField.focus();
+    //     }
+    //   });
+    }
     }
 }
 </script>
@@ -212,6 +233,8 @@ export default{
     display: flex;
     align-content: center;
     justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 .title{
     font-family: "Flood Std";
@@ -219,6 +242,7 @@ export default{
     font-weight: bold;
     white-space: nowrap;
     text-overflow: ellipsis;
+    text-align: center;
 }
 /* placeholder 색상 */
 /* input::placeholder{
@@ -258,19 +282,22 @@ export default{
 
 .loginBtn:hover{
     cursor:pointer;
+    background-color: #85b380;
+    color:#fff;
+    transition: .5s;
 }
 
 /* 로그인 틀 */
 #login{
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /* align-items: center; */
     padding: 40px;
     border: 1px solid #ddd;
     border-radius: 10px;
     background-color: #ffffff;
     max-width: 400px;
-    margin: 100px auto;
+    margin: 55px auto;
 }
 
 /* 로고 */
@@ -389,4 +416,18 @@ button {
   font-size: 20px;
 }
 
+.eye-icon {
+    position: absolute;
+    top: 455px;
+    right: 570px;
+    transform: translateY(-50%);
+    font-size: 20px;
+    cursor: pointer;
+}
+.view-pwd{
+    display: flex;
+    position: relative;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
 </style>

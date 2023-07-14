@@ -160,7 +160,7 @@
         if(self.memdto.img != null){
             return 'http://localhost:8081/members/imgs/'+ self.memnum;
         } else{
-            return require('@/assets/default.jpg')
+            return require('@/assets/userImg.png')
         }
       },
       // 클릭 확인 용 true일 때만 색이 바뀐다.

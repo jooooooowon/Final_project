@@ -210,4 +210,11 @@ public class ObattleService {
 		ArrayList<Obattle> list = (ArrayList<Obattle>)dao.memWinList(memnum);
 		return changeList(list);
 	}
+	
+	
+	//멤버넘버로 후보자뽑기.
+	public ArrayList<ObattleDto> chkCandidate(int memnum){
+		ArrayList<Obattle> list = (ArrayList<Obattle>)dao.chkCandidate(memnum);
+		return changeList(list);
+	}
 }

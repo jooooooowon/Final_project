@@ -1,11 +1,11 @@
 package com.example.demo.member;
 
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -32,6 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.auth.JwtTokenProvider;
+import com.example.demo.battle.ObattleDao;
+import com.example.demo.battle.ObattleDto;
+import com.example.demo.battle.ObattleService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -41,6 +44,9 @@ public class OmemberController {
 	private OmemberService service;
 
 	@Autowired
+	private ObattleService btservice;
+	
+	@Autowired
 	private JwtTokenProvider tokenprovider;
 
 	@Autowired
@@ -48,7 +54,7 @@ public class OmemberController {
 
 	@Value("${spring.servlet.multipart.location}")
 	private String path;
-
+	
 	// 가입, 이미지업로드
 	@PostMapping("")
 	public Map join(@RequestParam("mf") MultipartFile mf, OmemberDto dto) {
@@ -159,11 +165,50 @@ public class OmemberController {
 		return map;
 	}
 
+	// 탈퇴(원본)
+//	@DeleteMapping("/{memnum}")
+//	public Map del(@PathVariable("memnum") int memnum, @RequestHeader(name = "token", required = false) String token) {
+//		boolean flag = true;
+//		Map map = new HashMap();
+//		if (token != null) {
+//			try {
+//				int tempMemnum = tokenprovider.getMemnumFromToken(token);
+//				if (memnum != tempMemnum) {
+//					flag = false;
+//				}
+//			} catch (Exception e) {	
+//				flag = false;
+//			}
+//		}
+//		if (flag) {
+//			OmemberDto dto = service.getByMemnum(memnum);
+//			String oldImgPath = dto.getImg();
+//			if(oldImgPath != null && !oldImgPath.isEmpty()) {
+//				try {
+//					File oldImgFile = new File(URLDecoder.decode(oldImgPath, "utf-8"));
+//					oldImgFile.delete();
+//					File dir = new File(path + dto.getMemnum());
+//					dir.delete();
+//				}catch(Exception e) {
+//					e.printStackTrace();
+//				}
+//			}else {
+//				File dir = new File(path + dto.getMemnum());
+//				dir.delete();
+//			}
+//			service.delMember(memnum);
+//		}
+//		map.put("flag", flag);
+//		return map;
+//	}
+
 	// 탈퇴
 	@DeleteMapping("/{memnum}")
 	public Map del(@PathVariable("memnum") int memnum, @RequestHeader(name = "token", required = false) String token) {
 		boolean flag = true;
+		boolean chkCandidate = false;
 		Map map = new HashMap();
+		
 		if (token != null) {
 			try {
 				int tempMemnum = tokenprovider.getMemnumFromToken(token);
@@ -174,9 +219,18 @@ public class OmemberController {
 				flag = false;
 			}
 		}
-		if (flag) {
+		
+		//후보자인 경우 탈퇴 불가능 처리
+		ArrayList<ObattleDto> list = btservice.chkCandidate(memnum);
+		if(list != null && !list.isEmpty()) {
+			chkCandidate = true;
+		}
+		
+		
+		if (flag && !chkCandidate) { //후보자가 아닌 경우에만 탈퇴 가능
 			OmemberDto dto = service.getByMemnum(memnum);
 			String oldImgPath = dto.getImg();
+			
 			if(oldImgPath != null && !oldImgPath.isEmpty()) {
 				try {
 					File oldImgFile = new File(URLDecoder.decode(oldImgPath, "utf-8"));
@@ -191,11 +245,14 @@ public class OmemberController {
 				dir.delete();
 			}
 			service.delMember(memnum);
+			map.put("flag", true); //탈퇴 가능할 경우 flag true 값 
+			return map;
 		}
-		map.put("flag", flag);
+		map.put("flag", false); //탈퇴 불가능할 경우 flag는 false 값
 		return map;
 	}
-
+	
+	
 	// 이미지파일 읽어오기
 	@GetMapping("/imgs/{memnum}")
 	public ResponseEntity<byte[]> readImg(@PathVariable("memnum") int memnum) {

@@ -16,11 +16,6 @@
         <p class="input_idcheck" v-else>{{ msg }}</p>
         <!-- <p class="input_idcheck" v-else="validateId(id)"></p> -->
          </div>
-
-        <!-- 중복체크 버튼/메시지 -->
-        <!-- <span v-if="msg === '사용가능한 아이디'" class="success_message">{{ msg }}</span>
-        <span v-else class="error_message">{{ msg }}</span>
-        <button v-on:click="idcheck">중복체크(수정예정)</button><br/> -->
         
         <!-- 비밀번호 입력 폼 -->
         <div class="form_group">
@@ -101,21 +96,15 @@
                     <button class="c small Btn" @click="cancelProfileImg" style="margin-left:8px;">취소</button> 
                 </div>
             </div>
-            <!-- <input type="file" id="f1" style="display:none;" @change="profileImg">  -->
-            <!-- <div class="selectImg">
-                <input type="file" accept="image/*" id="f1" style="display: none" ref="fileInput" @change="profileImg">
-                <button class="s small Btn" @click="editImg">이미지 선택</button>
-
-                <button class="c small Btn" @click="cancelProfileImg">취소</button> 
-            </div> -->
         </div>
 
         <!-- 가입버튼 -->
         <div class="join_btn_box"> 
-        
-        <button v-on:click="join" class="joinBtn" >가입</button>
-        <!-- <button v-on:click="join" :disabled="!isJoinable">가입</button> -->
-        <!-- <button v-else v-on:click="join" :disabled="isJoinable" class="joinBtn">가입</button> -->
+        <!-- 발표용버튼 -->
+        <button v-on:click ="join" :class="joinBtnClass" :disabled="joinBtnDisabled">가입</button>
+
+        <!-- 테스트용버튼 -->
+        <!-- <button v-on:click="join" class="joinBtn" >가입</button> -->
         </div>
     </div>
     </div>
@@ -144,14 +133,27 @@ export default{
             hasNicknameError:false,
             f1:'',
             file:[],
+            isEnabled:false,
+            iddp:'',
+            nickdp:'',
         }
     },
 
-    // computed:{
-    //     isJoinable(){
-    //         return this.id && this.validatePwd(this.pwd) && this.validateId(this.id);
-    //     },
-    // },
+    computed:{
+        joinBtnClass(){
+            return{
+                // 순서대로: 아이디유효성통과 && 패스워드유효성통과 && 이메일유효성통과 && 닉네임유효성통과 && 인증번호통과 && 아이디, 패스워드, 이메일, 닉네임, 성별 값 있고 && 이메일인증통과 && id중복체크통과 && 닉네임중복체크통과
+                // css이슈 때문에 joinBtn_disabled 두개 넣음
+                // 부족한 실력탓에 코드가 길어요 
+                'joinBtn': !this.hasIdError && !this.hasPwdError && !this.hasEmailError && !this.hasNicknameError && this.authKey === this.compKey && this.id && this.pwd && this.email && this.nickname && this.gender && this.authComplete === 0 && !this.iddp && !this.nickdp,
+                'joinBtn_disabled': this.hasIdError || this.hasPwdError || this.hasEmailError || this.hasNicknameError || this.authKey !== this.compKey || !this.id || !this.pwd || !this.email || !this.nickname || !this.gender || this.authComplete !== 0 || this.iddp || this.nickdp
+            }
+        },
+        joinBtnDisabled(){
+            // return this.hasIdError || !this.hasPwdError || !this.hasEmailError || !this.hasNicknameError || this.authKey !== this.compKey || !(this.id && this.pwd && this.email && this.nickname && this.gender) || this.authComplete !== 0;
+            return this.hasIdError || this.hasPwdError || this.hasEmailError || this.hasNicknameError || this.authKey !== this.compKey || !this.id || !this.pwd || !this.email || !this.nickname || !this.gender || this.authComplete !== 0 || this.iddp || this.nickdp ;
+        },
+    },
 
     methods:{
 
@@ -200,7 +202,7 @@ export default{
                 .then(function(res){
                     if(res.status == 200){
                         let dto = res.data.dto
-                        alert(dto.id)
+                        console.log(dto.id);
                         location.href='/'
                     }else{
                         alert('에러코드:'+res.status)
@@ -212,7 +214,7 @@ export default{
                 .then(function(res){
                     if(res.status == 200){
                         let d = res.data.d
-                        alert(d.id)
+                        console.log(d);
                         location.href='/'
                     }else{
                         alert('에러코드:'+res.status)
@@ -234,9 +236,12 @@ export default{
                     if(res.data.tf){
                         self.msg='사용가능한 아이디'
                         // alert('사용가능한 아이디')
+                        self.iddp = false; // 중복 아이디가 아님
                     }else{
                         self.msg='중복된 아이디'
                         // alert('중복된 아이디')
+                        self.iddp = true; // 중복 아이디임
+
                     }
                 }else{
                     alert('에러코드:'+res.status)
@@ -255,8 +260,10 @@ export default{
                 if(res.status === 200){
                     if(res.data.tf === true){
                         self.nickmsg = '사용가능한 닉네임';
+                        self.nickdp = false; // 중복 닉네임이 아님
                     }else{
                         self.nickmsg = '중복된 닉네임';
+                        self.nickdp = true; // 중복 닉네임임
                     }
                     console.log(res.data.tf)
                     console.log("닉네임:"+self.nickname)
@@ -272,7 +279,7 @@ export default{
             const pattern = /^(?=.*[A-Za-z])[A-Za-z\d]{8,12}$/;
             this.hasIdError = !pattern.test(id);
             console.log("id:" + this.hasIdError);
-            this.enabledState();
+            // this.enabledState();
             // return pattern.test(id);
         },
 
@@ -282,7 +289,7 @@ export default{
             const pwd = event.target.value
             const pattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{4,12}$/;
             this.hasPwdError = !pattern.test(pwd);
-            this.enabledState();
+            // this.enabledState();
         },
 
         //이메일 정규식
@@ -290,7 +297,7 @@ export default{
             const emailId = event.target.value
             const pattern = /^[A-Za-z0-9_\\.\\-]+@[A-Za-z0-9\\-]+\.[A-Za-z0-9\\-]+/;
             this.hasEmailError = !pattern.test(emailId);
-            this.enabledState();
+            // this.enabledState();
         },
 
         //닉네임 정규식
@@ -299,16 +306,21 @@ export default{
             const nickname = event.target.value
             const pattern = /^(?!\s)(?!.*\s$)(?!.*[!@#$%^&*(),.?":{}|<>])(?!.*[ㄱ-ㅎㅏ-ㅣ])[^\s]{3,8}$/;
             this.hasNicknameError = !pattern.test(nickname);
-            this.enabledState();
+            // this.enabledState();
         },
 
-        enabledState(){
-            if(this.hasIdError || this.hasPwdError){
-                this.isEnabled = false;
-            }else{
-                this.isEnabled = true;
-            }
-        },
+        //인증번호 확인
+        // validateChkKey(){
+        //     this.isEnabled = !this.hasIdError && !this.hasPwdError && !this.hasEmailError && !this.hasNicknameError && this.authComplete === 0;
+        // },
+
+        // enabledState(){
+        //     if(this.hasIdError || this.hasPwdError){
+        //         this.isEnabled = false;
+        //     }else{
+        //         this.isEnabled = true;
+        //     }
+        // },
 
         //이메일 인증
         authEmail() {
@@ -331,6 +343,7 @@ export default{
                         authEmail.innerText = '인증번호 재발급'
                         authKey.disabled = false;
                         authKey.focus();
+                        checkKey.style.display = "inline-flex"; // 인증번호 확인 버튼 나타내기
                         checkKey.disabled = false;
                         self.compKey = key;
                         let secondsLeft = 180; // 3분
@@ -356,14 +369,35 @@ export default{
             });
         },
 
+        //이메일 인증 완료(원본)
+        // checkKey() {
+        //     const self = this;
+        //     let displayedTime = document.getElementById('displayedTime');
+        //     if(self.authKey == self.compKey) {
+        //         clearInterval(self.startTimer);
+        //         displayedTime.innerText = "인증이 완료되었습니다."
+        //         self.authComplete = 0;
+        //     } else {
+        //         alert('인증번호가 틀렸습니다.')
+        //         self.authComplete = 1;
+        //     }
+        // },
+
+
         //이메일 인증 완료
         checkKey() {
             const self = this;
             let displayedTime = document.getElementById('displayedTime');
+            let checkKeyBtn = document.getElementById('checkKey');
+            let authKey = document.getElementById('authKey');
+
             if(self.authKey == self.compKey) {
                 clearInterval(self.startTimer);
                 displayedTime.innerText = "인증이 완료되었습니다."
                 self.authComplete = 0;
+                checkKeyBtn.style.display = "none"; // 인증번호 확인 버튼 숨기기
+                checkKeyBtn.disabled = true; // 인증번호 확인 버튼 비활성화
+                authKey.disabled = true; // 인증번호 입력창 비활성화
             } else {
                 alert('인증번호가 틀렸습니다.')
                 self.authComplete = 1;
@@ -581,7 +615,7 @@ label{
 }
 
 /* 가입버튼*/
-.joinBtn{
+/* .joinBtnClass{
     display: block;
     width: 100%;
     padding: 10px;
@@ -594,6 +628,41 @@ label{
     cursor: pointer;
     font-family: 'PyeongChang-Regular';
     font-weight: normal;
+} */
+
+.joinBtn{
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: #000000;
+    color: #fff;
+    font-weight: bold;
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
+}
+
+.joinBtn_disabled{
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: #ebebeb;
+    color: #fff;
+    font-weight: bold;
+    font-family: 'PyeongChang-Regular';
+    font-weight: normal;
+}
+
+.joinBtn:hover{
+    cursor:pointer;
+    background-color: #85b380;
+    color:#fff;
+    transition: .5s;
 }
 .join_btn_box{
     width: 100%;
