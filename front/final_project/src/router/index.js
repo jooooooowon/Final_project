@@ -11,6 +11,7 @@ import addForm from '@/components/community/addForm.vue'
 import ListBoard from '@/components/community/ListBoard.vue'
 import BookMark from '@/components/community/BookMark.vue'
 import ReportList from '@/components/community/ReportList.vue'
+import MyList from '@/components/community/MyList.vue'
 import winnerList from '../components/battle/winnerList.vue'
 import weekWinner from '../components/battle/weekWinner.vue'
 import vote from '../components/battle/vote.vue'
@@ -86,6 +87,11 @@ const routes = [
     path:'/reportlist',
     name:'ReportList',
     component: ReportList
+  },
+  {
+    path:'/mylist',
+    name:'MyList',
+    component: MyList
   },
   {
     path:'/winnerList',

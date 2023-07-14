@@ -11,8 +11,8 @@
             <img src="@/assets/closet1.png" style="width:350px;height:auto;">
             
             <br/><br/>
-            오늘의 날씨를 확인하세요!<br>
-            현재 기온별 추천 아이템을 추천받고<br>
+            오늘의 날씨를 확인하고<br>
+            기온에 맞는 옷장 속 아이템을 추천받고<br>
             비슷한 날씨에 입었던 옷차림을 확인하세요!
         </div>
       </div>

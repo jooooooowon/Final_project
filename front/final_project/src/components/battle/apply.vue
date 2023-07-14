@@ -140,7 +140,7 @@ export default {
           { headers: { "Content-Type": "multipart/form-data" } })
           .then(res => {
             if (res.status == 200 || res.data.flag) {
-              alert("신청 완료.");
+              alert("신청이 완료되었습니다.");
               location.href = "/"
             } else {
               alert("오류 발생으로 인한 신청 실패")

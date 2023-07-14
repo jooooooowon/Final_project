@@ -73,13 +73,6 @@
               <span v-else-if="chkDay == 4"><router-link to="/weekWinner">이 주의 우승자</router-link></span>
               <span v-else><router-link to="/apply">배틀 신청</router-link></span>
             </li>
-
-            <!-- <li>
-              <span v-if="chkDay <= 3 && chkDay > 0"><router-link to="/vote">배틀 투표</router-link></span>
-              <span v-else-if="chkDay == 4"><router-link to="/weekWinner">이 주의 우승자</router-link></span>
-              <span v-else><router-link to="/apply">배틀 신청</router-link></span>
-            </li> -->
-
             <li>
               <router-link to="/winnerList">명예의 전당</router-link>
             </li>
@@ -146,7 +139,6 @@ export default {
       sessionStorage.removeItem('token')
       sessionStorage.removeItem('memnum')
       console.log('memnum')
-      // alert('로그아웃 성공')
       location.href = "/"
     },
     tokenlogout() {

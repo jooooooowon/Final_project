@@ -17,6 +17,7 @@ import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtTokenProvider {
+
 	private final Long expiredTime = 1000 * 60L * 60L * 1L; // 유효시간 1시간
 //	private final Long expiredTime = 1000 * 30L;
 	//키값은 256bit 이상의 값이여야 한다.
@@ -46,8 +47,9 @@ public class JwtTokenProvider {
 	//토큰의 추가 정보 세팅
 	private Map<String, Object> createClaims(OmemberDto member) {
 		Map<String, Object> claims = new HashMap<>();
-		claims.put("memnum", member.getMemnum()); //
-		/*claims.put("username", member.getId());*/ // id중복체크
+
+		claims.put("memnum", member.getMemnum()); // 로그인 id
+
 		return claims;
 	}
 
@@ -65,4 +67,5 @@ public class JwtTokenProvider {
 	public String getUsernameFromToken(String token) {
 		return (String) getClaims(token).get("username");
 	}*/
+
 }

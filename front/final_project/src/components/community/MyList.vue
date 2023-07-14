@@ -66,7 +66,7 @@ data() {
 },
 created: function () {
   let self = this;
-  self.$axios.get('http://localhost:8081/ocommunity/members/' + self.memnum)
+  self.$axios.get('http://localhost:8081/ocommunity/members/' + self.memnum + "/" + self.memnum)
     .then(res => {
       if (res.status === 200) {
         self.commAllList = res.data.list;

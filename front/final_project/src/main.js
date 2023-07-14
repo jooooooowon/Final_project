@@ -11,3 +11,5 @@ app.use(router)//라우터 사용설정 . url 별로 실행될 component등록
 app.config.globalProperties.$axios = axios;
 app.mount('#app')
 
+
+

@@ -148,7 +148,7 @@ export default{
         itemClass[i].addEventListener("click",function(){
           
           self.query = this.id;
-          alert(`${self.query}를 검색합니다.`);
+          // alert(`${self.query}를 검색합니다.`);
           searchMethod();
         });
         itemClass[i].addEventListener("mouseover",function(){
