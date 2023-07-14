@@ -17,7 +17,7 @@
         </div>
       </div>
     </section>
-    <section class="section2" @click="$router.push('/weekWinner')" style="cursor: pointer;">
+    <section class="section2" @click="$router.push('/winnerList')" style="cursor: pointer;">
       <div class="container">
         <div class="title">BATTLE</div>
         <div class="content">
