@@ -147,7 +147,10 @@ export default {
       console.log('memnum')
       alert('시간이 경과되어 로그아웃 되었습니다.')
       location.href = "/"
-    }
+    
+      alert('로그아웃 성공')
+      location.href = "/"
+    },
   }
 }
 </script>
