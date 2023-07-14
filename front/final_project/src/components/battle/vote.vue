@@ -13,10 +13,10 @@
       <div class="first-candidate">
         <!-- {{ firstCandidate.batnum }} -->
         <span v-if="firstCandidate.batnum != selectedbatNum">
-          <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" @click="voteCandidate(firstCandidate.batnum)" alt="첫번째 후보">
+          <img :src="'http://localhost:7878/battles/imgs/'+firstCandidate.batnum" @click="voteCandidate(firstCandidate.batnum)" alt="첫번째 후보">
         </span>
         <span v-if="firstCandidate.batnum == selectedbatNum">
-          <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" style="position: relative; z-index: 0;" alt="첫번째 후보">
+          <img :src="'http://localhost:7878/battles/imgs/'+firstCandidate.batnum" style="position: relative; z-index: 0;" alt="첫번째 후보">
           <img src="../../assets/selected.png" style="position:absolute; left:0; z-index: 1; opacity: 0.5;" alt="첫번째 후보">
         </span>
       </div>
@@ -25,10 +25,10 @@
       </div>
       <div class="second-candidate">
         <span v-if="secondCandidate.batnum != selectedbatNum">
-        <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" @click="voteCandidate(secondCandidate.batnum)" alt="두번째 후보">
+        <img :src="'http://localhost:7878/battles/imgs/'+secondCandidate.batnum" @click="voteCandidate(secondCandidate.batnum)" alt="두번째 후보">
         </span>
         <span v-if="secondCandidate.batnum == selectedbatNum">
-          <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" alt="두번째 후보">
+          <img :src="'http://localhost:7878/battles/imgs/'+secondCandidate.batnum" alt="두번째 후보">
           <img src="../../assets/selected.png" style="position:absolute; left:0; z-index: 1; opacity: 0.5;" alt="두번째 후보">
         </span>
       </div>
@@ -69,7 +69,7 @@ export default{
       location.href = "/"
     }else{
 
-      self.$axios.get(`http://localhost:8081/members/${this.memnum}`,
+      self.$axios.get(`http://localhost:7878/members/${this.memnum}`,
       {headers:{'token':token}})
       .then(res =>{
         if(res.status == 200){
@@ -80,7 +80,7 @@ export default{
       })
       
       // 투표대상인 후보들 리스트 뽑기.
-      self.$axios.get("http://localhost:8081/battles")
+      self.$axios.get("http://localhost:7878/battles")
       .then(res =>{
         if(res.status == 200 ){
           if(res.data.len == 2){
@@ -93,7 +93,7 @@ export default{
         }})
 
       // 투표 가능 유무 확인. (투표 한 번 하면 한 번더 못함.)
-      self.$axios.get(`http://localhost:8081/votes/chk/${self.memnum}`)
+      self.$axios.get(`http://localhost:7878/votes/chk/${self.memnum}`)
       .then(res =>{
         if(res.status == 200){
           self.chk = res.data.chk;
@@ -296,7 +296,7 @@ export default{
         let form = new FormData();
         form.append("memnum",self.memnum);
         form.append("batnum",num);
-        self.$axios.post('http://localhost:8081/votes',form)
+        self.$axios.post('http://localhost:7878/votes',form)
         .then(res => {
           if(res.status == 200){
             // alert(res.data.batnum);

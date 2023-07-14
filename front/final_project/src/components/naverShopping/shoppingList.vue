@@ -148,7 +148,7 @@ export default{
         itemClass[i].addEventListener("click",function(){
           
           self.query = this.id;
-          alert(`${self.query}를 검색합니다.`);
+          // alert(`${self.query}를 검색합니다.`);
           searchMethod();
         });
         itemClass[i].addEventListener("mouseover",function(){
@@ -160,7 +160,7 @@ export default{
     search(){
       let self = this;
       if(self.query != ''){
-        self.$axios.get(`http://localhost:8081/naver/${self.query}`)
+        self.$axios.get(`http://localhost:7878/naver/${self.query}`)
         .then(res => {
           if(res.status == 200){
             self.list = res.data.list;

@@ -9,7 +9,7 @@
         <!-- 프사 & 닉네임 -->
         <div class="item-1">
           <span><img style="margin-left: 5px; border-radius:50%; width: 20px; height: 20px;"
-            :src="'http://localhost:8081/members/imgs/' + mycommlist.memnum.memnum"></span>
+            :src="'http://localhost:7878/members/imgs/' + mycommlist.memnum.memnum"></span>
           <span style="margin-top: 6px; margin-left: 7px; font-size: 0.5em; font-weight: bold; ">
             {{ mycommlist.memnum.nickname }}</span>
         </div>
@@ -24,14 +24,14 @@
 
       <!-- box2 start -->
       <div id="box2">
-        <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + mycommlist.commnum + '/' + 1">
+        <img class="img1" :src="'http://localhost:7878/ocommunity/img/' + mycommlist.commnum + '/' + 1">
 
         <div v-if="mycommlist.img2 != undefined">
-          <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + mycommlist.commnum + '/' + 2">
+          <img class="img1" :src="'http://localhost:7878/ocommunity/img/' + mycommlist.commnum + '/' + 2">
         </div>
 
         <div v-if="mycommlist.img3 != undefined">
-          <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + mycommlist.commnum + '/' + 3">
+          <img class="img1" :src="'http://localhost:7878/ocommunity/img/' + mycommlist.commnum + '/' + 3">
         </div>
       </div>
       <!-- box2 End -->
@@ -66,7 +66,7 @@ data() {
 },
 created: function () {
   let self = this;
-  self.$axios.get('http://localhost:8081/ocommunity/members/' + self.memnum)
+  self.$axios.get('http://localhost:7878/ocommunity/members/' + self.memnum + "/" + self.memnum)
     .then(res => {
       if (res.status === 200) {
         self.commAllList = res.data.list;
@@ -80,7 +80,7 @@ methods: {
     const self = this;
     let check = confirm('정말 삭제하시겠습니까?');
     if(check){
-      self.$axios.delete('http://localhost:8081/ocommunity/' + commnum)
+      self.$axios.delete('http://localhost:7878/ocommunity/' + commnum)
       .then(function (res) {
         if (res.status === 200) {
           alert('게시글이 삭제되었습니다.')
@@ -98,7 +98,7 @@ methods: {
     let form = new FormData();
     form.append("memnum", self.memnum);
     form.append("commnum", commnum);
-    self.$axios.patch('http://localhost:8081/olikebtn',form)
+    self.$axios.patch('http://localhost:7878/olikebtn',form)
     .then(res =>{
       if(res.status == 200){
         window.location.reload();

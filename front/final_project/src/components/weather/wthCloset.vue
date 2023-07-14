@@ -32,7 +32,7 @@
                         <div class="cloth" v-for="cloth in additionalCloset" :key="cloth.closetnum"
                             :style="{ maxWidth: '160px', flex: '0 0 250px' }" @click="modalOpen(cloth.closetnum)"
                             @mouseover="cursorChange" @mouseout="resetCursor">
-                            <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + cloth.closetnum">
+                            <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + cloth.closetnum">
                             <span>{{ cloth.cloth }}</span>
                         </div>
                     </div>
@@ -67,7 +67,7 @@
             <!-- 옷 디테일 모달창 -->
             <div class="modal-wrap" v-show="modalCheck" @click="modalClose" id="modalWrap">
                 <div class="modal-container" @click.stop="" id="container">
-                    <label for="imgtag"><img :src="'http://localhost:8081/closets/img/' + memnum + '/' + setClosetnum"
+                    <label for="imgtag"><img :src="'http://localhost:7878/closets/img/' + memnum + '/' + setClosetnum"
                             id="thumbimg" style="width:200px; height:auto;"></label>
                     <input type="file" id="imgtag" style="display: none" accept="image/*" v-on:change="thumbnail($event)">
                     <div class="modal-tags">{{ maintag }} | {{ sub }}</div>
@@ -144,7 +144,7 @@ export default {
             this.showRecom = false;
             this.recommendation();
         } else {
-            this.$axios.get(`http://localhost:8081/members/${this.memnum}`,
+            this.$axios.get(`http://localhost:7878/members/${this.memnum}`,
                 { headers: { 'token': token } })
                 .then(async res => {
                     if (res.status == 200) {
@@ -259,7 +259,7 @@ export default {
             try {
                 // await -> 비동기 작업인 self.$axios.get(...)의 결과를 기다립니다.
                 // 메서드 내에서 옷장 데이터를 비동기적으로 요청
-                const res = await this.$axios.get('http://localhost:8081/closets/subtags/' + this.memnum + '/' + subtag);
+                const res = await this.$axios.get('http://localhost:7878/closets/subtags/' + this.memnum + '/' + subtag);
                 if (res.status === 200) {
                     // 컴포넌트 처음 로딩될 때 옷장에서 999999999번 default(기본이미지) 걸러서 리스트에 넣기
                     this.closetlist = res.data.list.filter(closet => closet.closetnum !== 999999999);
@@ -273,7 +273,7 @@ export default {
                     // 검색된 옷이 없으면 네이버 검색 띄워주기
                     if (this.closetlist.length === 0) {
                         this.message2 = '옷장이 비었네요!'
-                        const result = await this.$axios.get('http://localhost:8081/naver/' + this.gender + subtag)
+                        const result = await this.$axios.get('http://localhost:7878/naver/' + this.gender + subtag)
                         if (result.status == 200) {
                             const allList = result.data.list;
                             this.naverList = allList.slice(0, 10);
@@ -301,7 +301,7 @@ export default {
             const self = this;
             this.setClosetnum = closetnum;
             self.modalCheck = !self.modalCheck;
-            self.$axios.get('http://localhost:8081/closets/' + closetnum)
+            self.$axios.get('http://localhost:7878/closets/' + closetnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         let dto = res.data.dto
@@ -328,7 +328,7 @@ export default {
             const self = this;
             let formdata = new FormData();
             if (self.uploadimg == null) {
-                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.cloth)
+                self.$axios.patch('http://localhost:7878/closets/editcloth/' + closetnum + "/" + self.cloth)
                     .then(function (res) {
                         if (res.status == 200) {
                             let newdto = res.data.dto
@@ -340,7 +340,7 @@ export default {
                     })
             } else {
                 formdata.append('newf', self.uploadimg)
-                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.cloth, formdata)
+                self.$axios.patch('http://localhost:7878/closets/editcloth/' + closetnum + "/" + self.cloth, formdata)
                     .then(function (res) {
                         if (res.status == 200) {
                             let newdto = res.data.dto
@@ -374,7 +374,7 @@ export default {
         deletecloth(closetnum) {
             const self = this;
             if (confirm('정말 삭제하시겠습니까?\n삭제 시 옷장에서도 삭제됩니다.')) {
-                self.$axios.delete('http://localhost:8081/closets/' + closetnum)
+                self.$axios.delete('http://localhost:7878/closets/' + closetnum)
                     .then(function (res) {
                         if (res.status == 200) {
                             if (res.data.flag) {

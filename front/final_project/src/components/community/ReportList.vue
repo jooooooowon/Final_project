@@ -32,14 +32,14 @@
       </div>
       <div class="imgBox">
 
-        <span><img class="img1" :src="'http://localhost:8081/ocommunity/img/' + reportedCommnum + '/' + 1"></span>
+        <span><img class="img1" :src="'http://localhost:7878/ocommunity/img/' + reportedCommnum + '/' + 1"></span>
 
         <span v-if="commDto.img2 != undefined">
-          <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + reportedCommnum + '/' + 2">
+          <img class="img1" :src="'http://localhost:7878/ocommunity/img/' + reportedCommnum + '/' + 2">
         </span>
 
         <span v-if="commDto.img3 != undefined">
-          <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + reportedCommnum + '/' + 3">
+          <img class="img1" :src="'http://localhost:7878/ocommunity/img/' + reportedCommnum + '/' + 3">
         </span>
 
       </div>
@@ -76,7 +76,7 @@ export default {
   methods: {
     getReportList() {
       const self = this;
-      self.$axios.get('http://localhost:8081/oreport')
+      self.$axios.get('http://localhost:7878/oreport')
         .then(function (res) {
           if (res.status == 200) {
             self.reportList = res.data.list;
@@ -87,7 +87,7 @@ export default {
     },
     getCommunityList() {
       const self = this;
-      self.$axios.get('http://localhost:8081/ocommunity')
+      self.$axios.get('http://localhost:7878/ocommunity')
         .then(function (res) {
           if (res.status == 200) {
             self.communityList = res.data.list;
@@ -98,7 +98,7 @@ export default {
     },
     delComm(repnum) {
       const self = this;
-      self.$axios.delete('http://localhost:8081/oreport/' + repnum)
+      self.$axios.delete('http://localhost:7878/oreport/' + repnum)
         .then(function (res) {
           if (res.status == 200) {
             alert('게시글 삭제가 완료되었습니다.')
@@ -110,7 +110,7 @@ export default {
     },
     recComm(repnum) {
       const self = this;
-      self.$axios.delete('http://localhost:8081/oreport/recovery/' + repnum)
+      self.$axios.delete('http://localhost:7878/oreport/recovery/' + repnum)
         .then(function (res) {
           if (res.status == 200) {
             alert('게시글 복구가 완료되었습니다.')
@@ -125,7 +125,7 @@ export default {
       self.reportedCommnum = commnum;
       self.repnum = repnum;
       self.modalCheck = !self.modalCheck;
-      self.$axios.get('http://localhost:8081/ocommunity/commnum/' + commnum)
+      self.$axios.get('http://localhost:7878/ocommunity/commnum/' + commnum)
         .then(function (res) {
           if (res.status == 200) {
             self.commDto = res.data.dto;

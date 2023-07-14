@@ -3,7 +3,7 @@
         <br/><br/><br/><br/>
         <span v-for="closetNum in closetnumList" :key="closetNum">
             <span v-on:click="detailModal(closetNum)">
-                <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closetNum" alt=""
+                <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + closetNum" alt=""
                     style="border-radius: 15px; cursor: pointer;" title="옷 정보 보기">
             </span>
         </span>
@@ -38,13 +38,13 @@
         <div class="modal-container-detail" @click.stop="" id="containerDetail">
             <label for="detailEditFile">
                 <span v-if="img != 'basicImage' && detailEditImg == ''">
-                    <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + setClosetnum" class="modal-img-detail">
+                    <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + setClosetnum" class="modal-img-detail">
                 </span>
                 <span v-if="img != 'basicImage' && detailEditImg != ''">
                     <img :src="detailEditImg" class="modal-img-detail">
                 </span>
                 <span v-if="img == 'basicImage' && detailEditImg == ''">
-                    <img :src="'http://localhost:8081/closets/img/addimg/' + 0" class="modal-img-detail">
+                    <img :src="'http://localhost:7878/closets/img/addimg/' + 0" class="modal-img-detail">
                 </span>
                 <span v-if="img == 'basicImage' && detailEditImg != ''">
                     <img :src="detailEditImg" class="modal-img-detail">
@@ -90,7 +90,7 @@ export default {
     created: function () {
         const self = this;
         self.memnum = sessionStorage.getItem('memnum')
-        self.$axios.get('http://localhost:8081/boards/' + self.ootwnum)
+        self.$axios.get('http://localhost:7878/boards/' + self.ootwnum)
             .then(function (res) {
                 if (res.status == 200) {
                     let dto = res.data.dto;
@@ -117,7 +117,7 @@ export default {
             const self = this;
             this.setClosetnum = closetnum;
             self.modalCheckDetail = !self.modalCheckDetail;
-            self.$axios.get('http://localhost:8081/closets/' + closetnum)
+            self.$axios.get('http://localhost:7878/closets/' + closetnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         let dto = res.data.dto
@@ -140,7 +140,7 @@ export default {
         },
         deleteOootw(ootwnum) {
             const self = this;
-            self.$axios.delete('http://localhost:8081/boards/' + ootwnum)
+            self.$axios.delete('http://localhost:7878/boards/' + ootwnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         location.href = "/ootwlist";

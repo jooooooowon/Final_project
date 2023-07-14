@@ -27,7 +27,7 @@
                             <div class="ootw-item" v-for="(ootw, i) in allOotwList" :key="ootw.ootwnum"
                                 :style="{ width: '240px', flex: '0 0 250px' }" @click="modalOpen(ootw.ootwnum)"
                                 @mouseover="cursorChange" @mouseout="resetCursor">
-                                <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + allImageList[i]"> <br />
+                                <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + allImageList[i]"> <br />
                                 <div style="text-align: left; margin-left:10px;">
                                     <div class="ootw-contents">
                                         {{ datelist[i] }}&nbsp;&nbsp;&nbsp;{{ ootw.weather }}&nbsp;&nbsp;&nbsp;{{ ootw.temp
@@ -55,7 +55,7 @@
                 <h6>{{ odate }}의 기록</h6>
                 <div class="modal-imgs">
                     <span v-for="num in clothnum" :key="num">
-                        <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + num" alt="sdf">
+                        <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + num" alt="sdf">
                     </span>
                 </div>
                 <div class="modal-info">
@@ -120,7 +120,7 @@ export default {
             this.message = "지금 날씨에 입었던 옷이 궁금하신가요? 로그인 후 OOTW를 작성해보세요!";
             this.showRecom = false;
         } else {
-            this.$axios.get(`http://localhost:8081/members/${this.memnum}`,
+            this.$axios.get(`http://localhost:7878/members/${this.memnum}`,
                 { headers: { 'token': token } })
                 .then(async res => {
                     if (res.status == 200) {
@@ -252,7 +252,7 @@ export default {
 
             // OOTW 검색
             try {
-                const res = await this.$axios.get('http://localhost:8081/boards/temps/' + this.memnum + '/' + t1 + '/' + t2)
+                const res = await this.$axios.get('http://localhost:7878/boards/temps/' + this.memnum + '/' + t1 + '/' + t2)
                 if (res.status === 200) {
                     // 게시글의 첫번째 이미지 번호만 담긴 전체 리스트 (dto 순으로 들어와있음)
                     this.allImageList = res.data.closetNumList;
@@ -309,7 +309,7 @@ export default {
             self.ootwnum = ootwnum;
             self.clothnum = [];
             self.modalCheck = !this.modalCheck;
-            self.$axios.get('http://localhost:8081/boards/' + ootwnum)
+            self.$axios.get('http://localhost:7878/boards/' + ootwnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         // ootw dto
@@ -356,7 +356,7 @@ export default {
         deleteOootw(ootwnum) {
             const self = this;
             if (confirm('정말 삭제하시겠습니까?\n삭제 시 OOTW에서도 삭제됩니다.')) {
-                self.$axios.delete('http://localhost:8081/boards/' + ootwnum)
+                self.$axios.delete('http://localhost:7878/boards/' + ootwnum)
                     .then(function (res) {
                         if (res.status == 200) {
                             location.reload();

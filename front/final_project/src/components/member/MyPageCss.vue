@@ -124,7 +124,7 @@
       const self = this;
 
       // 멤버 뽑기
-      self.$axios.get(`http://localhost:8081/members/${self.memnum}`,
+      self.$axios.get(`http://localhost:7878/members/${self.memnum}`,
       {headers:{'token':token}})
       .then(function(res){
           if(res.status==200){
@@ -147,7 +147,7 @@
       });
   
       // wincount 세기
-      self.$axios.get(`http://localhost:8081/battles/winCount/${self.memnum}`)
+      self.$axios.get(`http://localhost:7878/battles/winCount/${self.memnum}`)
       .then(res =>{
         if(res.status == 200){
           self.winCount = res.data.winCount;
@@ -158,7 +158,7 @@
       profileImg(){
         let self = this;
         if(self.memdto.img != null){
-            return 'http://localhost:8081/members/imgs/'+ self.memnum;
+            return 'http://localhost:7878/members/imgs/'+ self.memnum;
         } else{
             return require('@/assets/userImg.png')
         }

@@ -17,13 +17,13 @@
       <div class="nickname">
         {{ firstMember }}
       </div> 
-      <img :src="'http://localhost:8081/battles/imgs/'+firstCandidate.batnum" alt="첫 번째">
+      <img :src="'http://localhost:7878/battles/imgs/'+firstCandidate.batnum" alt="첫 번째">
     </div>
     <div class="second-candidate">
       <div class="nickname">
         {{ secondMember }}
       </div>
-      <img :src="'http://localhost:8081/battles/imgs/'+secondCandidate.batnum" alt="두 번째">
+      <img :src="'http://localhost:7878/battles/imgs/'+secondCandidate.batnum" alt="두 번째">
       <br/><br/><br/>
     </div>
   </div>
@@ -46,7 +46,7 @@ export default{
   },
   created: function(){
     let self = this;
-    self.$axios.get('http://localhost:8081/battles/info')
+    self.$axios.get('http://localhost:7878/battles/info')
     .then(res =>{
       if(res.status == 200 || res.data.flag){
         // 대결 테마가 변경되어있는 지 확인하는 if문
@@ -64,7 +64,7 @@ export default{
     find : function(){
       let self = this;
 
-      self.$axios.get('http://localhost:8081/battles/manager/random')
+      self.$axios.get('http://localhost:7878/battles/manager/random')
       .then(res => {
         if(res.status == 200){
           if(res.data.len != 2){
@@ -93,7 +93,7 @@ export default{
         form.append("num1",self.firstCandidate.batnum);
         form.append("num2",self.secondCandidate.batnum);
         
-        self.$axios.delete(`http://localhost:8081/battles/manager/random/${self.firstCandidate.batnum}/${self.secondCandidate.batnum}`)
+        self.$axios.delete(`http://localhost:7878/battles/manager/random/${self.firstCandidate.batnum}/${self.secondCandidate.batnum}`)
         .then(res => {
           if(res.status == 200){
             alert('후보가 확정되었습니다.');

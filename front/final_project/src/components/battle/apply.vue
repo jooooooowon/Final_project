@@ -15,7 +15,7 @@
       <div class="profile">
         <div class="profile-item"> 《 신청자 프로필 》 </div>
         <div class="b-form">
-          <img class="memberimg" :src="'http://localhost:8081/members/imgs/' + memnum" alt="왜 안나옴 ㅋㅋ">
+          <img class="memberimg" :src="'http://localhost:7878/members/imgs/' + memnum" alt="왜 안나옴 ㅋㅋ">
           <hr style="width: 200px; border: solid gray 2px; margin-left: 15%; margin-top: -4px"/>
           <div class="form-p">
             <div class="item">☞ 아이디 : {{ id }}</div>
@@ -73,7 +73,7 @@ export default {
       alert("로그인 후 사용 가능합니다.");
       location.href = "/";
     }
-    self.$axios.get(`http://localhost:8081/members/${self.memnum}`, { headers: { 'token': token } })
+    self.$axios.get(`http://localhost:7878/members/${self.memnum}`, { headers: { 'token': token } })
       .then(res => {
         if (res.status == 200 || res.data.flag) {
           self.dto = res.data.dto;
@@ -93,7 +93,7 @@ export default {
       });
 
     // 대결 테마 들고 오기.
-    self.$axios.get('http://localhost:8081/battles/info')
+    self.$axios.get('http://localhost:7878/battles/info')
       .then(res => {
         if (res.status == 200 || res.data.flag) {
           // 대결 테마가 변경되어있는 지 확인하는 if문
@@ -108,7 +108,7 @@ export default {
       })
 
     // 신청 유무 확인하기.
-    self.$axios.get(`http://localhost:8081/battles/chk/${this.memnum}`)
+    self.$axios.get(`http://localhost:7878/battles/chk/${this.memnum}`)
       .then(res => {
         if (res.status == 200) {
           self.chk = res.data.chk;
@@ -136,11 +136,11 @@ export default {
         formdata.append("roundcnt", this.roundcnt);
         formdata.append("mf", file.files[0]);
 
-        self.$axios.post('http://localhost:8081/battles', formdata,
+        self.$axios.post('http://localhost:7878/battles', formdata,
           { headers: { "Content-Type": "multipart/form-data" } })
           .then(res => {
             if (res.status == 200 || res.data.flag) {
-              alert("신청 완료.");
+              alert("신청이 완료되었습니다.");
               location.href = "/"
             } else {
               alert("오류 발생으로 인한 신청 실패")
