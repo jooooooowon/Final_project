@@ -23,7 +23,7 @@
             <input type="password" id="pwd" v-model="pwd" placeholder="패스워드" :class="{'input_field': !hasPwdError, 'input_field_error': hasPwdError}" @focus="cPlaceholder($event)" @blur="rPlaceholder($event)" @input="validatePwd($event)">
 
         <!-- 비밀번호 유효성검사 메시지 -->
-        <p class="input_error" v-if="hasPwdError">영문, 숫자, 특수문자를 조합해서 입력해주세요. (4-12자)</p>
+        <p class="input_error" v-if="hasPwdError">영문, 숫자, 특수문자(!~#$%^&'()*+,./)를 조합해서 입력해주세요. (8-12자)</p>
         </div>
 
         <!-- 이메일 입력 폼 -->
@@ -273,6 +273,16 @@ export default{
             });
         },
 
+        // *정규식*
+        // 예시) /^(?=.*[A-Z])(?=.*\d)(?=.*[!~#$%^&'()*+,./])[A-Za-z\d!~#$%^&'()*+,./]\S{8,12}$/;
+        // (?=.*someting): .*' '에서 ' '안에 오는 문자열을 하나 이상 포함하여야한다.
+        // [A-Z]: 영대문자
+        // \d: 숫자
+        // !~#$%^&'()*+,./: 특수문자(특수문자 전체X => 아스키코드 33~47번)
+        // \S: 공백이 아닌 문자
+        // {8,12} : 대문자, 소문자, 숫자, 특수문자 8~12 자리
+
+
         //아이디 정규식(8~12자리 이상 영문+숫자, 영문, 숫자X)
         validateId(event){
             const id = event.target.value
@@ -285,9 +295,9 @@ export default{
 
         //비밀번호 정규식
         validatePwd(event){
-            //4~12자리, 공백X, 한글X, 영문+숫자, 영대문자1개 포함, 특수문자포함
+            //8~12자리, 공백X, 한글X, 영문+숫자, 영대문자1개 포함, 특수문자포함
             const pwd = event.target.value
-            const pattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{4,12}$/;
+            const pattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!~#$%^&'()*+,./])[A-Za-z\d!~#$%^&'()*+,./]{8,12}$/;
             this.hasPwdError = !pattern.test(pwd);
             // this.enabledState();
         },
@@ -368,21 +378,6 @@ export default{
                 }
             });
         },
-
-        //이메일 인증 완료(원본)
-        // checkKey() {
-        //     const self = this;
-        //     let displayedTime = document.getElementById('displayedTime');
-        //     if(self.authKey == self.compKey) {
-        //         clearInterval(self.startTimer);
-        //         displayedTime.innerText = "인증이 완료되었습니다."
-        //         self.authComplete = 0;
-        //     } else {
-        //         alert('인증번호가 틀렸습니다.')
-        //         self.authComplete = 1;
-        //     }
-        // },
-
 
         //이메일 인증 완료
         checkKey() {

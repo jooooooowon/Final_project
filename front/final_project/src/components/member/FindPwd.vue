@@ -74,13 +74,12 @@ export default{
                 console.log(self.email)
                 if(res.status==200){
                     let randomPwd = res.data.randomPwd.pwd;
-                    // let id = res.data.randomPwd
-                    // let email = res.data.randomPwd
-                    alert(randomPwd)
+                    // alert(randomPwd)
                     if(randomPwd!=null){
                         self.id = randomPwd.id;
                         self.email = randomPwd.email;
                         self.msg='';
+                        alert('해당 이메일로 임시비밀번호를 전송하였습니다.');
                     }else{
                         self.msg='';
                     }
@@ -93,7 +92,7 @@ export default{
             .catch(function(error){
                 console.log(error);
                 alert('일치하는 사용자 정보를 찾을 수 없습니다. ')
-                alert('오류가 발생했습니다.'+error);
+                //alert('오류가 발생했습니다.'+error);
             });
         },
 

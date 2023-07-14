@@ -178,7 +178,7 @@ export default{
         //비밀번호 정규식
         validatePwd(event){
             const pwd = event.target.value;
-            const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,12}$/;
+            const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!~#$%^&'()*+,./])[A-Za-z\d!~#$%^&'()*+,./]{8,12}$/;
             this.hasPwdError = !regex.test(pwd);
             console.log("pwd : " +this.hasPwdError)
             this.enabledState();

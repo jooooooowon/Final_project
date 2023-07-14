@@ -56,7 +56,7 @@
                                         <div class= "input_item">
                                             <input type="text" v-model="modifiedPwd" :class="{'info input_text': !hasPwdError, 'info input_text_error': hasPwdError}" @input="validatePwd($event)">
                                         </div>
-                                        <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자를 조합해서 입력해주세요. (8-12자)</p>
+                                        <p class="input_error" v-if="hasPwdError">대문자, 영문, 숫자, 특수문자(!~#$%^&'()*+,./)를 조합해서 입력해주세요. (8-12자)</p>
                                         
                                         <div class="modify_btn_box">
                                             <button class="btn medium cancel" @click="cancelModifyPwd">취소</button> 
@@ -392,29 +392,6 @@ export default{
             });
         },
 
-        //닉네임 중복체크
-        // nickcheck(){
-        //     const self = this;
-        //     if(self.nickname.trim() === ''){
-        //         return;
-        //     }
-        //     self.$axios.get('http://localhost:8081/members/nickname/'+self.nickname)
-        //     .then(function(res){
-        //         if(res.status === 200){
-        //             if(res.data.tf === true){
-        //                 self.nickmsg = '사용가능한 닉네임';
-        //             }else{
-        //                 self.nickmsg = '중복된 닉네임';
-        //             }
-        //             console.log(res.data.tf)
-        //             console.log("닉네임:"+self.nickname)
-        //         }else{
-        //             alert('에러코드:' + res.status)
-        //         }
-        //     });
-        // },
-
-
         //로그인, 패스워드 폼 포커스시
         cPlaceholder(event){
             event.target.previousElementSibling.classList.add('actvie');
@@ -440,7 +417,7 @@ export default{
         //비밀번호 정규식
         validatePwd(event){
             const pwd = event.target.value;
-            const pattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])[A-Za-z\d!@#$%^&*()]{8,12}$/;
+            const pattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!~#$%^&'()*+,./])[A-Za-z\d!~#$%^&'()*+,./]{8,12}$/;
             this.hasPwdError = !pattern.test(pwd);
             console.log("pwd : " +this.hasPwdError)
             // this.enabledState();

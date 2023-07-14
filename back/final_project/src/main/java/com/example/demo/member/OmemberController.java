@@ -165,43 +165,6 @@ public class OmemberController {
 		return map;
 	}
 
-	// 탈퇴(원본)
-//	@DeleteMapping("/{memnum}")
-//	public Map del(@PathVariable("memnum") int memnum, @RequestHeader(name = "token", required = false) String token) {
-//		boolean flag = true;
-//		Map map = new HashMap();
-//		if (token != null) {
-//			try {
-//				int tempMemnum = tokenprovider.getMemnumFromToken(token);
-//				if (memnum != tempMemnum) {
-//					flag = false;
-//				}
-//			} catch (Exception e) {	
-//				flag = false;
-//			}
-//		}
-//		if (flag) {
-//			OmemberDto dto = service.getByMemnum(memnum);
-//			String oldImgPath = dto.getImg();
-//			if(oldImgPath != null && !oldImgPath.isEmpty()) {
-//				try {
-//					File oldImgFile = new File(URLDecoder.decode(oldImgPath, "utf-8"));
-//					oldImgFile.delete();
-//					File dir = new File(path + dto.getMemnum());
-//					dir.delete();
-//				}catch(Exception e) {
-//					e.printStackTrace();
-//				}
-//			}else {
-//				File dir = new File(path + dto.getMemnum());
-//				dir.delete();
-//			}
-//			service.delMember(memnum);
-//		}
-//		map.put("flag", flag);
-//		return map;
-//	}
-
 	// 탈퇴
 	@DeleteMapping("/{memnum}")
 	public Map del(@PathVariable("memnum") int memnum, @RequestHeader(name = "token", required = false) String token) {
@@ -420,7 +383,7 @@ public class OmemberController {
 				int speIndex = random.nextInt(15) + 33; //1자리 랜덤 특수문자 생성, 0~14 + 33 = 33 ~ 47 => char변환(특수문자 생성)
 				key += (char)speIndex;
 			}
-			for(int i=0; i<4; i++) {
+			for(int i=0; i<5; i++) {
 				int numIndex = random.nextInt(10); // 6자리 랜덤 정수를 생성, 0~9
 				key += numIndex;
 			}
