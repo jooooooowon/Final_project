@@ -160,7 +160,7 @@ export default{
     search(){
       let self = this;
       if(self.query != ''){
-        self.$axios.get(`http://localhost:7878/naver/${self.query}`)
+        self.$axios.get(`http://localhost:8081/naver/${self.query}`)
         .then(res => {
           if(res.status == 200){
             self.list = res.data.list;

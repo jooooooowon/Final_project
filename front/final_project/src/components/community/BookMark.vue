@@ -9,7 +9,7 @@
         <!-- 프사 & 닉네임 -->
         <div class="item-1">
           <span><img style="margin-right: 5px; border-radius:50%; width: 20px; height: 20px;"
-            :src="'http://localhost:7878/members/imgs/' + bookmark.memnum.memnum"></span>
+            :src="'http://localhost:8081/members/imgs/' + bookmark.memnum.memnum"></span>
           <span style="margin-top: 6px; margin-left: 5px; font-size: 0.5em; font-weight: bold;" >
           {{ bookmark.memnum.nickname }}</span>
         </div>
@@ -21,14 +21,14 @@
 
       <!-- box2 start -->
       <div id="box2">
-        <img class="img1" :src="'http://localhost:7878/ocommunity/img/' + bookmark.commnum + '/' + 1">
+        <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + bookmark.commnum + '/' + 1">
 
         <div v-if="bookmark.img2 != undefined">
-          <img class="img1" :src="'http://localhost:7878/ocommunity/img/' + bookmark.commnum + '/' + 2">
+          <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + bookmark.commnum + '/' + 2">
         </div>
 
         <div v-if="bookmark.img3 != undefined">
-          <img class="img1" :src="'http://localhost:7878/ocommunity/img/' + bookmark.commnum + '/' + 3">
+          <img class="img1" :src="'http://localhost:8081/ocommunity/img/' + bookmark.commnum + '/' + 3">
         </div>
       </div>
       <!-- box2 End -->
@@ -81,7 +81,7 @@ mounted() {
 methods: {
   getAllMyList() {
     const self = this;
-    self.$axios.get(`http://localhost:7878/ocommunity/${self.memnum}`)
+    self.$axios.get(`http://localhost:8081/ocommunity/${self.memnum}`)
       .then(res => {
         if (res.status === 200) {
           self.allList = res.data.list;
@@ -98,7 +98,7 @@ methods: {
   //추가된 북마크 리스트
   getBookmarkList(method) {
     const self = this;
-    self.$axios.get('http://localhost:7878/obookmark/bookmarklist/' + self.memnum)
+    self.$axios.get('http://localhost:8081/obookmark/bookmarklist/' + self.memnum)
       .then(function (res) {
         if (res.status == 200) {
           self.bookmarklist = res.data.list;
@@ -113,7 +113,7 @@ methods: {
   },
   delComm(bmnum) {
     const self = this;
-    self.$axios.delete('http://localhost:7878/obookmark/' + bmnum)
+    self.$axios.delete('http://localhost:8081/obookmark/' + bmnum)
       .then(function (res) {
         if (res.status == 200) {
           alert('북마크가 해제되었습니다.')
@@ -129,7 +129,7 @@ methods: {
     let form = new FormData();
     form.append("memnum", self.memnum);
     form.append("commnum", commnum);
-    self.$axios.patch('http://localhost:7878/olikebtn', form)
+    self.$axios.patch('http://localhost:8081/olikebtn', form)
       .then(res => {
         if (res.status == 200) {
           window.location.reload();
@@ -145,7 +145,7 @@ methods: {
     let formdata = new FormData();
     formdata.append("commnum", commnum);
     formdata.append("memnum", self.memnum);
-    self.$axios.put('http://localhost:7878/obookmark', formdata)
+    self.$axios.put('http://localhost:8081/obookmark', formdata)
     .then(res => {
       if (res.status == 200) {
         window.location.reload();

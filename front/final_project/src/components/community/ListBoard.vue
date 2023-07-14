@@ -23,7 +23,7 @@
 				<!-- 프사 & 닉네임-->
 				<div class="item-1">
 					<span><img style="margin-right: 8px; border-radius:50%; width: 30px; height: 30px;"
-							:src="'http://localhost:7878/members/imgs/' + comm.memnum.memnum"></span>
+							:src="'http://localhost:8081/members/imgs/' + comm.memnum.memnum"></span>
 					<span style="margin-top: 8px;">
 						<a v-on:click="searchMember(comm.memnum.memnum)"
 							style="cursor: pointer; font-size: 0.8em; font-weight: bold;">{{ comm.memnum.nickname }}</a>
@@ -51,14 +51,14 @@
 
 			<!--box2 img-->
 			<div id="box2">
-				<img class="img1" :src="'http://localhost:7878/ocommunity/img/' + comm.commnum + '/' + 1">
+				<img class="img1" :src="'http://localhost:8081/ocommunity/img/' + comm.commnum + '/' + 1">
 
 				<div v-if="comm.img2 != undefined">
-					<img class="img1" :src="'http://localhost:7878/ocommunity/img/' + comm.commnum + '/' + 2">
+					<img class="img1" :src="'http://localhost:8081/ocommunity/img/' + comm.commnum + '/' + 2">
 				</div>
 
 				<div v-if="comm.img3 != undefined">
-					<img class="img1" :src="'http://localhost:7878/ocommunity/img/' + comm.commnum + '/' + 3">
+					<img class="img1" :src="'http://localhost:8081/ocommunity/img/' + comm.commnum + '/' + 3">
 				</div>
 			</div>
 			<!--box2 End-->
@@ -177,7 +177,7 @@ export default {
 			const self = this;
 			let check = confirm('정말 삭제하시겠습니까?');
 			if (check) {
-				self.$axios.delete('http://localhost:7878/ocommunity/' + commnum)
+				self.$axios.delete('http://localhost:8081/ocommunity/' + commnum)
 					.then(function (res) {
 						if (res.status === 200) {
 							if (res.data.flag) {
@@ -197,9 +197,9 @@ export default {
 			const self = this;
 			let url = '';
 			if (self.memnum == undefined) {
-				url = 'http://localhost:7878/ocommunity';
+				url = 'http://localhost:8081/ocommunity';
 			} else {
-				url = `http://localhost:7878/ocommunity/${self.memnum}`
+				url = `http://localhost:8081/ocommunity/${self.memnum}`
 			}
 			self.$axios.get(url)
 				.then((response) => {
@@ -222,7 +222,7 @@ export default {
 			if (self.searchTag == '' || self.searchTag == undefined) {
 				this.getCommunityList();
 			} else {
-				self.$axios.get('http://localhost:7878/ocommunity/tags/' + self.searchTag + "/" + self.memnum)
+				self.$axios.get('http://localhost:8081/ocommunity/tags/' + self.searchTag + "/" + self.memnum)
 					.then(res => {
 						if (res.status == 200) {
 							self.commlist = res.data.tags;
@@ -241,7 +241,7 @@ export default {
 			// const self = this;
             // self.$router.push({ name: 'ListBoard2', query: { memnum: memnum } });
 			let self = this;
-			self.$axios.get('http://localhost:7878/ocommunity/members/' + memnum + "/" + self.memnum)
+			self.$axios.get('http://localhost:8081/ocommunity/members/' + memnum + "/" + self.memnum)
 				.then(res => {
 					if (res.status == 200) {
 						self.commlist = res.data.list;
@@ -257,7 +257,7 @@ export default {
 		// 신고 리스트 받는거
 		getReportList(method) {
 			const self = this;
-			self.$axios.get('http://localhost:7878/oreport')
+			self.$axios.get('http://localhost:8081/oreport')
 				.then(function (res) {
 					if (res.status == 200) {
 						self.reportlist = res.data.list;
@@ -285,7 +285,7 @@ export default {
 				formdata.append('memnum', self.memnum);
 				formdata.append('commnum', self.reportCommnum);
 				formdata.append('category', self.reportContent);
-				self.$axios.post('http://localhost:7878/oreport', formdata)
+				self.$axios.post('http://localhost:8081/oreport', formdata)
 					.then(function (res) {
 						if (res.status == 200) {
 							alert('신고가 완료되었습니다.')
@@ -330,7 +330,7 @@ export default {
 				let form = new FormData();
 				form.append("memnum", self.memnum);
 				form.append("commnum", commnum);
-				self.$axios.patch('http://localhost:7878/olikebtn', form)
+				self.$axios.patch('http://localhost:8081/olikebtn', form)
 					.then(res => {
 						if (res.status == 200) {
 							window.location.reload();
@@ -351,7 +351,7 @@ export default {
 				let formdata = new FormData();
 				formdata.append("commnum", commnum);
 				formdata.append("memnum", self.memnum);
-				self.$axios.put('http://localhost:7878/obookmark', formdata)
+				self.$axios.put('http://localhost:8081/obookmark', formdata)
 					.then(res => {
 						if (res.status == 200) {
 							window.location.reload();

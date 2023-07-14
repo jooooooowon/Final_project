@@ -197,7 +197,7 @@ export default{
             if(file.files[0]){
                 formdata.append('mf', file.files[0]);
     
-                self.$axios.post('http://localhost:7878/members', formdata,
+                self.$axios.post('http://localhost:8081/members', formdata,
                 { headers: { "Content-Type": "multipart/form-data" } })
                 .then(function(res){
                     if(res.status == 200){
@@ -210,7 +210,7 @@ export default{
                 });
             }else{
                 //이미지X 회원가입
-                self.$axios.post('http://localhost:7878/members/omem', formdata)
+                self.$axios.post('http://localhost:8081/members/omem', formdata)
                 .then(function(res){
                     if(res.status == 200){
                         let d = res.data.d
@@ -230,7 +230,7 @@ export default{
                 // self.msg = '아이디를 입력하시오.'
                 return;
             }
-            self.$axios.get('http://localhost:7878/members/check/'+self.id)
+            self.$axios.get('http://localhost:8081/members/check/'+self.id)
             .then(function(res){
                 if(res.status == 200){
                     if(res.data.tf){
@@ -255,7 +255,7 @@ export default{
             if(self.nickname.trim() === ''){
                 return;
             }
-            self.$axios.get('http://localhost:7878/members/nickname/'+self.nickname)
+            self.$axios.get('http://localhost:8081/members/nickname/'+self.nickname)
             .then(function(res){
                 if(res.status === 200){
                     if(res.data.tf === true){
@@ -328,7 +328,7 @@ export default{
             clearInterval(self.startTimer);
             // self.email = self.emailId + '@' + self.emailDomain;
             self.email = self.emailId;
-            self.$axios.get('http://localhost:7878/members/email/' + self.email)
+            self.$axios.get('http://localhost:8081/members/email/' + self.email)
             .then(function(res){
                 if(res.status == 200){
                     let exist = res.data.exist;

@@ -16,17 +16,17 @@
         <!-- 이번주 우승자입니다. -->
         이번주  [{{ theme }}] 우승자
       </div>
-      <!-- <img :src="'http://localhost:7878/battles/imgs/'+batnum" alt=""> -->
+      <!-- <img :src="'http://localhost:8081/battles/imgs/'+batnum" alt=""> -->
       <hr>
       <div class="win-info">
         <!-- <div class="batnum-img"> -->
-          <img style="margin-left: 90px;" :src="'http://localhost:7878/battles/imgs/'+batnum" alt="">
+          <img style="margin-left: 90px;" :src="'http://localhost:8081/battles/imgs/'+batnum" alt="">
         <!-- </div> -->
           
         <div class="main-content">
           <img class="winner-img" style="width:170px; height:170px;" :src="require('@/assets/winner.png')" alt="">
         <div class = "content-main">
-          <!-- <img :src="'http://localhost:7878/battles/imgs/'+num" alt=""> -->
+          <!-- <img :src="'http://localhost:8081/battles/imgs/'+num" alt=""> -->
           <div class="content-title">
             닉네임:
           </div>
@@ -153,7 +153,7 @@ export default {
       let self = this;
     
       // chk는 혹시나 오류가 났을 때 대처할 페이지로 이동의 유무를 따지는 역할을 한다.
-      self.$axios.get("http://localhost:7878/battles/winner")
+      self.$axios.get("http://localhost:8081/battles/winner")
       .then(res =>{
         if(res.status == 200 || res.data.flag){
           if(res.data.dto == undefined || res.data.dto.theme == '이번주 테마는?'){
@@ -180,7 +180,7 @@ export default {
 
     findProfileImg(){
       const self = this;
-      self.$axios.get('http://localhost:7878/members/' + this.batnum)
+      self.$axios.get('http://localhost:8081/members/' + this.batnum)
         .then(function(res){
             if(res.status==200){
                 let dto = res.data.dto

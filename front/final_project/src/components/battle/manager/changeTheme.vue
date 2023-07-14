@@ -23,7 +23,7 @@ export default{
       let form = new FormData();
       form.append('theme',this.theme);
 
-      self.$axios.put('http://localhost:7878/battles/manager',form)
+      self.$axios.put('http://localhost:8081/battles/manager',form)
       .then(res => {
         if(res.status == 200){
           if(res.data.flag){

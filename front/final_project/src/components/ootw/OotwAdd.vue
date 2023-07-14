@@ -71,7 +71,7 @@
                         <div class="container">
                             <div class="item" v-for="closet in closetlist" :key="closet.closetnum">
                                 <span v-if="closet.img != 'basicImage'">
-                                <img :src="'http://localhost:7878/closets/img/' + closet.memnum.memnum + '/' + closet.closetnum">
+                                <img :src="'http://localhost:8081/closets/img/' + closet.memnum.memnum + '/' + closet.closetnum">
                                 </span>
                                 <span v-if="closet.img == 'basicImage'">
                                     <img src="../../assets/basic.png">
@@ -123,7 +123,7 @@ export default {
     created: function () {
         const self = this;
         self.memnum = sessionStorage.getItem('memnum')
-        self.$axios.get('http://localhost:7878/closets/members/' + self.memnum)
+        self.$axios.get('http://localhost:8081/closets/members/' + self.memnum)
             .then(function (res) {
                 if (res.status == 200) {
                     self.closetlist = res.data.list;
@@ -148,7 +148,7 @@ export default {
             const self = this;
             if (index == 0) {
                 self.memnum = sessionStorage.getItem('memnum')
-                self.$axios.get('http://localhost:7878/closets/members/' + self.memnum)
+                self.$axios.get('http://localhost:8081/closets/members/' + self.memnum)
                     .then(function (res) {
                         if (res.status == 200) {
                             self.closetlist = res.data.list;
@@ -187,7 +187,7 @@ export default {
             if (index == 0) {
                 self.memnum = sessionStorage.getItem('memnum')
                 var maintag = self.subtags[0].split('(', 1)
-                self.$axios.get('http://localhost:7878/closets/maintags/' + self.memnum + "/" + maintag)
+                self.$axios.get('http://localhost:8081/closets/maintags/' + self.memnum + "/" + maintag)
                     .then(function (res) {
                         if (res.status == 200) {
                             self.closetlist = res.data.list;
@@ -198,7 +198,7 @@ export default {
             } else {
                 self.memnum = sessionStorage.getItem('memnum')
                 var subtag = self.subtags[index]
-                self.$axios.get('http://localhost:7878/closets/subtags/' + self.memnum + "/" + subtag)
+                self.$axios.get('http://localhost:8081/closets/subtags/' + self.memnum + "/" + subtag)
                     .then(function (res) {
                         if (res.status == 200) {
                             self.closetlist = res.data.list;
@@ -214,19 +214,19 @@ export default {
                 alert("기본 이미지는 Ootw에 등록할 수 없습니다.")
             } else {
                 if (self.thumbnum == 1) {
-                    self.thumbImg1 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
+                    self.thumbImg1 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
                     self.closetnumlist[0] = closetnum
                 } else if (self.thumbnum == 2) {
-                    self.thumbImg2 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
+                    self.thumbImg2 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
                     self.closetnumlist[1] = closetnum
                 } else if (self.thumbnum == 3) {
-                    self.thumbImg3 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
+                    self.thumbImg3 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
                     self.closetnumlist[2] = closetnum
                 } else if (self.thumbnum == 4) {
-                    self.thumbImg4 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
+                    self.thumbImg4 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
                     self.closetnumlist[3] = closetnum
                 } else if (self.thumbnum == 5) {
-                    self.thumbImg5 = 'http://localhost:7878/closets/img/' + self.memnum + '/' + closetnum
+                    self.thumbImg5 = 'http://localhost:8081/closets/img/' + self.memnum + '/' + closetnum
                     self.closetnumlist[4] = closetnum
                 }
                 this.modalCheck = !this.modalCheck
@@ -249,7 +249,7 @@ export default {
                 formdata.append('temp', self.temp)
                 formdata.append('comments', self.comments)
                 formdata.append('closetnumlist', self.closetnumlist)
-                self.$axios.post('http://localhost:7878/boards', formdata)
+                self.$axios.post('http://localhost:8081/boards', formdata)
                     .then(function (res) {
                         if (res.status == 200) {
                             location.href = '/ootwlist'

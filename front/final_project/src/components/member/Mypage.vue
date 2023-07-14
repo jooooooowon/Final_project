@@ -170,7 +170,7 @@ export default{
         
         const self = this;
 
-        self.$axios.get('http://localhost:7878/members/'+self.num,
+        self.$axios.get('http://localhost:8081/members/'+self.num,
         {headers:{'token':token}})
         .then(function(res){
             if(res.status==200){
@@ -279,7 +279,7 @@ export default{
         //프로필사진
         profileImg(){
             if(this.img != null){
-                return 'http://localhost:7878/members/imgs/'+ this.num;
+                return 'http://localhost:8081/members/imgs/'+ this.num;
             } else{
                 return require('@/assets/userImg.png')
             }
@@ -298,7 +298,7 @@ export default{
                 formdata.append('mf', null)
             }
              let token = sessionStorage.getItem('token')
-            self.$axios.put('http://localhost:7878/members',formdata,
+            self.$axios.put('http://localhost:8081/members',formdata,
             {headers:{'token':token}})
             .then(function(res){
                 if(res.status == 200){
@@ -331,7 +331,7 @@ export default{
             let token = sessionStorage.getItem('token')
             let answer = confirm('탈퇴하시겠습니까?')
             if(answer){
-            self.$axios.delete('http://localhost:7878/members/'+self.num,
+            self.$axios.delete('http://localhost:8081/members/'+self.num,
             {headers:{'token':token}})
             .then(function(res){
                 if(res.status == 200){
@@ -354,7 +354,7 @@ export default{
         //이미지 삭제
         delImg(){
             const self = this;
-            self.$axios.delete('http://localhost:7878/members/imgs/'+self.num)
+            self.$axios.delete('http://localhost:8081/members/imgs/'+self.num)
             .then(function(res){
                 if(res.status == 200){
                     if(res.data.flag){
@@ -374,7 +374,7 @@ export default{
             if(self.modifiedNickname.trim() === ''){
                 return;
             }
-            self.$axios.get('http://localhost:7878/members/nickname/'+self.modifiedNickname)
+            self.$axios.get('http://localhost:8081/members/nickname/'+self.modifiedNickname)
             .then(function(res){
                 if(res.status === 200){
                     if(res.data.tf === true){
@@ -398,7 +398,7 @@ export default{
         //     if(self.nickname.trim() === ''){
         //         return;
         //     }
-        //     self.$axios.get('http://localhost:7878/members/nickname/'+self.nickname)
+        //     self.$axios.get('http://localhost:8081/members/nickname/'+self.nickname)
         //     .then(function(res){
         //         if(res.status === 200){
         //             if(res.data.tf === true){

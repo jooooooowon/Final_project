@@ -50,7 +50,7 @@ export default{
     methods:{
         find(){
             const self = this;
-            self.$axios.get('http://localhost:7878/members/email/find/'+self.email)
+            self.$axios.get('http://localhost:8081/members/email/find/'+self.email)
             .then(function(res){
                 if(res.status==200){
                     let dto = res.data.dto

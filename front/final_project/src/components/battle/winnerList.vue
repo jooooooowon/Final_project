@@ -41,7 +41,7 @@
                   </div>
                 </div>
                 <div class="imgPosition">
-                  <img :src="'http://localhost:7878/battles/imgs/' + winner.batnum" alt="이미지 불러오기 실패">
+                  <img :src="'http://localhost:8081/battles/imgs/' + winner.batnum" alt="이미지 불러오기 실패">
                 </div>
               </div>
             </li>
@@ -103,7 +103,7 @@ export default {
   methods: {
     winnerList() {
       let self = this;
-      self.$axios.get('http://localhost:7878/battles/winnerlist')
+      self.$axios.get('http://localhost:8081/battles/winnerlist')
         .then(res => {
           if (res.status == 200) {
             self.list = res.data.list;

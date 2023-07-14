@@ -105,7 +105,7 @@
                 style="display: flex; align-items: center;">
                 <div class="card" v-for="closet in row" :key="closet.closetnum">
                     <span v-if="closet.img != 'basicImage'">
-                    <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + closet.closetnum"
+                    <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closet.closetnum"
                         v-on:click="modalOpenDetail(closet.closetnum)" style="cursor: pointer;" title="수정하려면 클릭하세요.">
                     </span>
                     <span v-if="closet.img == 'basicImage'">
@@ -142,7 +142,7 @@
             <div class="modal-container-detail" @click.stop="" id="containerDetail">
                 <label for="detailEditFile">
                     <span v-if="img != 'basicImage' && detailEditImg == ''">
-                        <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + setClosetnum"
+                        <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + setClosetnum"
                             class="modal-img-detail">
                     </span>
                     <span v-if="img != 'basicImage' && detailEditImg != ''">
@@ -233,7 +233,7 @@ export default {
             location.href = '/login'
         } else {
             let cloth = self.listclothname;
-            self.$axios.get('http://localhost:7878/closets/clothes/' + self.memnum + "/" + cloth)
+            self.$axios.get('http://localhost:8081/closets/clothes/' + self.memnum + "/" + cloth)
                 .then(function (res) {
                     if (res.status == 200) {
                         self.closetlist = res.data.list;
@@ -316,7 +316,7 @@ export default {
             if (favorite == 1) {
                 let answer = confirm('즐겨찾기된 옷입니다. 정말 삭제하시겠습니까?')
                 if (answer) {
-                    self.$axios.delete('http://localhost:7878/closets/' + closetnum)
+                    self.$axios.delete('http://localhost:8081/closets/' + closetnum)
                         .then(function (res) {
                             if (res.status == 200) {
                                 if (res.data.flag) {
@@ -337,7 +337,7 @@ export default {
                     alert('삭제가 취소되었습니다.')
                 }
             } else {
-                self.$axios.delete('http://localhost:7878/closets/' + closetnum)
+                self.$axios.delete('http://localhost:8081/closets/' + closetnum)
                     .then(function (res) {
                         if (res.status == 200) {
                             if (res.data.flag) {
@@ -358,7 +358,7 @@ export default {
         },
         favorite(closetnum) {
             const self = this;
-            self.$axios.patch('http://localhost:7878/closets/' + closetnum)
+            self.$axios.patch('http://localhost:8081/closets/' + closetnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         const updatedCloset = self.closetlist.find(closet => closet.closetnum == closetnum);
@@ -525,7 +525,7 @@ export default {
                     formdata.append('cloth', self.clothname)
                     formdata.append('maintag', self.selectedmain)
                     formdata.append('subtag', self.selectedsub)
-                    self.$axios.post('http://localhost:7878/closets/nofile', formdata)
+                    self.$axios.post('http://localhost:8081/closets/nofile', formdata)
                         .then(function () {
                             location.reload();
                         })                    
@@ -535,7 +535,7 @@ export default {
                     formdata.append('cloth', self.clothname)
                     formdata.append('maintag', self.selectedmain)
                     formdata.append('subtag', self.selectedsub)
-                    self.$axios.post('http://localhost:7878/closets', formdata)
+                    self.$axios.post('http://localhost:8081/closets', formdata)
                         .then(function () {
                             location.reload();
                         })
@@ -547,7 +547,7 @@ export default {
             const self = this;
             this.setClosetnum = closetnum;
             self.modalCheckDetail = !self.modalCheckDetail;
-            self.$axios.get('http://localhost:7878/closets/' + closetnum)
+            self.$axios.get('http://localhost:8081/closets/' + closetnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         let dto = res.data.dto
@@ -574,7 +574,7 @@ export default {
             const self = this;
             let formdata = new FormData();
             if (self.uploadimg == null) {
-                self.$axios.patch('http://localhost:7878/closets/editcloth/' + closetnum + "/" + self.modalCloth)
+                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.modalCloth)
                     .then(function (res) {
                         if (res.status == 200) {
                             let newdto = res.data.dto
@@ -586,7 +586,7 @@ export default {
                     })
             } else {
                 formdata.append('newf', self.uploadimg)
-                self.$axios.patch('http://localhost:7878/closets/editcloth/' + closetnum + "/" + self.modalCloth, formdata)
+                self.$axios.patch('http://localhost:8081/closets/editcloth/' + closetnum + "/" + self.modalCloth, formdata)
                     .then(function (res) {
                         if (res.status == 200) {
                             let newdto = res.data.dto

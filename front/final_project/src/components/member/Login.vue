@@ -99,7 +99,7 @@ export default{
             form.append('id', self.id)
             form.append('pwd',self.pwd)
 
-            self.$axios.post('http://localhost:7878/members/login', form)
+            self.$axios.post('http://localhost:8081/members/login', form)
             .then(function(res){
                 if(res.status == 200){
                     if(res.data.flag){

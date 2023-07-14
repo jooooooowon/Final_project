@@ -47,7 +47,7 @@
             <div class="ootw-list">
                 <div class="ootw-item" v-for="(ootw, index) in ootwlist" :key="ootw.ootwnum"
                     v-on:click="detail(ootw.ootwnum)">
-                    <img :src="'http://localhost:7878/closets/img/' + memnum + '/' + closetNumList[index]"><br />
+                    <img :src="'http://localhost:8081/closets/img/' + memnum + '/' + closetNumList[index]"><br />
                     <div class="ootw-contents">
                         {{ datelist[index] }}&nbsp;&nbsp;&nbsp;{{ ootw.weather }}&nbsp;&nbsp;&nbsp;{{ ootw.temp }}도
                     </div>
@@ -106,7 +106,7 @@ export default {
             alert('로그인 화면으로 이동합니다.')
             location.href = '/login'
         } else {
-            self.$axios.get('http://localhost:7878/boards/members/' + self.memnum)
+            self.$axios.get('http://localhost:8081/boards/members/' + self.memnum)
                 .then(function (res) {
                     if (res.status == 200) {
                         self.ootwlist = res.data.list;
@@ -193,7 +193,7 @@ export default {
             if (self.date2 < self.date1 || self.date1 == '' || self.date2 == '') {
                 alert('날짜 범위를 다시 정해주세요.')
             } else {
-                self.$axios.get('http://localhost:7878/boards/dates/' + self.memnum + "/" + self.date1 + "/" + self.date2)
+                self.$axios.get('http://localhost:8081/boards/dates/' + self.memnum + "/" + self.date1 + "/" + self.date2)
                     .then(function (res) {
                         if (res.status == 200) {
                             if (res.data.list != '') {
@@ -225,7 +225,7 @@ export default {
             if (self.temp1 > self.temp2 || self.temp1 == '' || self.temp2 == '') {
                 alert("기온 범위를 다시 정해주세요.")
             } else {
-                self.$axios.get('http://localhost:7878/boards/temps/' + self.memnum + "/" + self.temp1 + "/" + self.temp2)
+                self.$axios.get('http://localhost:8081/boards/temps/' + self.memnum + "/" + self.temp1 + "/" + self.temp2)
                     .then(function (res) {
                         if (res.status == 200) {
                             if (res.data.list != '') {
@@ -257,7 +257,7 @@ export default {
             if (self.comments == '') {
                 alert("커멘트 키워드를 검색해 주세요.")
             } else {
-                self.$axios.get('http://localhost:7878/boards/comments/' + self.comments + "/" + self.memnum)
+                self.$axios.get('http://localhost:8081/boards/comments/' + self.comments + "/" + self.memnum)
                     .then(function (res) {
                         if (res.status == 200) {
                             if (res.data.list != '') {

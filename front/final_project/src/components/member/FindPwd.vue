@@ -67,7 +67,7 @@ export default{
             console.log(this.id)
             let form = new FormData();
             form.append("id",self.id);
-            self.$axios.post('http://localhost:7878/members/findPwd/' + self.email,
+            self.$axios.post('http://localhost:8081/members/findPwd/' + self.email,
             form)
             .then(function(res){
                 console.log(self.id)
