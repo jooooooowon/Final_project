@@ -825,7 +825,7 @@ button:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 400px;
-    height: 53%;
+    height: 55%;
     background: #fff;
     box-shadow: 0 20px 10px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
