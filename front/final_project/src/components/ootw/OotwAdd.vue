@@ -29,8 +29,11 @@
         <button v-on:click="modalOpen(5)" id="addLabel5" style="display:none"></button><br/>
         
         <!-- 날짜 입력 -->
-        <input type="date" v-model="odate" id="date" style="font-family: 'PyeongChang-Regular';
-        font-size:13px; width:162px; height: 30px; text-align: center; color:rgb(161, 157, 157); font-weight: 500;
+        <!-- min, max속성에는 문자열 형태의 날짜가 필요함 -->
+        <!-- 년-월-일 보다는 YYYY-MM-DD와 같은 완벽한 날짜 문자열 형태를 갖춰야 인식을 함 -->
+        <input type="date" v-model="odate" id="odate" :max="getNow"
+        style="font-family: 'PyeongChang-Regular'; font-size:13px; width:162px; height: 30px;
+        text-align: center; color:rgb(161, 157, 157); font-weight: 500;
         border-color: lightgray; border-radius: 5px;" data-placeholder="날짜 선택" aria-required="true" required><br /><br/>
         
         <!-- 날씨 입력 -->
@@ -120,6 +123,22 @@ export default {
             closetnumlist: []
         }
     },
+    computed: {
+      getNow() {
+        let now = new Date();
+        let year = now.getFullYear();
+        // Date에서 얻은 날짜의 Month와 date를 문자열로 반환하고,
+        // 반환된 문자열이 한자리일 경우 앞에 0을 붙여 두자리로 만들고,
+        // 두자리일 경우 그 두자리를 그대로 출력하도록 하는
+        // JavaScript의 문자열 메서드 padStart를 이용함
+        // 자리수와 시작되는 문자는 상황에 맞게 지정..
+        // month는 0부터 시작이므로 +1
+        let month = (now.getMonth() + 1).toString().padStart(2, '0');
+        let date = now.getDate().toString().padStart(2, '0');
+        let nowDate = year + "-" + month + "-" + date;
+        return nowDate;
+      }
+    },
     created: function () {
         const self = this;
         self.memnum = sessionStorage.getItem('memnum')
@@ -159,13 +178,6 @@ export default {
                     })
             }
         },
-        // moreBtn() {
-        //     const self = this;
-        //     const startIndex = self.currentPage * self.closetPerPage;
-        //     const endIndex = startIndex + self.closetPerPage;
-        //     self.displayedcloset = [...self.displayedcloset, ...self.closetlist.slice(startIndex, endIndex)];
-        //     self.currentPage++;
-        // },
         selectsub(index) {
             const self = this;
             if (index == 0) {
